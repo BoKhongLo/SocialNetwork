@@ -2,19 +2,20 @@ import { StyleSheet } from "react-native"
 
 const styles = StyleSheet.create ({
     container: {
-        backgroundColor: 'white',
+        // backgroundColor: 'white',
         flex: 1,
+
     },
     headerContainer:{
         justifyContent:  'space-between',
         alignItems: 'center',
         flexDirection: 'row',
-        marginHorizontal: 20
+        marginHorizontal: 20,
+        marginTop:15
     },
 
     LoginContainer:{
         flex : 1,
-        // backgroundColor : 'white',
         paddingTop: 50,
         paddingHorizontal: 12
     },
@@ -25,34 +26,34 @@ const styles = StyleSheet.create ({
     },
 
     imgLogo: {
-        height: 90,
+        height: 110,
         width: 100,
-        marginBottom: 60
+        marginBottom: 70
     },
     logo: {
-        width: 100,
+        // marginTop:20,
+        width: 120,
         height:50,
         resizeMode : 'contain',
     },
     iconContainer: {
+        marginTop:10,
         flexDirection: 'row',
+        justifyContent: 'space-between'
+        
     },
-    icon :{
+
+    icon : {
         width: 30,
-        height : 30,
+        height :30,
         marginLeft :10,
         resizeMode: 'contain' 
     },
     unreadBadge:{
         backgroundColor: '#FF3250',
-        position: 'absolute',
-        left: 20,
-        bottom: 18,
-        width : 25,
-        height:18,
-        borderRadius: 25,
-        alignItems: 'center',
-        zIndex: 100
+        width: 10,
+        height: 10,
+        borderRadius: 5,
     },
     unreadBadgeText:{
         color: 'white',
@@ -96,8 +97,22 @@ const styles = StyleSheet.create ({
         width: '100%',
         justifyContent: 'center',
         marginTop: 50
-    }
+    },
 
+    // Bottom tabs styles
+    BottomTabContainer:{
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        height: 50,
+        paddingTop: 10
+        
+    },
+    BottomTabIcon:{
+        width: 30,
+        height : 30,
+        marginLeft :10,
+        resizeMode: 'contain'
+    }
 
 })
 

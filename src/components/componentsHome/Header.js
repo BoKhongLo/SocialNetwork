@@ -8,22 +8,19 @@ const Header = () => {
       <TouchableOpacity>
         <Image
           style={styles.logo}
-          source = { require('../../../assets/img/logoLogin.png')}
+          source = { require('../../../assets/img/Instagram_logo.png')}
         />
       </TouchableOpacity>
 
         <View style = {styles.iconContainer}>
-          <TouchableOpacity>
-            <Text styles = {styles.icon}> icon </Text>
+          <TouchableOpacity style={{marginRight: 20}}>
+            <Image styles = {styles.icon} source={require('../../../assets/dummyicon/X.png')}/> 
           </TouchableOpacity>
 
-          <TouchableOpacity>
-            <View style = {styles.unreadBadge}>
-              <Text style = {styles.unreadBadgeText}> </Text>
-            </View>
-            <Text styles = {styles.icon}> icon </Text>
+          <TouchableOpacity style={{flexDirection: 'row'}}> 
+            <Image styles = {styles.icon} source={require('../../../assets/dummyicon/X.png')}/> 
+            <View style = {styles.unreadBadge}></View>
           </TouchableOpacity>
-          
         </View>
     </View>
   )

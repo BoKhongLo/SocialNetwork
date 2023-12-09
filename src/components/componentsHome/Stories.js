@@ -6,7 +6,9 @@ const Stories = () => {
         <View style = {{marginBottom: 13}}>
             <ScrollView showsHorizontalScrollIndicator = {false}>
             </ScrollView>
+            <Text> STORIES </Text>
         </View>
+
     )
 }
 
