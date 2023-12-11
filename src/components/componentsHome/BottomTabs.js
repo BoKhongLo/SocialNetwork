@@ -21,19 +21,19 @@ const BottomTabs = () => {
             <Image 
             style = {styles.BottomTabIcon}
             source = {require('../../../assets/dummyicon/X.png')}
-            onPress ={()=> console.log('da nhan nut 1')}/>
+            onPress ={()=> console.log('da nhan nut 2')}/>
         </TouchableOpacity>
         <TouchableOpacity >        
             <Image 
             style = {styles.BottomTabIcon}
             source = {require('../../../assets/dummyicon/X.png')}
-            onPress ={()=> console.log('da nhan nut 1')}/>
+            onPress ={()=> console.log('da nhan nut 3')}/>
         </TouchableOpacity>
         <TouchableOpacity >        
             <Image 
             style = {styles.BottomTabIcon}
             source = {require('../../../assets/dummyicon/X.png')}
-            onPress ={()=> console.log('da nhan nut 1')}/>
+            onPress ={()=> console.log('da nhan nut 4')}/>
         </TouchableOpacity>
     </View>
   )

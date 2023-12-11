@@ -1,26 +1,64 @@
-import { View, Text, SafeAreaView, ScrollView } from 'react-native'
-import React from 'react'
-import styles from '../styles/styles'
+import React, { useState, useEffect } from 'react';
+import { View, ScrollView, Animated, SafeAreaView, RefreshControl } from 'react-native';
+import Header from '../components/componentsHome/Header';
+import Stories from '../components/componentsHome/Stories';
+import BottomTabs from '../components/componentsHome/BottomTabs';
+import Post from '../components/componentsHome/Post';
 
-import Header from '../components/componentsHome/Header'
-import Stroies from '../components/componentsHome/Stories'
-import Bottomtabs from '../components/componentsHome/BottomTabs'
-import Post from '../components/componentsHome/Post'
+const HomeScreen = () => {
+  const [scrollY] = useState(new Animated.Value(0));
+  const [refreshing, setRefreshing] = useState(false);
+  const handledif = Animated.diffClamp(scrollY, 0, 45)
+  const headerOpacity = handledif.interpolate({
+    inputRange: [0, 100], // You can adjust the range based on your design
+    outputRange: [0, -100],
+    // extrapolate: 'clamp',
+  });
 
-import LoginScreen from './LoginScreen'
+  const handleRefresh = () => {
+    setRefreshing(true);
+    // Perform your refresh logic, e.g., fetching new data
+    // ...
 
-const HomeScreens = () => {
+    // Simulate an asynchronous operation (e.g., API call) with setTimeout
+    setTimeout(() => {
+      // Update the Animated.Value and reset refreshing state
+      scrollY.setValue(0);
+      setRefreshing(false);
+    }, 1000); // Adjust the delay as needed
+  };
+
   return (
-    <SafeAreaView style = {styles.container}>
-      <ScrollView style = {{flex:1}}>
-        <Header/> 
-        <Stroies/>
-        <Post/>
+    <SafeAreaView style={{ flex: 1 }}>
+      <Animated.View style={{
+        transform:[
+          {translateY: headerOpacity }
+        ],
+        elevation:4,
+        zIndex:100,
+      }}>
+        <Header />
+      </Animated.View>
+      <ScrollView
+        style={{ flex: 1 }}
+        scrollEventThrottle={16}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: false }
+        )}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+          />
+        }
+      >
+        <Stories />
+        <Post />
       </ScrollView>
-      {/* <Bottomtabs/> */}
+      <BottomTabs />
     </SafeAreaView>
-  )
-}
+  );
+};
 
-
-export default HomeScreens
+export default HomeScreen;

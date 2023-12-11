@@ -3,6 +3,7 @@ import { StyleSheet } from "react-native"
 const styles = StyleSheet.create ({
     container: {
         // backgroundColor: 'white',
+        // backgroundColor: 'black',
         flex: 1,
 
     },
@@ -11,7 +12,6 @@ const styles = StyleSheet.create ({
         alignItems: 'center',
         flexDirection: 'row',
         marginHorizontal: 20,
-        marginTop:15
     },
 
     LoginContainer:{
@@ -112,8 +112,17 @@ const styles = StyleSheet.create ({
         height : 30,
         marginLeft :10,
         resizeMode: 'contain'
-    }
-
+    },
+    
+    // Stories styles.
+    stroryImg : {
+        width: 90,
+        height: 90,
+        borderRadius: 50,
+        marginLeft:6,
+        borderWidth:3,
+        borderColor: '#ff8501'
+    },
 })
 
 export default styles;

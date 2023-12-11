@@ -1,5 +1,5 @@
-import axios from "axios";
+// import axios from "axios";
 
-function getEmail(email){
-    axios.post('https://instagramclone-109dd-default-rtdb.firebaseio.com/')
-}
+// function getEmail(email){
+//     axios.post('https://instagramclone-109dd-default-rtdb.firebaseio.com/')
+// }
