@@ -3,7 +3,6 @@ import { StyleSheet, Text, View } from 'react-native';
 import { NativeBaseProvider } from 'native-base';
 
 import { NavigationContainer } from '@react-navigation/native';
-// import {AppStack} from './src/navigations/AppStack'
 
 
 import HomeScreens from './src/screens/HomeScreens';

@@ -8,55 +8,63 @@ import Post from '../components/componentsHome/Post';
 const HomeScreen = () => {
   const [scrollY] = useState(new Animated.Value(0));
   const [refreshing, setRefreshing] = useState(false);
-  const handledif = Animated.diffClamp(scrollY, 0, 45)
-  const headerOpacity = handledif.interpolate({
-    inputRange: [0, 100], // You can adjust the range based on your design
-    outputRange: [0, -100],
-    // extrapolate: 'clamp',
+
+  const headerOpacity = Animated.diffClamp(scrollY, 0, 45).interpolate({
+    inputRange: [0, 45],
+    outputRange: [1, 0],
+    extrapolate: 'clamp',
+  });
+
+  const headerTranslateY = Animated.diffClamp(scrollY, 0, 45).interpolate({
+    inputRange: [0, 45],
+    outputRange: [0, -45],
+    extrapolate: 'clamp',
   });
 
   const handleRefresh = () => {
     setRefreshing(true);
-    // Perform your refresh logic, e.g., fetching new data
-    // ...
 
-    // Simulate an asynchronous operation (e.g., API call) with setTimeout
     setTimeout(() => {
-      // Update the Animated.Value and reset refreshing state
+      // Reset the scrollY value and reset refreshing state
       scrollY.setValue(0);
       setRefreshing(false);
     }, 1000); // Adjust the delay as needed
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <Animated.View style={{
-        transform:[
-          {translateY: headerOpacity }
-        ],
-        elevation:4,
-        zIndex:100,
-      }}>
-        <Header />
-      </Animated.View>
-      <ScrollView
-        style={{ flex: 1 }}
-        scrollEventThrottle={16}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: false }
-        )}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-          />
-        }
-      >
-        <Stories />
-        <Post />
+    // <View style={{ flex: 1 }}>
+    //   <SafeAreaView>
+    //     <Animated.View
+    //       style={{
+    //         transform: [{ translateY: headerTranslateY }],
+    //         opacity: headerOpacity,
+    //         zIndex: 100,
+    //       }}
+    //     >
+    //       <Header />
+    //     </Animated.View>
+    //   </SafeAreaView>
+    //   <ScrollView
+    //     style={{ flex: 1 }}
+    //     scrollEventThrottle={16}
+    //     onScroll={Animated.event(
+    //       [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+    //       { useNativeDriver: false }
+    //     )}
+    //     refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
+    //   >
+    //     <Stories />
+    //     <Post />
+    //   </ScrollView>
+    //   <BottomTabs />
+    // </View>
+    <SafeAreaView style ={{flex:1}}>
+      <Header/>
+      <ScrollView>
+        <Stories/>
+        <Post/>
       </ScrollView>
-      <BottomTabs />
+      <BottomTabs/>
     </SafeAreaView>
   );
 };
