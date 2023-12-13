@@ -1,32 +1,33 @@
 import React from 'react';
-import { View, Text, Image, FlatList } from 'react-native';
+import { View, Text, Image, FlatList, TouchableOpacity } from 'react-native';
 import styles from '../../styles/styles';
 
-const Stories = () => {
-    const data = [
-        { key: '1', name: 'asdsad' },
-        { key: '2', name: 'asdsadsa' },
-        { key: '3', name: 'asdasddasasd' },
-        { key: '4', name: 'dsdasdsaaa' },
-        { key: '5', name: 'asaasdass' },
-        { key: '6', name: 'asasdsadsa' },
-        { key: '7', name: 'asdsadas' },
-        ];
+const Stories = ({post,onPressStories}) => {
 
-    const renderItem = ({ item }) => (
-        <View style={{ alignItems: 'center', marginHorizontal: 10 }}>
-            <Image
-            style={styles.stroryImg}
-            source={require('../../../assets/img/dummyImg.png')}
-            />
-            <Text style={{ color: 'black' }}>{item.name}</Text>
+    const { username, avt } = post[0]; // data test
+
+    const handlePressStories = () =>{
+        console.log("stories pressed!")
+        if (onPressStories){
+            onPressStories();
+        }
+    }
+    const renderItem = ({post}) => (
+        <View style={{ alignItems: 'center', marginHorizontal: 5 }}>
+            <TouchableOpacity onPress={handlePressStories }>
+                <Image
+                style={styles.stroryImg}
+                source={avt}
+                />
+            </TouchableOpacity>
+            <Text style={{ color: 'black' }}>{username}</Text>
         </View>
         );
 
     return (
         <View>
             <FlatList
-                data={data}
+                data={post}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.key}
                 horizontal

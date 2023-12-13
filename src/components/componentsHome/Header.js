@@ -14,12 +14,14 @@ const Header = () => {
         </TouchableOpacity>
           <View style = {styles.iconContainer}>
             <TouchableOpacity style={{marginRight: 20}}>
-              <Image styles = {styles.icon} source={require('../../../assets/dummyicon/X.png')}/> 
+              <Image styles = {styles.icon} source={require('../../../assets/dummyicon/icons8-heart-25.png')}/>
             </TouchableOpacity>
 
             <TouchableOpacity style={{flexDirection: 'row'}}> 
-              <Image styles = {styles.icon} source={require('../../../assets/dummyicon/X.png')}/> 
-              <View style = {styles.unreadBadge}></View>
+              <Image styles = {styles.icon} source={require('../../../assets/dummyicon/icons8-chat-message-25.png')}/> 
+              <View style = {styles.unreadBadge}>
+                <Text style={styles.unreadBadgeText}></Text>
+              </View>
             </TouchableOpacity>
           </View>
       </View>

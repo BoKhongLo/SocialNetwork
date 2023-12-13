@@ -47,14 +47,14 @@ const styles = StyleSheet.create ({
 
     icon : {
         width: 30,
-        height :30,
-        marginLeft :10,
-        resizeMode: 'contain' 
+        height: 30,
+        marginLeft: 10,
+        resizeMode: 'contain'
     },
     unreadBadge:{
         backgroundColor: '#FF3250',
-        width: 10,
-        height: 10,
+        width: 7,
+        height: 7,
         borderRadius: 5,
     },
     unreadBadgeText:{

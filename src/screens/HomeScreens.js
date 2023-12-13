@@ -1,70 +1,136 @@
-import React, { useState, useEffect } from 'react';
-import { View, ScrollView, Animated, SafeAreaView, RefreshControl } from 'react-native';
-import Header from '../components/componentsHome/Header';
-import Stories from '../components/componentsHome/Stories';
-import BottomTabs from '../components/componentsHome/BottomTabs';
-import Post from '../components/componentsHome/Post';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  ScrollView,
+  Animated,
+  SafeAreaView,
+  RefreshControl,
+  Image,
+} from "react-native";
+import Header from "../components/componentsHome/Header";
+import Stories from "../components/componentsHome/Stories";
+import BottomTabs from "../components/componentsHome/BottomTabs";
+import Post from "../components/componentsHome/Post";
+
+const post = [
+  {
+    username: "danh_1808",
+    avt: require("../../assets/img/avt.png"),
+    imagepost: require("../../assets/img/anhmanhinh.png"),
+    likes: 30,
+    captions: "ditmecuocsong !!",
+    comments: [
+      {
+        username: "thang ngu 1",
+        comment: "ditmecuocdoi!!!",
+      },
+      {
+        username: "thang ngu 2",
+        comment: "ditmecuocdoi!!@@!!@@!@@!!",
+      },
+    ],
+  },
+  {
+    username: "danh_1808",
+    avt: require("../../assets/img/avt.png"),
+    imagepost: require("../../assets/img/baidang.png"),
+    likes: 3890987,
+    captions: "ditmecuocsong !!",
+    comments: [
+      {
+        username: "thang ngu 1",
+        comment: "ditmecuocdoi!!!",
+      },
+      {
+        username: "thang ngu 2",
+        comment: "ditmecuocdoi!!@@!!@@!@@!!",
+      },
+    ],
+  },
+  {
+    username: "danh_1808",
+    avt: require("../../assets/img/avt.png"),
+    imagepost: require("../../assets/img/baidang.png"),
+    likes: 387553231234560,
+    captions: "ditmecuocsong !!",
+    comments: [
+      {
+        username: "thang ngu 1",
+        comment: "ditmecuocdoi!!!",
+      },
+      {
+        username: "thang ngu 2",
+        comment: "ditmecuocdoi!!@@!!@@!@@!!",
+      },
+    ],
+  },
+  {
+    username: "danh_1808",
+    avt: require("../../assets/img/avt.png"),
+    imagepost: require("../../assets/img/baidang.png"),
+    likes: 30,
+    captions: "ditmecuocsong !!",
+    comments: [
+      {
+        username: "thang ngu 1",
+        comment: "ditmecuocdoi!!!",
+      },
+      {
+        username: "thang ngu 2",
+        comment: "ditmecuocdoi!!@@!!@@!@@!!",
+      },
+    ],
+  },
+  {
+    username: "danh_1808",
+    avt: require("../../assets/img/avt.png"),
+    imagepost: require("../../assets/img/baidang.png"),
+    likes: 88765453,
+    captions: "ditmecuocsong !!",
+    comments: [
+      {
+        username: "thang ngu 1",
+        comment: "ditmecuocdoi!!!",
+      },
+      {
+        username: "thang ngu 2",
+        comment: "ditmecuocdoi!!@@!!@@!@@!!",
+      },
+    ],
+  },
+  {
+    username: "danh_1808",
+    avt: require("../../assets/img/avt.png"),
+    imagepost: require("../../assets/img/baidang.png"),
+    likes: 30,
+    captions: "ditmecuocsong !!",
+    comments: [
+      {
+        username: "thang ngu 1",
+        comment: "ditmecuocdoi!!!",
+      },
+      {
+        username: "thang ngu 2",
+        comment: "ditmecuocdoi!!@@!!@@!@@!!",
+      },
+    ],
+  },
+
+];
 
 const HomeScreen = () => {
-  const [scrollY] = useState(new Animated.Value(0));
-  const [refreshing, setRefreshing] = useState(false);
-
-  const headerOpacity = Animated.diffClamp(scrollY, 0, 45).interpolate({
-    inputRange: [0, 45],
-    outputRange: [1, 0],
-    extrapolate: 'clamp',
-  });
-
-  const headerTranslateY = Animated.diffClamp(scrollY, 0, 45).interpolate({
-    inputRange: [0, 45],
-    outputRange: [0, -45],
-    extrapolate: 'clamp',
-  });
-
-  const handleRefresh = () => {
-    setRefreshing(true);
-
-    setTimeout(() => {
-      // Reset the scrollY value and reset refreshing state
-      scrollY.setValue(0);
-      setRefreshing(false);
-    }, 1000); // Adjust the delay as needed
-  };
-
   return (
-    // <View style={{ flex: 1 }}>
-    //   <SafeAreaView>
-    //     <Animated.View
-    //       style={{
-    //         transform: [{ translateY: headerTranslateY }],
-    //         opacity: headerOpacity,
-    //         zIndex: 100,
-    //       }}
-    //     >
-    //       <Header />
-    //     </Animated.View>
-    //   </SafeAreaView>
-    //   <ScrollView
-    //     style={{ flex: 1 }}
-    //     scrollEventThrottle={16}
-    //     onScroll={Animated.event(
-    //       [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-    //       { useNativeDriver: false }
-    //     )}
-    //     refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
-    //   >
-    //     <Stories />
-    //     <Post />
-    //   </ScrollView>
-    //   <BottomTabs />
-    // </View>
-    <SafeAreaView style ={{flex:1}}>
-      <Header/>
-      <ScrollView>
-        <Stories/>
-        <Post/>
-      </ScrollView>
-      <BottomTabs/>
+    <SafeAreaView style={{ flex: 1 }}>
+      <Header />
+      <View style={{ flex: 1 }}>
+        <ScrollView style={{ flex: 1 }}>
+          <Stories post={post} />
+          {post.map((item, index) => (
+            <Post key={index} post={[item]} style={{ flex: 1 }} />
+          ))}
+        </ScrollView>
+      </View>
+      <BottomTabs />
     </SafeAreaView>
   );
 };
