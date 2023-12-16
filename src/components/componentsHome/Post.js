@@ -1,8 +1,15 @@
 import React, { useState } from "react";
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  TouchableHighlight,
+  TouchableWithoutFeedback
+} from "react-native";
 import { Divider } from "react-native-elements";
 import headerPoststyles from "./../../styles/postHeaderStyles";
-
+import highLight from "../../styles/highLightStyles";
 const Post = ({ post }) => {
   return (
     <View style={{ marginBottom: 30 }}>
@@ -10,22 +17,23 @@ const Post = ({ post }) => {
       <PostHeader post={post} />
       <PostImage post={post} />
       <View>
-        <PostFooter post={post} />
+        <PostFooter post={post} onAvatarPress={onAvatarPress} />
         <Likes post={post} />
         <Caption post={post} />
-        <Comments post={post}/>
+        <Comments post={post} />
       </View>
     </View>
   );
 };
 
+const onAvatarPress = () => {};
 const PostHeader = ({
   post,
   onAvatarPress,
   onUsernamePress,
   onEllipsisPress,
 }) => {
-  const { username, avt} = post[0];
+  const { username, avt } = post[0];
 
   const handleAvatarPress = () => {
     console.log("Avatar pressed!");
@@ -34,12 +42,12 @@ const PostHeader = ({
     }
   };
 
-  const handleUsernamePress = () => {
-    console.log("Username pressed!");
-    if (onUsernamePress) {
-      onUsernamePress();
-    }
-  };
+  // const handleUsernamePress = () => {
+  //   console.log("Username pressed!");
+  //   if (onUsernamePress) {
+  //     onUsernamePress();
+  //   }
+  // };
 
   const handleEllipsisPress = () => {
     console.log("3Dots pressed!");
@@ -50,21 +58,26 @@ const PostHeader = ({
 
   return (
     <View style={headerPoststyles.containerHeaderPost}>
-      <View style={{ flexDirection: "row" }}>
-        <TouchableOpacity onPress={handleAvatarPress}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+        <TouchableHighlight
+          style={highLight.highLightAVTpost}
+          underlayColor="lightgray"
+          onPress={handleAvatarPress}
+        >
           <Image style={headerPoststyles.avatar} source={avt} />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handleUsernamePress}>
+        </TouchableHighlight>
+        <View>
           <Text style={headerPoststyles.userName}>{username}</Text>
-        </TouchableOpacity>
+        </View>
       </View>
+
       <View>
-        <TouchableOpacity onPress={handleEllipsisPress}>
+        <TouchableWithoutFeedback onPress={handleEllipsisPress}>
           <Image
             style={{ width: 25, height: 25 }}
             source={require("../../../assets/dummyicon/icons8-ellipsis-25.png")}
           />
-        </TouchableOpacity>
+        </TouchableWithoutFeedback>
       </View>
     </View>
   );
@@ -88,7 +101,6 @@ const PostImage = ({ post, onPressImgPost }) => {
     </TouchableOpacity>
   );
 };
-
 const PostFooter = ({
   post,
   onPressLike,
@@ -113,7 +125,7 @@ const PostFooter = ({
   return (
     <View style={headerPoststyles.postFooterContainer}>
       <View style={{ flexDirection: "row" }}>
-        <TouchableOpacity onPress={() => handlePress("Like")}>
+        <TouchableOpacity onPress={() => [handlePress("Like")]}>
           <Image
             style={headerPoststyles.commentsIcon}
             source={
@@ -123,7 +135,7 @@ const PostFooter = ({
             }
           />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => handlePress("Comment")}>
+        <TouchableOpacity onPress={() => [handlePress("Comment")]}>
           <Image
             style={headerPoststyles.commentsIcon}
             source={require("../../../assets/dummyicon/icons8-comments-25.png")}
@@ -175,10 +187,8 @@ const Comments = ({ post }) => {
   const { comments } = post;
 
   return (
-    <View style={{marginTop : 5}}> 
-        <Text style={{ color: "gray", marginHorizontal: 10 }}>
-            View comments
-        </Text>
+    <View style={{ marginTop: 5 }}>
+      <Text style={{ color: "gray", marginHorizontal: 10 }}>View comments</Text>
     </View>
   );
 };

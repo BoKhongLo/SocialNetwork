@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, Image, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, Image, FlatList, TouchableHighlight } from 'react-native';
 import styles from '../../styles/styles';
-
+import highLight from '../../styles/highLightStyles';
 const Stories = ({post,onPressStories}) => {
 
     const { username, avt } = post[0]; // data test
@@ -14,12 +14,14 @@ const Stories = ({post,onPressStories}) => {
     }
     const renderItem = ({post}) => (
         <View style={{ alignItems: 'center', marginHorizontal: 5 }}>
-            <TouchableOpacity onPress={handlePressStories }>
+            <TouchableHighlight 
+            style ={highLight.highLightStories}
+            onPress={handlePressStories }>
                 <Image
                 style={styles.stroryImg}
                 source={avt}
                 />
-            </TouchableOpacity>
+            </TouchableHighlight>
             <Text style={{ color: 'black' }}>{username}</Text>
         </View>
         );

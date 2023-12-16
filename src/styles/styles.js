@@ -1,9 +1,9 @@
 import { StyleSheet } from "react-native"
-
+import { TouchableHighlight } from "react-native";
 const styles = StyleSheet.create ({
     container: {
         // backgroundColor: 'white',
-        // backgroundColor: 'black',
+        backgroundColor: 'black',
         flex: 1,
 
     },
@@ -121,9 +121,8 @@ const styles = StyleSheet.create ({
         width: 90,
         height: 90,
         borderRadius: 50,
-        marginLeft:6,
         borderWidth:3,
-        borderColor: '#ff8501'
+        borderColor: '#ff8501',
     },
 })
 

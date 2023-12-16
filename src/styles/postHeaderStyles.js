@@ -13,13 +13,14 @@ const headerPoststyles = StyleSheet.create({
     width: 35,
     height: 35,
     borderRadius: 50,
-    marginLeft: 6,
+    // marginLeft: 6,
     borderWidth: 3,
   },
 
   userName: {
+    fontWeight:'600',
     marginTop: 5,
-    marginLeft: 3,
+    marginLeft: 5,
   },
   frame: {
     borderWidth: 1, // Độ rộng của đường viền
