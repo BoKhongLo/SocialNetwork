@@ -55,7 +55,9 @@ const HeaderChats = () => {
   return (
     <View style={chat.TinnhanHeader}>
       <Text style={chat.TinnhanText}>Tin nhắn</Text>
-      <Text style={chat.dangchoText}>Tin nhắn đang chờ</Text>
+      <TouchableOpacity>
+        <Text style={chat.dangchoText}>Tin nhắn đang chờ</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -63,8 +65,8 @@ const HeaderChats = () => {
 const ListOfChat = ({ friend }) => {
   return (
     <View>
-      <TouchableOpacity>
-        <View style={chat.KhungChat}>
+      <View style={chat.KhungChat}>
+        <TouchableOpacity>
           <View style={{ flexDirection: "row" }}>
             <Image style={chat.avtChat} source={friend.friendAVT} />
             <View style={chat.nameChatContainer}>
@@ -72,12 +74,14 @@ const ListOfChat = ({ friend }) => {
               <Text> Hoạt động {friend.time} giờ trước</Text>
             </View>
           </View>
+        </TouchableOpacity>
+        <TouchableOpacity>
           <Image
             style={chat.iconVideoCall}
             source={require("../../../assets/dummyicon/icons8-video-chat-48.png")}
           />
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -93,17 +97,24 @@ const HeaderRecoments = () => {
 const ListOfRecomentChat = ({ recoment }) => {
   return (
     <View style={chat.KhungChat}>
-      <View style={{ flexDirection: "row" }}>
-        <Image style={chat.avtChat} source={recoment.RcmfriendAVT} />
-        <View style={chat.nameChatContainer}>
-          <Text style={chat.chatUSerName}> {recoment.RecomentfriendName}</Text>
-          <Text> {recoment.detail} </Text>
+      <TouchableOpacity>
+        <View style={{ flexDirection: "row" }}>
+          <Image style={chat.avtChat} source={recoment.RcmfriendAVT} />
+          <View style={chat.nameChatContainer}>
+            <Text style={chat.chatUSerName}>
+              {" "}
+              {recoment.RecomentfriendName}
+            </Text>
+            <Text> {recoment.detail} </Text>
+          </View>
         </View>
-      </View>
-      <Image
-        style={chat.iconVideoCall}
-        source={require("../../../assets/dummyicon/icons8-video-chat-48.png")}
-      />
+      </TouchableOpacity>
+      <TouchableOpacity>
+        <Image
+          style={chat.iconVideoCall}
+          source={require("../../../assets/dummyicon/icons8-video-chat-48.png")}
+        />
+      </TouchableOpacity>
     </View>
   );
 };

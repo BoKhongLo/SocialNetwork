@@ -1,4 +1,12 @@
-import { View, Text, SafeAreaView, ScrollView, TouchableHighlight, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  SafeAreaView,
+  ScrollView,
+  TouchableHighlight,
+  TouchableOpacity,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import React from "react";
 import Chats from "./../components/Chat/Chats";
 import Header from "./../components/Chat/Header";
@@ -7,20 +15,29 @@ import chat from "../styles/chatStyles";
 
 const user = {
   username: "danh_1808",
-}
-
-
+};
 
 const ChatScreen = () => {
+  const insets = useSafeAreaInsets();
   return (
     <View style={chat.container}>
-      <SafeAreaView>
+      <View
+        style={{
+          paddingTop: insets.top,
+          paddingBottom: insets.bottom,
+          paddingLeft: insets.left,
+          paddingRight: insets.right,
+        }}
+      >
         <Header user={user} />
-        <ScrollView>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+        >
           <Search />
-          <Chats/>
+          <Chats />
         </ScrollView>
-      </SafeAreaView>
+      </View>
     </View>
   );
 };

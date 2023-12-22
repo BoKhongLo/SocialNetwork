@@ -1,4 +1,4 @@
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, TouchableOpacity } from "react-native";
 import React from "react";
 import { Divider } from "react-native-elements";
 
@@ -10,16 +10,20 @@ const Header = ({ user }) => {
     <View>
       <View style={chatStyles.headerContainer}>
         <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
-          <Image
-            source={require("../../../assets/dummyicon/icons8-back-30.png")}
-          />
+          <TouchableOpacity>
+            <Image
+              source={require("../../../assets/dummyicon/icons8-back-30.png")}
+            />
+          </TouchableOpacity>
           <Text style={chatStyles.userNameStyles}> {user.username} </Text>
         </View>
         <View>
-          <Image
-            style={chat.createIcon}
-            source={require("../../../assets/dummyicon/icons8-create-24.png")}
-          />
+          <TouchableOpacity>
+            <Image
+              style={chat.createIcon}
+              source={require("../../../assets/dummyicon/icons8-create-24.png")}
+            />
+          </TouchableOpacity>
         </View>
       </View>
       <Divider width={1} orientation="vertical" />

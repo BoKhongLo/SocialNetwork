@@ -7,6 +7,7 @@ import {
   RefreshControl,
   Image,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Header from "../components/componentsHome/Header";
 import Stories from "../components/componentsHome/Stories";
 import BottomTabs from "../components/componentsHome/BottomTabs";
@@ -149,12 +150,20 @@ const post = [
       },
     ],
   },
-  
 ];
 
 const HomeScreen = () => {
+  const insets = useSafeAreaInsets();
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <View
+      style={{
+        paddingTop: insets.top,
+        paddingBottom: insets.bottom,
+        paddingLeft: insets.left,
+        paddingRight: insets.right,
+        flex: 1,
+      }}
+    >
       <Header />
       <View style={{ flex: 1 }}>
         <ScrollView style={{ flex: 1 }}>
@@ -165,7 +174,7 @@ const HomeScreen = () => {
         </ScrollView>
       </View>
       <BottomTabs />
-    </SafeAreaView>
+    </View>
   );
 };
 

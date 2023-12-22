@@ -52,7 +52,8 @@ const chat = StyleSheet.create({
   },
   dangchoText: {
     paddingTop: hp("2%"),
-    fontWeight: "200",
+    fontWeight: "300",
+    fontSize: 12
     // color:'white'
   },
 
