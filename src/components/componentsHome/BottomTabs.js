@@ -13,7 +13,6 @@ import styles from "../../styles/styles";
 
 const BottomTabs = () => {
   const navigation = useNavigation();
-
   return (
     <View style={styles.BottomTabContainer}>
       <TouchableOpacity  onPress={() => navigation.navigate('main')}>
