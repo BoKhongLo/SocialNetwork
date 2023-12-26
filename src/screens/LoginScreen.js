@@ -15,8 +15,6 @@ const LoginScreen = () => {
         <View>
             <LoginForm/>
         </View>
-
-
     </View>
   )
 }

@@ -1,16 +1,18 @@
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import React from "react";
 import { Divider } from "react-native-elements";
+import { useNavigation } from '@react-navigation/native';
 
 import chatStyles from "./../../styles/chatStyles";
 import chat from "./../../styles/chatStyles";
 
 const Header = ({ user }) => {
+  const navigation = useNavigation();
   return (
     <View>
       <View style={chatStyles.headerContainer}>
         <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('main')}>
             <Image
               source={require("../../../assets/dummyicon/icons8-back-30.png")}
             />

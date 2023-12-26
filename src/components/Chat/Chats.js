@@ -1,6 +1,7 @@
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import React from "react";
 import chat from "../../styles/chatStyles";
+import { useNavigation } from '@react-navigation/native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -16,7 +17,7 @@ const friendList = [
     friendName: "_sieucapbeoy_",
     friendAVT: require("../../../assets/img/LanAnhAVT.jpg"),
     time: "2",
-  },
+  }, 
   {
     friendName: "ban 3",
     friendAVT: require("../../../assets/img/avt.png"),
