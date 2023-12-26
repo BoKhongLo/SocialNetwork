@@ -8,10 +8,7 @@ import LoginScreen from "./src/screens/LoginScreen";
 import ChatScreen from "./src/screens/ChatScreen";
 import ProfileUser from "./src/screens/ProfileUser";
 import SignupScreen from "./src/screens/SignupScreen";
-import Infor from "./src/components/Signup/Infor";
-import Header from "./src/components/componentsHome/Header";
-import Notification from "./src/components/notification/Notification";
-
+import Notify from "./src/components/notification/Notify";
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -21,7 +18,7 @@ export default function App() {
         <Stack.Screen options={{headerShown: false}} name="main" component={HomeScreens} />
         <Stack.Screen options={{headerShown: false}}  name="Profile" component={ProfileUser} />
         <Stack.Screen options={{headerShown: false}}  name="chat" component={ChatScreen} />
-        <Stack.Screen options={{headerShown: false}}  name="noti" component={Notification} />
+        <Stack.Screen options={{headerShown: false}}  name="noti" component={Notify} />
       </Stack.Navigator>
     </NavigationContainer>
   );
