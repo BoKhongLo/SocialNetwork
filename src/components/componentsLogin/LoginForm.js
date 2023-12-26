@@ -1,16 +1,29 @@
 import { View, Text, TextInput, Button, secureTextEntry, Pressable, onPress, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React,  { useState } from 'react'
 import styles from '../../styles/styles'
+import { LoginDto } from '../../util/dto'
+import { LoginAsync, getUserDataAsync } from '../../util'
 
 const LoginForm = () => {
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
   const handleForgotPassword = () => {
     console.log('Forgot password clicked');
     // Add your logic here
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     console.log('Login clicked');
-    // Add your login logic here
+    const dto = new LoginDto(email, password);
+    const dataLogin = await LoginAsync(dto);
+    console.log(dataLogin)
+
+    const dataUser = await getUserDataAsync(dataLogin.id, dataLogin.accessToken)
+    console.log(dataUser)
+
+
   };
 
   const handleSignUp = () => {
@@ -28,6 +41,8 @@ const LoginForm = () => {
             keyboardType='email-address'
             textContentType='emailAddress'
             autoFocus = {true}
+            value={email}
+            onChangeText={(text) => setEmail(text)}
           />
       </View>
 
@@ -39,6 +54,8 @@ const LoginForm = () => {
             autoCorrect={false}
             secureTextEntry={true}
             textContentType='passWord'
+            value={password}
+            onChangeText={(text) => setPassword(text)}
           />
       </View>
 

@@ -12,9 +12,9 @@ export default function App() {
   return (
     <NativeBaseProvider>
       {/* <HomeScreens/> */}
-      {/* <LoginScreen/> */}
+      <LoginScreen/>
       {/* <ChatScreen/> */}
-      <ProfileUser/>
+      {/* <ProfileUser/> */}
     </NativeBaseProvider>
     );
 }
