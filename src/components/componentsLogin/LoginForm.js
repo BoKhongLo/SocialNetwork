@@ -3,11 +3,13 @@ import React,  { useState } from 'react'
 import styles from '../../styles/styles'
 import { LoginDto } from '../../util/dto'
 import { LoginAsync, getUserDataAsync } from '../../util'
+import { useNavigation } from '@react-navigation/native';
 
 const LoginForm = () => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigation = useNavigation();
 
   const handleForgotPassword = () => {
     console.log('Forgot password clicked');
@@ -18,17 +20,13 @@ const LoginForm = () => {
     console.log('Login clicked');
     const dto = new LoginDto(email, password);
     const dataLogin = await LoginAsync(dto);
-    console.log(dataLogin)
-
     const dataUser = await getUserDataAsync(dataLogin.id, dataLogin.accessToken)
-    console.log(dataUser)
-
 
   };
 
   const handleSignUp = () => {
     console.log('Sign up clicked');
-    // Add your sign-up logic here
+    navigation.navigate('Signup')
   };
 
   return (
@@ -39,7 +37,7 @@ const LoginForm = () => {
             placeholder='Phone number, Username or Email'
             autoCapitalize='none'
             keyboardType='email-address'
-            textContentType='emailAddress'
+            textContentType="emailAddress"
             autoFocus = {true}
             value={email}
             onChangeText={(text) => setEmail(text)}
@@ -48,15 +46,14 @@ const LoginForm = () => {
 
       <View style = {styles.inputField}>
         <TextInput
-            placeholderTextColor='#444'
-            placeholder='Password'
-            autoCapitalize='none'
-            autoCorrect={false}
-            secureTextEntry={true}
-            textContentType='passWord'
-            value={password}
-            onChangeText={(text) => setPassword(text)}
-          />
+          placeholderTextColor='#444'
+          placeholder='Password'
+          autoCapitalize='none'
+          autoCorrect={false}
+          secureTextEntry={true}
+          value={password}
+          onChangeText={(text) => setPassword(text)}
+        />
       </View>
 
         <TouchableOpacity style ={{alignItems:'flex-end', marginBottom:30}} onPress ={ () => handleForgotPassword()}>

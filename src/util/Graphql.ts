@@ -19,7 +19,7 @@ class JwtPayload {
 }
 
 
-export async function saveDataUser(userId: string, data: any): Promise<void> {
+export async function saveDataUserLocal(userId: string, data: any): Promise<void> {
     try {
         const jsonValue = JSON.stringify(data);
         return await AsyncStorage.setItem(userId, jsonValue);
@@ -49,7 +49,7 @@ export async function getAllIdUserLocal(): Promise<string[]> {
     return keys;
 }
 
-export async function deleteDataUser(userId: string): Promise<void> {
+export async function deleteDataUserLocal(userId: string): Promise<void> {
     try {
         await AsyncStorage.removeItem(userId)
     } catch (e) {
@@ -99,8 +99,8 @@ export async function LoginAsync(dto: LoginDto) {
             "lastUpdated": new Date().toISOString()
         }
 
-        await deleteDataUser(decoded.id)
-        await saveDataUser(decoded.id, saveData)
+        await deleteDataUserLocal(decoded.id)
+        await saveDataUserLocal(decoded.id, saveData)
 
         return saveData;
     } catch (error) {
@@ -156,8 +156,8 @@ export async function SignupAsync(dto: SignUpDto) {
             "lastUpdated": new Date().toISOString()
         }
 
-        await deleteDataUser(decoded.id)
-        await saveDataUser(decoded.id, saveData)
+        await deleteDataUserLocal(decoded.id)
+        await saveDataUserLocal(decoded.id, saveData)
 
         return saveData;
 
@@ -215,6 +215,55 @@ export async function getUserDataAsync(userId: string, accessToken: string) {
             { headers: headers }
         );
         return response.data.data.getUser;
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+
+export async function updateAccessTokenAsync(userId: string, refreshToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const SIGNUP_MUTATION = `
+        query Refresh ($userId: String!) {
+            Refresh(id: $userId) {
+                access_token
+                refresh_token
+            }
+        }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${refreshToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: SIGNUP_MUTATION,
+                variables: {
+                    userId: userId
+                },
+            },
+            { headers: headers }
+        );
+        const decoded = jwtDecode<JwtPayload>(response.data.data.Refresh.access_token);
+
+        const saveData = {
+            "id": decoded.id,
+            "email": decoded.email,
+            "accessToken": response.data.data.Login.access_token,
+            "refreshToken": response.data.data.Login.refresh_token,
+            "lastUpdated": new Date().toISOString()
+        }
+
+        await deleteDataUserLocal(decoded.id)
+        await saveDataUserLocal(decoded.id, saveData)
+
+        return saveData;
+
     } catch (error) {
         console.error('Error:', error);
         throw error;
