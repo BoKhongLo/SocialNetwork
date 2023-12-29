@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   },
 
   // Stories styles.
-  stroryImg: {
+  stroyImg: {
     width: 90,
     height: 90,
     borderRadius: 50,

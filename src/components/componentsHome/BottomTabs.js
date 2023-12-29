@@ -10,10 +10,10 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import React from "react";
 import styles from "../../styles/styles";
+import { useRoute } from "@react-navigation/native"
 
-const BottomTabs = () => {
+const BottomTabs = ({receivedData}) => {
   const navigation = useNavigation();
-
   return (
     <View style={styles.BottomTabContainer}>
       <TouchableOpacity  onPress={() => navigation.navigate('main')}>
@@ -44,7 +44,7 @@ const BottomTabs = () => {
           onPress={() => console.log("da nhan nut 3")}
         />
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+      <TouchableOpacity onPress={() => navigation.navigate('Profile', {data: receivedData})}>
         <Image
           style={styles.BottomTabIcon}
           source={require("../../../assets/dummyicon/icons8-user-25.png")}

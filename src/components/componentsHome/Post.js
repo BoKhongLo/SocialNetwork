@@ -8,7 +8,7 @@ import {
   TouchableWithoutFeedback
 } from "react-native";
 import { Divider } from "react-native-elements";
-import headerPoststyles from "./../../styles/postHeaderStyles";
+import headerPostStyles from "./../../styles/postHeaderStyles";
 import highLight from "../../styles/highLightStyles";
 const Post = ({ post }) => {
   return (
@@ -57,17 +57,17 @@ const PostHeader = ({
   };
 
   return (
-    <View style={headerPoststyles.containerHeaderPost}>
+    <View style={headerPostStyles.containerHeaderPost}>
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <TouchableHighlight
           style={highLight.highLightAVTpost}
           underlayColor="lightgray"
           onPress={handleAvatarPress}
         >
-          <Image style={headerPoststyles.avatar} source={avt} />
+          <Image style={headerPostStyles.avatar} source={avt} />
         </TouchableHighlight>
         <View>
-          <Text style={headerPoststyles.userName}>{username}</Text>
+          <Text style={headerPostStyles.userName}>{username}</Text>
         </View>
       </View>
 
@@ -95,8 +95,8 @@ const PostImage = ({ post, onPressImgPost }) => {
 
   return (
     <TouchableOpacity onPress={handleImagePress}>
-      <View style={headerPoststyles.frame}>
-        <Image style={headerPoststyles.image} source={imagepost} />
+      <View style={headerPostStyles.frame}>
+        <Image style={headerPostStyles.image} source={imagepost} />
       </View>
     </TouchableOpacity>
   );
@@ -123,11 +123,11 @@ const PostFooter = ({
   };
 
   return (
-    <View style={headerPoststyles.postFooterContainer}>
+    <View style={headerPostStyles.postFooterContainer}>
       <View style={{ flexDirection: "row" }}>
         <TouchableOpacity onPress={() => [handlePress("Like")]}>
           <Image
-            style={headerPoststyles.commentsIcon}
+            style={headerPostStyles.commentsIcon}
             source={
               likePressed
                 ? require("../../../assets/dummyicon/icons8-favorite-liked.png")
@@ -137,13 +137,13 @@ const PostFooter = ({
         </TouchableOpacity>
         <TouchableOpacity onPress={() => [handlePress("Comment")]}>
           <Image
-            style={headerPoststyles.commentsIcon}
+            style={headerPostStyles.commentsIcon}
             source={require("../../../assets/dummyicon/icons8-comments-25.png")}
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => handlePress("Share")}>
           <Image
-            style={headerPoststyles.commentsIcon}
+            style={headerPostStyles.commentsIcon}
             source={require("../../../assets/dummyicon/icons8-share-25.png")}
           />
         </TouchableOpacity>
@@ -151,7 +151,7 @@ const PostFooter = ({
       <View>
         <TouchableOpacity onPress={() => handlePress("Bookmark")}>
           <Image
-            style={headerPoststyles.commentsIcon}
+            style={headerPostStyles.commentsIcon}
             source={
               bookmarkPressed
                 ? require("../../../assets/dummyicon/icons8-bookmark-checked.png")
@@ -167,8 +167,8 @@ const PostFooter = ({
 const Likes = ({ post }) => {
   const { likes } = post[0];
   return (
-    <View style={headerPoststyles.likesContainer}>
-      <Text style={headerPoststyles.likes}> {likes} likes</Text>
+    <View style={headerPostStyles.likesContainer}>
+      <Text style={headerPostStyles.likes}> {likes} likes</Text>
     </View>
   );
 };
@@ -176,9 +176,9 @@ const Likes = ({ post }) => {
 const Caption = ({ post }) => {
   const { username, captions } = post[0];
   return (
-    <View style={headerPoststyles.captionContainer}>
+    <View style={headerPostStyles.captionContainer}>
       <Text style={{ fontWeight: "600", marginLeft: 10 }}>{username}</Text>
-      <Text style={headerPoststyles.caption}> {captions}</Text>
+      <Text style={headerPostStyles.caption}> {captions}</Text>
     </View>
   );
 };

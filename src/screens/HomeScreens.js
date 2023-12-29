@@ -12,7 +12,8 @@ import Header from "../components/componentsHome/Header";
 import Stories from "../components/componentsHome/Stories";
 import BottomTabs from "../components/componentsHome/BottomTabs";
 import Post from "../components/componentsHome/Post";
-
+import { useRoute } from "@react-navigation/native"
+import { getAllIdUserLocal, getDataUserLocal, updateAccessTokenAsync } from "../util";
 const post = [
   {
     username: "danh_1808",
@@ -153,7 +154,22 @@ const post = [
 ];
 
 const HomeScreen = () => {
+  const route = useRoute();
+  const [receivedData, setReceivedData] = useState(route.params?.data || null);
   const insets = useSafeAreaInsets();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const keys = await getAllIdUserLocal();
+      const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
+      if (receivedData === null) {
+        setReceivedData({ ...dataLocal });
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <View
       style={{
@@ -169,11 +185,12 @@ const HomeScreen = () => {
         <ScrollView style={{ flex: 1 }}>
           <Stories post={post} />
           {post.map((item, index) => (
-            <Post key={index} post={[item]} style={{ flex: 1 }} />
+            <Post key={`${index}-${item.username}`} post={[item]} style={{ flex: 1 }} />
           ))}
         </ScrollView>
       </View>
-      <BottomTabs />
+      <BottomTabs receivedData={receivedData}
+       />
     </View>
   );
 };

@@ -9,7 +9,8 @@ import ChatScreen from "./src/screens/ChatScreen";
 import ProfileUser from "./src/screens/ProfileUser";
 import SignupScreen from "./src/screens/SignupScreen";
 import Notify from "./src/components/notification/Notify";
-import { getAllIdUserLocal, deleteDataUserLocal } from './src/util'
+import EditField from "./src/components/Profile/EditField";
+import { getAllIdUserLocal, deleteDataUserLocal, updateAccessTokenAsync, getDataUserLocal } from './src/util'
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -22,11 +23,20 @@ export default function App() {
       try {
         // const keys = await getAllIdUserLocal();
         const keys = []
-        console.log("user", keys)
-        for (const key in keys) {
-          await deleteDataUserLocal(key)
+        if (keys.length ==  0) {
+          setIsLoggedIn(false);
+          return;
         }
-        setIsLoggedIn(keys.length !== 0);
+        const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
+        const dataAsync = await updateAccessTokenAsync(dataLocal.id, dataLocal.refreshToken)
+        
+        if (dataAsync == null) {
+          await deleteDataUserLocal(keys[keys.length - 1]);
+          setIsLoggedIn(false);
+          return
+        }
+        
+        setIsLoggedIn(true);
 
 
       } catch (error) {
@@ -50,22 +60,17 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName={isLoggedIn ? "main" : "Login"}>
-        {isLoggedIn ? (
-          <>
             <Stack.Screen key="main" options={{ headerShown: false }} name="main" component={HomeScreens} />
-            <Stack.Screen key="Profile" options={{ headerShown: false }} name="Profile" component={ProfileUser} />
             <Stack.Screen key="chat" options={{ headerShown: false }} name="chat" component={ChatScreen} />
             <Stack.Screen key="noti" options={{ headerShown: false }} name="noti" component={Notify} />
-          </>
-        ) : (
-          <>
             <Stack.Screen key="Login" options={{ headerShown: false }} name="Login" component={LoginScreen} />
             <Stack.Screen key="Signup" options={{ headerShown: false }} name="Signup" component={SignupScreen} />
-          </>
-        )}
+            <Stack.Screen key="Profile" options={{ headerShown: false }} name="Profile" component={ProfileUser} />
+            <Stack.Screen key="editField" options={{ headerShown: false }} name="editField" component={EditField} />
       </Stack.Navigator>
     </NavigationContainer>
-  );
+ 
+ );
 }
 
 const styles = StyleSheet.create({

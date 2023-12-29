@@ -80,7 +80,7 @@ const SignupForm = () => {
       <View style={styles.inputField}>
         <TextInput
           placeholderTextColor="#444"
-          placeholder="Name"
+          placeholder="Ho ten"
           autoCapitalize="none"
           autoFocus={true}
           value={name}
@@ -137,7 +137,7 @@ const SignupForm = () => {
           >
             <TextInput
               placeholderTextColor="#11182744"
-              placeholder="The birthday"
+              placeholder="Ngày tháng năm sinh"
               value={dateOfBirth}
               editable={false}
               onChangeText={(text) => setDateOfBirth(text)}

@@ -89,6 +89,7 @@ export async function LoginAsync(dto: LoginDto) {
             },
             { headers: headers }
         );
+        if (response.data.data == null) return null;
         const decoded = jwtDecode<JwtPayload>(response.data.data.Login.access_token);
 
         const saveData = {
@@ -146,13 +147,14 @@ export async function SignupAsync(dto: SignUpDto) {
             },
             { headers: headers }
         );
-        const decoded = jwtDecode<JwtPayload>(response.data.data.Login.access_token);
+        if (response.data.data == null) return null;
+        const decoded = jwtDecode<JwtPayload>(response.data.data.SignUp.access_token);
 
         const saveData = {
             "id": decoded.id,
             "email": decoded.email,
-            "accessToken": response.data.data.Login.access_token,
-            "refreshToken": response.data.data.Login.refresh_token,
+            "accessToken": response.data.data.SignUp.access_token,
+            "refreshToken": response.data.data.SignUp.refresh_token,
             "lastUpdated": new Date().toISOString()
         }
 
@@ -214,7 +216,8 @@ export async function getUserDataAsync(userId: string, accessToken: string) {
             },
             { headers: headers }
         );
-        return response.data.data.getUser;
+        return response.data.data
+        
     } catch (error) {
         console.error('Error:', error);
         throw error;
@@ -249,13 +252,14 @@ export async function updateAccessTokenAsync(userId: string, refreshToken: strin
             },
             { headers: headers }
         );
+        if (response.data.data == null) return null;
         const decoded = jwtDecode<JwtPayload>(response.data.data.Refresh.access_token);
 
         const saveData = {
             "id": decoded.id,
             "email": decoded.email,
-            "accessToken": response.data.data.Login.access_token,
-            "refreshToken": response.data.data.Login.refresh_token,
+            "accessToken": response.data.data.Refresh.access_token,
+            "refreshToken": response.data.data.Refresh.refresh_token,
             "lastUpdated": new Date().toISOString()
         }
 
