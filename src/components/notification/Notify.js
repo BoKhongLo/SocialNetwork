@@ -6,6 +6,7 @@ import notistyles from "../../styles/notiStyles";
 import { Touchable } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from '@react-navigation/native';
+import styles from "../../styles/styles";
 
 
 const Notification = () => {
@@ -22,10 +23,11 @@ const Notification = () => {
         flex: 1,
       }}
     >
-      <View style={{ flexDirection: "row" }}>
+      <View style={{ flexDirection: "row", justifyContent: 'flex-start', alignItems:'center' }}>
         <TouchableOpacity onPress={() => navigation.navigate('main')}>
           <Image
-            source={require("../../../assets/dummyicon/icons8-back-30.png")}
+          style={styles.iconforAll}
+            source={require("../../../assets/dummyicon/left_line_64.png")}
           />
         </TouchableOpacity>
         <Text style={notistyles.headerName}> Notify </Text>

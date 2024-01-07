@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
 import { useFonts } from 'expo-font';
 
-const headerPoststyles = StyleSheet.create({
+const headerPostStyles = StyleSheet.create({
   containerHeaderPost: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -66,9 +66,9 @@ const headerPoststyles = StyleSheet.create({
   captionContainer:{
     flexDirection: 'row',
     marginTop: 4,
-    justifyContent: 'flext-start'
+    justifyContent: "flex-start"
   }
 
 });
 
-export default headerPoststyles;
+export default headerPostStyles;

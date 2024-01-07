@@ -1,18 +1,31 @@
-import { View, Text, Image } from 'react-native'
-import React from 'react'
-import profileStyle from '../../styles/profileStyles'
+import { View, Text, Image, Touchable } from "react-native";
+import React from "react";
+import profileStyle from "../../styles/profileStyles";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { useNavigation } from "@react-navigation/native";
 
-const Header = ({user}) => {
+const Header = ({ user }) => {
+  const navigation = useNavigation();
   return (
-    <View style={{flexDirection: 'row', justifyContent: 'space-between', flex: 0.08,}}>
-      <View>
+    <View
+      style={{
+        flexDirection: "row",
+        justifyContent: "space-between",
+        flex: 0.08,
+        alignItems:'center'
+      }}
+    >
       <Text style={profileStyle.userNameStyles}>{user.username}</Text>
-      </View>
-      <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-      <Image source={require('../../../assets/dummyicon/icons8-add-new-25.png')}/>
-      <Image source={require('../../../assets/dummyicon/icons8-add-new-25.png')}/>
-      </View>
+      <TouchableOpacity
+      style={{padding: 10,}}
+      onPress={() => navigation.navigate('main')}>
+      <Image
+          style={{ height: 25, width: 25 }}
+          source={require("../../../assets/dummyicon/filter_2_line.png")}
+        />
+      </TouchableOpacity>
+        
     </View>
-  )
-}
-export default Header
+  );
+};
+export default Header;

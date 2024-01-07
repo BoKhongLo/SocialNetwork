@@ -1,9 +1,8 @@
-// Trong component Stories.js
 import React from "react";
 import { View, Text, Image, FlatList, TouchableHighlight } from "react-native";
-import { useNavigation } from "@react-navigation/native";
 import styles from "../../styles/styles";
 import highLight from "../../styles/highLightStyles";
+import { useNavigation } from '@react-navigation/native';
 
 const Stories = ({ post }) => {
   const navigation = useNavigation();
@@ -14,16 +13,15 @@ const Stories = ({ post }) => {
     // Chuyển hướng đến màn hình LoadStories và truyền dữ liệu avt
     navigation.navigate("loadStory", { imagepost });
   };
-
-  const renderItem = ({ post }) => (
+  const renderItem = ({ item }) => (
     <View style={{ alignItems: "center", marginHorizontal: 5 }}>
       <TouchableHighlight
         style={highLight.highLightStories}
         onPress={handleStoryPress}
       >
-        <Image style={styles.stroryImg} source={avt} />
+        <Image style={styles.stroyImg} source={item.avt} />
       </TouchableHighlight>
-      <Text style={{ color: "black" }}>{username}</Text>
+      <Text style={{ color: "black" }}>{item.username}</Text>
     </View>
   );
 
@@ -32,7 +30,7 @@ const Stories = ({ post }) => {
       <FlatList
         data={post}
         renderItem={renderItem}
-        keyExtractor={(item) => item.key}
+        keyExtractor={(item, index) => `${item.id}-${index}`}
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{

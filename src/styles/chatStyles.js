@@ -14,6 +14,7 @@ const chat = StyleSheet.create({
     justifyContent: "space-between",
     height: hp("5%"),
     paddingTop: wp("2%"),
+    alignItems:'center'
     // backgroundColor: 'black'
   },
 

@@ -21,7 +21,7 @@ const Header = () => {
           style={{ marginRight: 20 }}>
             <Image
               style={styles.icon}
-              source={require('../../../assets/dummyicon/icons8-heart-25.png')}
+              source={require('../../../assets/dummyicon/heart.png')}
             />
           </TouchableOpacity>
 
@@ -31,7 +31,7 @@ const Header = () => {
           >
             <Image
               style={styles.icon}
-              source={require('../../../assets/dummyicon/icons8-chat-message-25.png')}
+              source={require('../../../assets/dummyicon/chat.png')}
             />
             <View style={styles.unreadBadge}>
               <Text style={styles.unreadBadgeText}></Text>

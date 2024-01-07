@@ -9,9 +9,8 @@ const profileStyle = StyleSheet.create({
     width: 90,
     height: 90,
     borderRadius: 50,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: "black",
-    marginBottom: 5,
   },
   editContainer: {
     backgroundColor: "grey",
@@ -28,8 +27,6 @@ const profileStyle = StyleSheet.create({
   userNameStyles: {
     fontWeight: "700",
     fontSize: hp("3%"),
-
-    // color: 'white',
   },
   fieldContainer: {
     flexDirection: "row",
@@ -38,13 +35,34 @@ const profileStyle = StyleSheet.create({
   },
   textField: {
     flex: 0.3,
-    fontSize: 17
+    fontSize: 17,
   },
   inputField: {
     borderColor: "gray",
     borderBottomWidth: 1,
     flex: 0.7,
   },
+  numInfor: {
+    flex: 0.5,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  tell: {
+    flex: 0.5,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#B0B0B0",
+    borderRadius: 20,
+    marginRight: 20,
+  },
+  bietdanhContainer: {
+    borderRadius: 10,
+    paddingRight: 10,
+    paddingLeft: 10,
+    alignContent: "center",
+    backgroundColor: "#B0B0B0",
+  },
+  
 });
 
 export default profileStyle;

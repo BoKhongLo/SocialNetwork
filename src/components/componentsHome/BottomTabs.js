@@ -8,46 +8,39 @@ import {
   Pressable,
 } from "react-native";
 import { useNavigation } from '@react-navigation/native';
-import React from "react";
+import React, { useState } from "react";
 import styles from "../../styles/styles";
+const BottomTabs = ({receivedData}) => {
 
-const BottomTabs = () => {
   const navigation = useNavigation();
   return (
     <View style={styles.BottomTabContainer}>
       <TouchableOpacity  onPress={() => navigation.navigate('main')}>
         <Image
           style={styles.BottomTabIcon}
-          source={require("../../../assets/dummyicon/icons8-home-25.png")}
-          onPress={() => console.log("da nhan nut")}
+          source={require("../../../assets/dummyicon/home_6_line.png")}
+          onPress={() => console.log("da nhan nut home")}
         />
       </TouchableOpacity>
       <TouchableOpacity>
         <Image
           style={styles.BottomTabIcon}
-          source={require("../../../assets/dummyicon/icons8-search-25.png")}
-          onPress={() => console.log("da nhan nut 1")}
+          source={require("../../../assets/dummyicon/search_line.png")}
+          onPress={() => console.log("da nhan nut search")}
         />
       </TouchableOpacity>
       <TouchableOpacity>
         <Image
           style={styles.BottomTabIcon}
-          source={require("../../../assets/dummyicon/icons8-add-new-25.png")}
-          onPress={() => console.log("da nhan nut 2")}
+          source={require("../../../assets/dummyicon/new.png")}
+          onPress={() => console.log("da nhan nut create post")}
         />
       </TouchableOpacity>
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('Profile', {data: receivedData})}>
         <Image
           style={styles.BottomTabIcon}
-          source={require("../../../assets/dummyicon/icons8-start-25.png")}
-          onPress={() => console.log("da nhan nut 3")}
-        />
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-        <Image
-          style={styles.BottomTabIcon}
-          source={require("../../../assets/dummyicon/icons8-user-25.png")}
-          onPress={() => console.log("da nhan nut 4")}
+          source={require("../../../assets/dummyicon/user.png")}
+          onPress={() => console.log("da nhan nut user site")}
         />
       </TouchableOpacity>
     </View>

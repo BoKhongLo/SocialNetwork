@@ -4,7 +4,7 @@ import profileStyle from "../../styles/profileStyles";
 import { useNavigation } from "@react-navigation/native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-const Edit = () => {
+const Edit = ({data}) => {
   const navigation = useNavigation();
 
   return (
@@ -17,7 +17,7 @@ const Edit = () => {
       }}
     >
       <View style={profileStyle.editContainer}>
-        <TouchableOpacity onPress={()=> navigation.navigate('editfield')}>
+        <TouchableOpacity onPress={()=> navigation.navigate('editField', {data:data})}>
           <Text style={profileStyle.textEdit}>Chỉnh sửa</Text>
         </TouchableOpacity>
       </View>

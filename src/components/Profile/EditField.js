@@ -1,17 +1,21 @@
-import { View, Text, Image, TextInput } from "react-native";
-import React from "react";
+import { View, Text, Image, TextInput, Pressable, Platform } from "react-native";
+import React, {useState} from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Divider } from "react-native-elements";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import DateTimePicker from '@react-native-community/datetimepicker';
 import profileStyle from "../../styles/profileStyles";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
+import { useRoute } from "@react-navigation/native"
+import styles from "../../styles/styles";
+
 const EditField = () => {
   const insets = useSafeAreaInsets();
-
+  
   return (
     <View
       style={{
@@ -55,6 +59,49 @@ const Header = () => {
 };
 
 const Field = () => {
+  const route = useRoute();
+  const [receivedData, setReceivedData] = useState(route.params?.data || null);
+  const [name, setName] = useState(receivedData.username);
+  const [nickName, setNickName] = useState(receivedData.nickName);
+  const [description, setDescription] = useState(receivedData.description);
+
+  const [date, setDate] = useState(new Date());
+  const [showPicker, setShowPicker] = useState(false);
+  const [dateOfBirth, setDateOfBirth] = useState("");
+
+  const toggleDatePicker = () => {
+    setShowPicker(!showPicker)
+  }
+  const formatDate = (rawDate) => {
+    let date = new Date(rawDate);
+    let year = date.getFullYear();
+    let month = date.getMonth() + 1;
+    let day = date.getDate();
+
+    month = month < 10 ? `0${month}` : month;
+    day = day < 10 ? `0${day}` : day;
+    return `${day}-${month}-${year}`
+
+  }
+  const setDateTime = ({ type }, selectDate) => {
+    if (type == "set") {
+      const currentDate = selectDate;
+      setDate(currentDate)
+
+      if (Platform.OS === "android") {
+        toggleDatePicker()
+        setDateOfBirth(formatDate(currentDate))
+      }
+    }
+    else {
+      toggleDatePicker()
+    }
+  };
+
+  const confirmIOSDate = () => {
+    setDateOfBirth(formatDate(date))
+    toggleDatePicker()
+  }
   return (
     <View>
       <View style={{ alignItems: "center" }}>
@@ -74,19 +121,86 @@ const Field = () => {
 
       <View style={profileStyle.fieldContainer}>
         <Text style={profileStyle.textField}>Tên</Text>
-        <TextInput style={profileStyle.inputField} placeholder="" />
+        <TextInput 
+        style={profileStyle.inputField} 
+        value={name}
+        onChangeText={(text) => setName(text)}
+        />
       </View>
       <View style={profileStyle.fieldContainer}>
         <Text style={profileStyle.textField}>Biệt danh</Text>
-        <TextInput style={profileStyle.inputField} placeholder="" />
+        <TextInput style={profileStyle.inputField} 
+            value={nickName}
+            onChangeText={(text) => setNickName(text)}
+         />
       </View>
       <View style={profileStyle.fieldContainer}>
         <Text style={profileStyle.textField}>Tiểu sử</Text>
-        <TextInput style={profileStyle.inputField} placeholder="" />
+        <TextInput style={profileStyle.inputField} 
+            value={description}
+            onChangeText={(text) => setDescription(text)}
+         />
       </View>
       <View style={profileStyle.fieldContainer}>
         <Text style={profileStyle.textField}>Ngày tháng năm sinh</Text>
-        <TextInput style={profileStyle.inputField} placeholder="" />
+        {showPicker && (
+          <DateTimePicker
+            mode="date"
+            display="spinner"
+            value={date}
+            onChange={setDateTime}
+          />
+        )}
+        {!showPicker && Platform.OS === "ios" && (
+          <View
+            style={{ flexDirection: "Row", justifyContent: "space-around" }}
+          >
+            <TouchableOpacity style={[
+              styles.buttonLogin,
+              { backgroundColor: "#11182711" }
+            ]}
+              onPress={toggleDatePicker}
+            >
+              <Text
+                style={[styles.buttonLoginText,
+                { color: "#075985" }]
+                }
+              >
+                Cancel
+              </Text>
+            </TouchableOpacity>
+
+
+            <TouchableOpacity style={[
+              styles.buttonLogin,
+            ]}
+              onPress={confirmIOSDate}
+            >
+              <Text
+                style={styles.buttonLoginText}
+              >
+                Confirm
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+        )}
+
+        {!showPicker && (
+          <Pressable
+            onPress={toggleDatePicker}
+          >
+            <TextInput
+              placeholderTextColor="#11182744"
+              placeholder="Ngày tháng năm sinh"
+              style={profileStyle.inputField} 
+              value={dateOfBirth}
+              editable={false}
+              onChangeText={(text) => setDateOfBirth(text)}
+              onPressIn={toggleDatePicker}
+            />
+          </Pressable>
+        )}
       </View>
     </View>
   );

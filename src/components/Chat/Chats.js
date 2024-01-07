@@ -34,6 +34,7 @@ const recomentList = [
 ];
 
 const Chats = () => {
+  
   return (
     <View style={{ flex: 1, height: hp("100%") }}>
       <View>
@@ -64,10 +65,11 @@ const HeaderChats = () => {
 };
 
 const ListOfChat = ({ friend }) => {
+  const navigation = useNavigation();
   return (
     <View>
       <View style={chat.KhungChat}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('chatwindow')}>
           <View style={{ flexDirection: "row" }}>
             <Image style={chat.avtChat} source={friend.friendAVT} />
             <View style={chat.nameChatContainer}>
@@ -103,7 +105,6 @@ const ListOfRecomentChat = ({ recoment }) => {
           <Image style={chat.avtChat} source={recoment.RcmfriendAVT} />
           <View style={chat.nameChatContainer}>
             <Text style={chat.chatUSerName}>
-              {" "}
               {recoment.RecomentfriendName}
             </Text>
             <Text> {recoment.detail} </Text>

@@ -17,7 +17,7 @@ const user = {
   username: "danh_1808",
 };
 
-const ChatScreen = () => {
+const ChatScreen = ({}) => {
   const insets = useSafeAreaInsets();
   return (
     <View style={chat.container}>

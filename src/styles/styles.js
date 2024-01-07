@@ -119,13 +119,18 @@ const styles = StyleSheet.create({
   },
 
   // Stories styles.
-  stroryImg: {
+  stroyImg: {
     width: 90,
     height: 90,
     borderRadius: 50,
     borderWidth: 3,
     borderColor: "#ff8501",
   },
+
+  iconforAll:{
+    width: 40,
+    height: 40,
+  }
 });
 
 export default styles;
