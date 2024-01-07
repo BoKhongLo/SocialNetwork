@@ -13,6 +13,8 @@ import EditField from "./src/components/Profile/EditField";
 import LoadStories from "./src/components/componentsHome/LoadStories";
 import ChatWindows from "./src/components/Chat/ChatWindows";
 import { getAllIdUserLocal, deleteDataUserLocal, updateAccessTokenAsync, getDataUserLocal } from './src/util'
+import FillEmail from "./src/components/Signup/FillEmail";
+import FillPassword from "./src/components/Signup/FillPassword";
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -71,11 +73,11 @@ export default function App() {
             <Stack.Screen key="editField" options={{ headerShown: false }} name="editField" component={EditField} />
             <Stack.Screen key="loadStory" options={{headerShown: false}}  name="loadStory" component={LoadStories} />
             <Stack.Screen key="chatwindow" options={{headerShown: false}}  name="chatwindow" component={ChatWindows} />
-
+            <Stack.Screen key="fillemail" options={{headerShown: false}}  name="fillemail" component={FillEmail} />
+            <Stack.Screen key="fillPass" options={{headerShown: false}}  name="fillPass" component={FillPassword} />
       </Stack.Navigator>
     </NavigationContainer>
- 
- );
+);
 }
 
 const styles = StyleSheet.create({

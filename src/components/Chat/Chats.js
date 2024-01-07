@@ -43,12 +43,12 @@ const Chats = () => {
           <ListOfChat key={index} friend={friend} />
         ))}
       </View>
-      <View>
+      {/* <View>
         <HeaderRecoments />
         {recomentList.map((recoment, index) => (
           <ListOfRecomentChat key={index} recoment={recoment} />
         ))}
-      </View>
+      </View> */}
     </View>
   );
 };

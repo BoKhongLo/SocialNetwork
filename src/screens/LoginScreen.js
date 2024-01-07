@@ -7,10 +7,8 @@ const LoginScreen = () => {
   return (
     <View style = {styles.LoginContainer}>
         <View style = {styles.logoContainer}>
-            <Image
-                style = {styles.imgLogo}
-                source = {require('../../assets/img/meoden.png')}
-            />
+            <Text style={{fontSize:30, fontWeight: '500', marginBottom: 10}}>Log in</Text>
+            <Text style={{fontSize:30, fontWeight: '400', marginBottom:100, color:'grey'}}>Hi! Welcome</Text>
         </View>
         <View>
             <LoginForm/>

@@ -75,27 +75,29 @@ const styles = StyleSheet.create({
   // Login form styles
   wrapper: {
     marginBottom: 80,
+    justifyContent:'center',
+    marginLeft:10,
+    marginRight:10
   },
   inputField: {
     borderRadius: 4,
     padding: 15,
-    // paddingRight: wp('20%'),
-    backgroundColor: "#FAFAFA",
     marginBottom: 10,
-    borderWidth: 1,
+    borderBottomWidth:0.5
   },
   buttonLogin: {
-    backgroundColor: "#0096F6",
+    backgroundColor: "black",
     alignItems: "center",
     justifyContent: "center",
     minHeight: 50,
-    borderRadius: 8,
-    marginTop:10,
+    borderRadius: 40,
+    marginTop:25,
   },
   buttonLoginText: {
     fontWeight: "500",
     color: "#fff",
     fontSize: 20,
+    padding: 18,
   },
   signupContainer: {
     flexDirection: "row",

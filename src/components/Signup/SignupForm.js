@@ -1,14 +1,25 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Platform, Pressable } from "react-native";
-import DateTimePicker from '@react-native-community/datetimepicker';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Platform,
+  Pressable,
+} from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import styles from "../../styles/styles";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { color } from "react-native-elements/dist/helpers";
-import { SignupAsync, getUserDataAsync } from '../../util'
-import { SignUpDto } from '../../util/dto'
+import { SignupAsync, getUserDataAsync } from "../../util";
+import { SignUpDto } from "../../util/dto";
+
+import { useNavigation } from '@react-navigation/native';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 const SignupForm = () => {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -19,8 +30,8 @@ const SignupForm = () => {
   const [showPicker, setShowPicker] = useState(false);
   const [dateOfBirth, setDateOfBirth] = useState("");
   const toggleDatePicker = () => {
-    setShowPicker(!showPicker)
-  }
+    setShowPicker(!showPicker);
+  };
   const formatDate = (rawDate) => {
     let date = new Date(rawDate);
     let year = date.getFullYear();
@@ -29,28 +40,26 @@ const SignupForm = () => {
 
     month = month < 10 ? `0${month}` : month;
     day = day < 10 ? `0${day}` : day;
-    return `${day}-${month}-${year}`
-
-  }
+    return `${day}-${month}-${year}`;
+  };
   const setDateTime = ({ type }, selectDate) => {
     if (type == "set") {
       const currentDate = selectDate;
-      setDate(currentDate)
+      setDate(currentDate);
 
       if (Platform.OS === "android") {
-        toggleDatePicker()
-        setDateOfBirth(formatDate(currentDate))
+        toggleDatePicker();
+        setDateOfBirth(formatDate(currentDate));
       }
-    }
-    else {
-      toggleDatePicker()
+    } else {
+      toggleDatePicker();
     }
   };
 
   const confirmIOSDate = () => {
-    setDateOfBirth(formatDate(date))
-    toggleDatePicker()
-  }
+    setDateOfBirth(formatDate(date));
+    toggleDatePicker();
+  };
   const handleSignUp = async () => {
     console.log("SignUp clicked");
     const dto = new SignUpDto();
@@ -62,7 +71,8 @@ const SignupForm = () => {
 
     const data = await SignupAsync(dto);
   };
-
+  const insets = useSafeAreaInsets();
+  const navigation = useNavigation();
   return (
     <View style={styles.wrapper}>
       <View style={styles.inputField}>
@@ -80,7 +90,7 @@ const SignupForm = () => {
       <View style={styles.inputField}>
         <TextInput
           placeholderTextColor="#444"
-          placeholder="Ho ten"
+          placeholder="Name"
           autoCapitalize="none"
           autoFocus={true}
           value={name}
@@ -100,44 +110,28 @@ const SignupForm = () => {
           <View
             style={{ flexDirection: "Row", justifyContent: "space-around" }}
           >
-            <TouchableOpacity style={[
-              styles.buttonLogin,
-              { backgroundColor: "#11182711" }
-            ]}
+            <TouchableOpacity
+              style={[styles.buttonLogin, { backgroundColor: "#11182711" }]}
               onPress={toggleDatePicker}
             >
-              <Text
-                style={[styles.buttonLoginText,
-                { color: "#075985" }]
-                }
-              >
+              <Text style={[styles.buttonLoginText, { color: "#075985" }]}>
                 Cancel
               </Text>
             </TouchableOpacity>
 
-
-            <TouchableOpacity style={[
-              styles.buttonLogin,
-            ]}
+            <TouchableOpacity
+              style={[styles.buttonLogin]}
               onPress={confirmIOSDate}
             >
-              <Text
-                style={styles.buttonLoginText}
-              >
-                Confirm
-              </Text>
+              <Text style={styles.buttonLoginText}>Confirm</Text>
             </TouchableOpacity>
           </View>
-
         )}
 
         {!showPicker && (
-          <Pressable
-            onPress={toggleDatePicker}
-          >
+          <Pressable onPress={toggleDatePicker}>
             <TextInput
-              placeholderTextColor="#11182744"
-              placeholder="Ngày tháng năm sinh"
+              placeholder="Month - Date - Year"
               value={dateOfBirth}
               editable={false}
               onChangeText={(text) => setDateOfBirth(text)}
@@ -145,7 +139,6 @@ const SignupForm = () => {
             />
           </Pressable>
         )}
-
       </View>
       <View style={styles.inputField}>
         <TextInput
@@ -186,9 +179,9 @@ const SignupForm = () => {
       <TouchableOpacity
         titleSize={20}
         style={styles.buttonLogin}
-        onPress={() => handleSignUp()}
+        onPress={() => navigation.navigate('fillemail')}
       >
-        <Text style={styles.buttonLoginText}> Đăng ký </Text>
+        <Text style={styles.buttonLoginText}> Next </Text>
       </TouchableOpacity>
     </View>
   );
