@@ -3,9 +3,11 @@ import React from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import styles from "../../styles/styles";
+
 const FillEmail = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
+
   return (
     <View
       style={{

@@ -49,7 +49,7 @@ const FillPassword = () => {
         style={styles.buttonLogin}
         onPress={() => console.log('sign up')}
       >
-        <Text style={styles.buttonLoginText}> Next </Text>
+        <Text style={styles.buttonLoginText}> Done </Text>
       </TouchableOpacity>
     </View>
   );

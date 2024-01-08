@@ -39,7 +39,7 @@ const LoginForm = () => {
 
   const handleSignUp = () => {
     console.log("Sign up clicked");
-    navigation.navigate("chat");
+    navigation.navigate("Signup");
   };
 
   return (
