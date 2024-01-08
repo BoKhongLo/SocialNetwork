@@ -1,6 +1,6 @@
-import { View, Text, Image, TextInput, Pressable, Platform } from "react-native";
-import React, {useState} from "react";
-import { useNavigation } from "@react-navigation/native";
+import { View, Text, Image, TextInput, Pressable, Platform, Modal, Button } from "react-native";
+import React, { useState } from "react";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Divider } from "react-native-elements";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -10,12 +10,14 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import { useRoute } from "@react-navigation/native"
 import styles from "../../styles/styles";
-
+import * as ImagePicker from 'expo-image-picker';
+import { FileUploadDto } from "../../util/dto";
+import { uploadFile, getDataUserLocal, getAllIdUserLocal } from "../../util";
 const EditField = () => {
   const insets = useSafeAreaInsets();
-  
+  const route = useRoute();
+  const receivedData = route.params?.data;
   return (
     <View
       style={{
@@ -28,14 +30,14 @@ const EditField = () => {
         marginLeft: 10,
       }}
     >
-      <Header />
+      <Header data={receivedData}/>
       <Divider width={1} orientation="vertical" style={{ marginBottom: 20 }} />
-      <Field />
+      <Field data={receivedData}/>
     </View>
   );
 };
 
-const Header = () => {
+const Header = (data) => {
   const navigation = useNavigation();
   return (
     <View
@@ -51,16 +53,16 @@ const Header = () => {
       <Text style={{ fontSize: 18, fontWeight: "500" }}>
         Chỉnh sửa trang cá nhân
       </Text>
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => {console.log(data.data)}}>
         <Text style={{ fontSize: 18 }}>Xong</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
-const Field = () => {
-  const route = useRoute();
-  const [receivedData, setReceivedData] = useState(route.params?.data || null);
+const Field = (data) => {
+  const receivedData = data.data;
+  const [avtImg, setAvtImg] = useState(receivedData.avt || '');
   const [name, setName] = useState(receivedData.username);
   const [nickName, setNickName] = useState(receivedData.nickName);
   const [description, setDescription] = useState(receivedData.description);
@@ -68,6 +70,62 @@ const Field = () => {
   const [date, setDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
   const [dateOfBirth, setDateOfBirth] = useState("");
+
+  const [image, setImage] = useState(null);
+
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const chooseModal = () => {
+    setModalVisible(!modalVisible);
+  };
+  const editAvaImg = async (validate) => {
+    if (validate === "Camera") {
+      const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
+      if (cameraPermission.granted === false) {
+        return;
+      }
+  
+      let result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+  
+      console.log(result);
+  
+      if (!result.canceled) {
+        setImage(result.assets[0].uri);
+        setAvtImg({uri : result.assets[0].uri});
+      }
+    }
+    else if (validate === "Gallery") {
+      const galleryPermission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (galleryPermission.granted === false) {
+        return;
+      }
+  
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+  
+      console.log(result);
+  
+      if (!result.canceled) {
+        setImage(result.assets[0].uri);
+        setAvtImg({uri : result.assets[0].uri});
+        const keys = await getAllIdUserLocal();
+        const dto = new FileUploadDto(receivedData.id, result.assets[0].uri)
+        const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
+        const data = await uploadFile(dto, dataLocal.accessToken)
+        console.log(data)
+      }
+    }
+
+  }
 
   const toggleDatePicker = () => {
     setShowPicker(!showPicker)
@@ -105,41 +163,73 @@ const Field = () => {
   return (
     <View>
       <View style={{ alignItems: "center" }}>
-        <Image
-          style={{
-            width: 90,
-            height: 90,
-            borderRadius: 50,
-            borderWidth: 1,
-            borderColor: "black",
-            marginBottom: 10,
-          }}
-        />
+        <Pressable onPress={chooseModal}>
+          <Image
+            style={{
+              width: 90,
+              height: 90,
+              borderRadius: 50,
+              borderWidth: 1,
+              borderColor: 'black',
+              marginBottom: 10,
+            }}
+            source={avtImg}
+          />
+        </Pressable>
         <Text style={{ marginBottom: 10 }}>Chỉnh sửa avatar</Text>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={chooseModal}
+        >
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: 'rgba(0,0,0,0.5)',
+            }}
+          >
+            <View
+              style={{
+                backgroundColor: 'white',
+                padding: 20,
+                borderRadius: 10,
+                alignItems: 'center',
+              }}
+            >
+              <Text>Choose an option:</Text>
+              <Button title="Camera"  style = {{ marginBottom:10 }} onPress={() => editAvaImg("Camera")} />
+              <Button title="Gallery" style = {{ marginBottom:10 }} onPress={() => editAvaImg("Gallery")} />
+              <Button title="Exit" onPress={chooseModal} />
+            </View>
+          </View>
+        </Modal>
       </View>
       <Divider width={1} orientation="vertical" style={{ marginBottom: 20 }} />
 
       <View style={profileStyle.fieldContainer}>
         <Text style={profileStyle.textField}>Tên</Text>
-        <TextInput 
-        style={profileStyle.inputField} 
-        value={name}
-        onChangeText={(text) => setName(text)}
+        <TextInput
+          style={profileStyle.inputField}
+          value={name}
+          onChangeText={(text) => setName(text)}
         />
       </View>
       <View style={profileStyle.fieldContainer}>
         <Text style={profileStyle.textField}>Biệt danh</Text>
-        <TextInput style={profileStyle.inputField} 
-            value={nickName}
-            onChangeText={(text) => setNickName(text)}
-         />
+        <TextInput style={profileStyle.inputField}
+          value={nickName}
+          onChangeText={(text) => setNickName(text)}
+        />
       </View>
       <View style={profileStyle.fieldContainer}>
         <Text style={profileStyle.textField}>Tiểu sử</Text>
-        <TextInput style={profileStyle.inputField} 
-            value={description}
-            onChangeText={(text) => setDescription(text)}
-         />
+        <TextInput style={profileStyle.inputField}
+          value={description}
+          onChangeText={(text) => setDescription(text)}
+        />
       </View>
       <View style={profileStyle.fieldContainer}>
         <Text style={profileStyle.textField}>Ngày tháng năm sinh</Text>
@@ -193,7 +283,7 @@ const Field = () => {
             <TextInput
               placeholderTextColor="#11182744"
               placeholder="Ngày tháng năm sinh"
-              style={profileStyle.inputField} 
+              style={profileStyle.inputField}
               value={dateOfBirth}
               editable={false}
               onChangeText={(text) => setDateOfBirth(text)}

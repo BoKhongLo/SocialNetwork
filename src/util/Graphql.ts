@@ -89,6 +89,7 @@ export async function LoginAsync(dto: LoginDto) {
             },
             { headers: headers }
         );
+        console.log(response.data);
         if (response.data.data == null) return null;
         const decoded = jwtDecode<JwtPayload>(response.data.data.Login.access_token);
 
@@ -114,7 +115,7 @@ export async function SignupAsync(dto: SignUpDto) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
     const SIGNUP_MUTATION = `
-            mutation SignUp($email: String!, $password: String!, $name: String!, $birthday: Date, $phoneNumber: String) {
+            mutation SignUp($email: String!, $password: String!, $name: String!, $birthday: DateTime, $phoneNumber: Float) {
                 SignUp(userDto: {
                     email: $email
                     password: $password
@@ -147,6 +148,7 @@ export async function SignupAsync(dto: SignUpDto) {
             },
             { headers: headers }
         );
+        console.log(response.data);
         if (response.data.data == null) return null;
         const decoded = jwtDecode<JwtPayload>(response.data.data.SignUp.access_token);
 

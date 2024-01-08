@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -17,18 +17,28 @@ import { color } from "react-native-elements/dist/helpers";
 import { SignupAsync, getUserDataAsync } from "../../util";
 import { SignUpDto } from "../../util/dto";
 
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const SignupForm = () => {
-  const [email, setEmail] = useState("");
+  const route = useRoute();
+  const receivedData = route.params?.data;
   const [name, setName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [date, setDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
   const [dateOfBirth, setDateOfBirth] = useState("");
+  const insets = useSafeAreaInsets();
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (receivedData == null) {
+        navigation.navigate('Login');
+      }};
+    fetchData();
+  }, []);
+
   const toggleDatePicker = () => {
     setShowPicker(!showPicker);
   };
@@ -60,33 +70,29 @@ const SignupForm = () => {
     setDateOfBirth(formatDate(date));
     toggleDatePicker();
   };
+
   const handleSignUp = async () => {
     console.log("SignUp clicked");
     const dto = new SignUpDto();
-    dto.email = email;
-    dto.password = password;
+    dto.email = receivedData.email;
+    dto.password = receivedData.password;
     dto.name = name;
-    dto.phoneNumber = phoneNumber;
+    dto.phoneNumber = parseFloat(phoneNumber.replace(/\D/g, ''));
     dto.birthday = dateOfBirth;
 
-    const data = await SignupAsync(dto);
+    try {
+      const dataSignUp = await SignupAsync(dto);
+      if (dataSignUp != null && dataSignUp != undefined) {
+        navigation.navigate("main", { data: dataSignUp });
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
-  const insets = useSafeAreaInsets();
-  const navigation = useNavigation();
+
+
   return (
     <View style={styles.wrapper}>
-      <View style={styles.inputField}>
-        <TextInput
-          placeholderTextColor="#444"
-          placeholder="Email"
-          autoCapitalize="none"
-          keyboardType="email-address"
-          textContentType="emailAddress"
-          autoFocus={true}
-          value={email}
-          onChangeText={(text) => setEmail(text)}
-        />
-      </View>
       <View style={styles.inputField}>
         <TextInput
           placeholderTextColor="#444"
@@ -143,30 +149,6 @@ const SignupForm = () => {
       <View style={styles.inputField}>
         <TextInput
           placeholderTextColor="#444"
-          placeholder="Mật khẩu"
-          autoCapitalize="none"
-          autoCorrect={false}
-          secureTextEntry={true}
-          textContentType="password"
-          value={password}
-          onChangeText={(text) => setPassword(text)}
-        />
-      </View>
-      <View style={styles.inputField}>
-        <TextInput
-          placeholderTextColor="#444"
-          placeholder="Xác nhận mật khẩu"
-          autoCapitalize="none"
-          autoCorrect={false}
-          secureTextEntry={true}
-          textContentType="password"
-          value={confirmPassword}
-          onChangeText={(text) => setConfirmPassword(text)}
-        />
-      </View>
-      <View style={styles.inputField}>
-        <TextInput
-          placeholderTextColor="#444"
           placeholder="Số điện thoại"
           autoCapitalize="none"
           keyboardType="number-pad"
@@ -179,9 +161,9 @@ const SignupForm = () => {
       <TouchableOpacity
         titleSize={20}
         style={styles.buttonLogin}
-        onPress={() => navigation.navigate('fillemail')}
+        onPress={handleSignUp}
       >
-        <Text style={styles.buttonLoginText}> Next </Text>
+        <Text style={styles.buttonLoginText}> Submit </Text>
       </TouchableOpacity>
     </View>
   );

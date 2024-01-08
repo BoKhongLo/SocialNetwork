@@ -38,20 +38,29 @@ const ProfileUser = () => {
         dataUserLocal.id,
         dataUserLocal.accessToken
       );
+      const newProfile = { ...userProfile };
+
       if (dataUserAsync == null) {
         const dataUpdate = await updateAccessTokenAsync(dataUserLocal.id, dataUserLocal.refreshToken)
         dataUserAsync = await getUserDataAsync(dataUpdate.id, dataUpdate.accessToken)
+        newProfile.accessToken = dataUpdate.accessToken;
       }
+
       console.log(dataUserAsync)
+
       if (dataUserAsync == null) {
         navigation.navigate('main');
       }
 
       const { detail, id } = dataUserAsync.getUser;
-      const newProfile = { ...userProfile };
+
+
+      newProfile.id = id;
+ 
+
       if (detail) {
         if (detail.name) newProfile.username = detail.name;
-        if (detail.avatarUrl) newProfile.avt = { uri: detail.avatarUrl };
+        if (detail.avatarUrl ) newProfile.avt = {uri : detail.avatarUrl};
         if (detail.nickName) newProfile.nickName = detail.nickName;
         if (detail.age) newProfile.age = detail.age;
         if (detail.friend) newProfile.friends = detail.friends;

@@ -73,7 +73,7 @@ export default function App() {
             <Stack.Screen key="editField" options={{ headerShown: false }} name="editField" component={EditField} />
             <Stack.Screen key="loadStory" options={{headerShown: false}}  name="loadStory" component={LoadStories} />
             <Stack.Screen key="chatwindow" options={{headerShown: false}}  name="chatwindow" component={ChatWindows} />
-            <Stack.Screen key="fillemail" options={{headerShown: false}}  name="fillemail" component={FillEmail} />
+            <Stack.Screen key="fillEmail" options={{headerShown: false}}  name="fillEmail" component={FillEmail} />
             <Stack.Screen key="fillPass" options={{headerShown: false}}  name="fillPass" component={FillPassword} />
       </Stack.Navigator>
     </NavigationContainer>
