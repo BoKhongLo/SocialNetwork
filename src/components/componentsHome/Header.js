@@ -24,7 +24,6 @@ const Header = () => {
               source={require('../../../assets/dummyicon/heart.png')}
             />
           </TouchableOpacity>
-
           <TouchableOpacity
             style={{ flexDirection: 'row'}}
             onPress={() => navigation.navigate('chat')}
@@ -37,11 +36,9 @@ const Header = () => {
               <Text style={styles.unreadBadgeText}></Text>
             </View>
           </TouchableOpacity>
-
         </View>
       </View>
     </View>
   );
 };
-
 export default Header;

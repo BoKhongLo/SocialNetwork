@@ -121,8 +121,8 @@ const Field = ({data, onUpdateData}) => {
       birthday: receivedData.birthday,
       userId:  receivedData.id
     }
-    if (typeof receivedData.avatarUrl === 'string') {
-      dataInit.avatarUrl = receivedData.avatarUrl;
+    if (typeof receivedData.avatarUrl  === 'object') {
+      dataInit.avatarUrl = receivedData.avatarUrl.uri;
     }
     else {
       dataInit.avatarUrl = null;

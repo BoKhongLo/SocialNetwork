@@ -9,7 +9,7 @@ const Header = ({ user }) => {
 
   const logoutFunction = async (userId) => {
     await deleteDataUserLocal(userId);
-    navigation.navigate('Login');
+    navigation.replace('Login');
   }
 
   return (

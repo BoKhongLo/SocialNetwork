@@ -46,8 +46,6 @@ const LoadStories = ({ route }) => {
       </View>
       <View
         style={{
-          borderRadius: 15,
-          backgroundColor: "black",
           justifyContent: "center",
           alignItems: "center",
           width: "auto",
@@ -60,7 +58,7 @@ const LoadStories = ({ route }) => {
             height: "100%",
             resizeMode: "contain",
             alignItems: "center",
-            borderRadius: 15,
+            borderRadius:15
           }}
           source={imagepost}
         />

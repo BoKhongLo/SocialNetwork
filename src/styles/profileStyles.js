@@ -9,7 +9,7 @@ const profileStyle = StyleSheet.create({
     width: 90,
     height: 90,
     borderRadius: 50,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: "black",
   },
   editContainer: {

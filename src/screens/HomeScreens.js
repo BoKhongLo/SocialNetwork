@@ -18,7 +18,7 @@ const post = [
   {
     username: "danh_1808",
     avt: require("../../assets/img/avt.png"),
-    imagepost: require("../../assets/img/avt.png"),
+    imagepost: require("../../assets/img/anhmanhinh.png"),
     likes: 30,
     captions: "ditmecuocsong !!",
     comments: [
