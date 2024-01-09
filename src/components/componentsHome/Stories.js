@@ -10,8 +10,7 @@ const Stories = ({ post }) => {
   const { username, avt, imagepost } = post[0];
 
   const handleStoryPress = () => {
-    // Chuyển hướng đến màn hình LoadStories và truyền dữ liệu avt
-    navigation.navigate("loadStory", { imagepost });
+    navigation.navigate("loadStory", { imagepost, username });
   };
   const renderItem = ({ item }) => (
     <View style={{ alignItems: "center", marginHorizontal: 5 }}>
