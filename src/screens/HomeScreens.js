@@ -180,7 +180,7 @@ const HomeScreen = () => {
         flex: 1,
       }}
     >
-      <Header />
+      <Header receivedData={receivedData}/>
       <View style={{ flex: 1 }}>
         <ScrollView style={{ flex: 1 }}>
           <Stories post={post} />

@@ -5,9 +5,8 @@ import Header from "../components/Profile/Header";
 import BottomTabs from "../components/componentsHome/BottomTabs";
 import Information from "../components/Profile/Information";
 import Edit from "../components/Profile/Edit";
-import { useRoute } from "@react-navigation/native"
 import { getUserDataAsync, getAllIdUserLocal, getDataUserLocal, updateAccessTokenAsync } from "../util";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 const ProfileUser = () => {
   const route = useRoute();
@@ -41,15 +40,16 @@ const ProfileUser = () => {
       );
       const newProfile = { ...userProfile };
 
-      if (dataUserAsync == null) {
-        const dataUpdate = await updateAccessTokenAsync(dataUserLocal.id, dataUserLocal.refreshToken)
-        dataUserAsync = await getUserDataAsync(dataUpdate.id, dataUpdate.accessToken)
+      if ("errors" in dataUserAsync) {
+        const dataUpdate = await updateAccessTokenAsync(dataUserLocal.id, dataUserLocal.refreshToken);
+        dataUserLocal.accessToken = dataUpdate.accessToken;
+        dataUserAsync = await getUserDataAsync(dataUpdate.id, dataUpdate.accessToken);
         newProfile.accessToken = dataUpdate.accessToken;
       }
 
       console.log(dataUserAsync)
 
-      if (dataUserAsync == null) {
+      if ("errors" in dataUserAsync) {
         navigation.navigate('main');
       }
 

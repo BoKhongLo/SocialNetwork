@@ -1,5 +1,5 @@
 import { View, Text, Image, TouchableOpacity } from "react-native";
-import React from "react";
+import React, {useState, useEffect} from "react";
 import chat from "../../styles/chatStyles";
 import { useNavigation } from '@react-navigation/native';
 import {
@@ -25,30 +25,18 @@ const friendList = [
   },
 ];
 
-const recomentList = [
-  {
-    RecomentfriendName: "de xuat 1",
-    RcmfriendAVT: require("../../../assets/img/avt.png"),
-    detail: "Nhấn để trò chuyện",
-  },
-];
 
-const Chats = () => {
-  
+const Chats = ({dataRoomchat}) => {
+
   return (
     <View style={{ flex: 1, height: hp("100%") }}>
       <View>
         <HeaderChats />
-        {friendList.map((friend, index) => (
-          <ListOfChat key={index} friend={friend} />
+        {dataRoomchat.map((roomchat, index) => (
+          <ListOfChat key={index} roomchat={roomchat} />
         ))}
       </View>
-      {/* <View>
-        <HeaderRecoments />
-        {recomentList.map((recoment, index) => (
-          <ListOfRecomentChat key={index} recoment={recoment} />
-        ))}
-      </View> */}
+
     </View>
   );
 };
@@ -64,17 +52,17 @@ const HeaderChats = () => {
   );
 };
 
-const ListOfChat = ({ friend }) => {
+const ListOfChat = ({ roomchat }) => {
   const navigation = useNavigation();
   return (
     <View>
       <View style={chat.KhungChat}>
         <TouchableOpacity onPress={() => navigation.navigate('chatwindow')}>
           <View style={{ flexDirection: "row" }}>
-            <Image style={chat.avtChat} source={friend.friendAVT} />
+            <Image style={chat.avtChat} source={roomchat.imgDisplay} />
             <View style={chat.nameChatContainer}>
-              <Text style={chat.chatUSerName}> {friend.friendName}</Text>
-              <Text> Hoạt động {friend.time} giờ trước</Text>
+              <Text style={chat.chatUSerName}> {roomchat.title}</Text>
+              {/* <Text> Hoạt động {friend.time} giờ trước</Text> */}
             </View>
           </View>
         </TouchableOpacity>
