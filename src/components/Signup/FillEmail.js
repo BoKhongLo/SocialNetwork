@@ -1,12 +1,21 @@
 import { View, Text, TouchableOpacity, Image, TextInput } from "react-native";
-import React from "react";
-import { useNavigation } from "@react-navigation/native";
+import React, {useState} from "react";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import styles from "../../styles/styles";
 
 const FillEmail = () => {
   const insets = useSafeAreaInsets();
+  const route = useRoute();
   const navigation = useNavigation();
+  const [email, setEmail] = useState("");
+
+  const nextStep = async () => {
+    console.log("data: " ,email)
+    if (email == "") return;
+    if (email.indexOf("@") == -1) return;
+    navigation.navigate('fillPass', {data: {email: email}});
+  }
 
   return (
     <View
@@ -26,14 +35,14 @@ const FillEmail = () => {
           alignItems: "center",
         }}
       >
-        <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
+        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
           <Image
             style={{ height: 40, width: 40, padding: 10 }}
             source={require("../../../assets/dummyicon/left_line_64.png")}
           />
         </TouchableOpacity>
         <Text style={{ fontSize: 20, fontWeight: "500", marginBottom: 10 }}>
-          Sign up
+          Login
         </Text>
       </View>
       <Text
@@ -46,10 +55,24 @@ const FillEmail = () => {
       >
         What's your email ?
       </Text>
+      <View style={styles.wrapper}>
+        <View style={styles.inputField}>
+          <TextInput
+            placeholderTextColor="#444"
+            placeholder="Email"
+            autoCapitalize="none"
+            keyboardType="email-address"
+            textContentType="emailAddress"
+            autoFocus={true}
+            value={email}
+            onChangeText={(text) => setEmail(text)}
+          />
+        </View>
+      </View>
       <TouchableOpacity
         titleSize={20}
         style={styles.buttonLogin}
-        onPress={() => navigation.navigate('fillPass')}
+        onPress={nextStep}
       >
         <Text style={styles.buttonLoginText}> Next </Text>
       </TouchableOpacity>

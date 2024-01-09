@@ -83,7 +83,8 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     padding: 15,
     marginBottom: 10,
-    borderBottomWidth:0.5
+    borderBottomWidth:0.5,
+    marginTop: 10,
   },
   buttonLogin: {
     backgroundColor: "black",

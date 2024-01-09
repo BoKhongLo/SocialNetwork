@@ -1,8 +1,10 @@
 import axios from "axios";
-import { LoginDto, SignUpDto } from './dto';
+import { LoginDto, SignUpDto, ValidateUserDto } from './dto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from "jwt-decode";
 import "core-js/stable/atob";
+
+
 
 class JwtPayload {
     id: string;
@@ -89,7 +91,7 @@ export async function LoginAsync(dto: LoginDto) {
             },
             { headers: headers }
         );
-        if (response.data.data == null) return null;
+        if ("errors" in response.data) return response.data;
         const decoded = jwtDecode<JwtPayload>(response.data.data.Login.access_token);
 
         const saveData = {
@@ -114,7 +116,7 @@ export async function SignupAsync(dto: SignUpDto) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
     const SIGNUP_MUTATION = `
-            mutation SignUp($email: String!, $password: String!, $name: String!, $birthday: Date, $phoneNumber: String) {
+            mutation SignUp($email: String!, $password: String!, $name: String!, $birthday: DateTime, $phoneNumber: Float) {
                 SignUp(userDto: {
                     email: $email
                     password: $password
@@ -147,7 +149,8 @@ export async function SignupAsync(dto: SignUpDto) {
             },
             { headers: headers }
         );
-        if (response.data.data == null) return null;
+
+        if ("errors" in response.data) return response.data;
         const decoded = jwtDecode<JwtPayload>(response.data.data.SignUp.access_token);
 
         const saveData = {
@@ -168,6 +171,120 @@ export async function SignupAsync(dto: SignUpDto) {
         throw error;
     }
 }
+
+export async function validateUserDataAsync(dto: ValidateUserDto, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const VALIDATE_USER_QUERY = `
+        mutation ValidateUser ($userId: String!, $name: String!, $nickName: String!, $description: String!, $avatarUrl: String, $birthday: DateTime) {
+            validateUser(
+                validateUser: {
+                    userId: $userId
+                    name: $name
+                    nickName: $nickName
+                    description: $description
+                    avatarUrl: $avatarUrl
+                    birthday: $birthday
+                }
+            ) {
+                id
+                email
+                isOnline
+                friends
+                created_at
+                updated_at
+                detail {
+                    name
+                    nickName
+                    birthday
+                    age
+                    description
+                    phoneNumber
+                    avatarUrl
+                }
+            }
+        }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: VALIDATE_USER_QUERY,
+                variables: {
+                    userId: dto.userId,
+                    name: dto.name,
+                    nickName: dto.nickName,
+                    description: dto.description,
+                    avatarUrl: dto.avatarUrl,
+                    birthday: dto.birthday,
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.validateUser
+        
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+
+export async function updateAccessTokenAsync(userId: string, refreshToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const SIGNUP_MUTATION = `
+        query Refresh ($userId: String!) {
+            Refresh(id: $userId) {
+                access_token
+                refresh_token
+            }
+        }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${refreshToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: SIGNUP_MUTATION,
+                variables: {
+                    userId: userId
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        const decoded = jwtDecode<JwtPayload>(response.data.data.Refresh.access_token);
+
+        const saveData = {
+            "id": decoded.id,
+            "email": decoded.email,
+            "accessToken": response.data.data.Refresh.access_token,
+            "refreshToken": response.data.data.Refresh.refresh_token,
+            "lastUpdated": new Date().toISOString()
+        }
+
+        await deleteDataUserLocal(decoded.id)
+        await saveDataUserLocal(decoded.id, saveData)
+
+        return saveData;
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
 
 export async function getUserDataAsync(userId: string, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
@@ -216,58 +333,9 @@ export async function getUserDataAsync(userId: string, accessToken: string) {
             },
             { headers: headers }
         );
-        return response.data.data
+        if ("errors" in response.data) return response.data;
+        return response.data.data.getUser
         
-    } catch (error) {
-        console.error('Error:', error);
-        throw error;
-    }
-}
-
-
-export async function updateAccessTokenAsync(userId: string, refreshToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
-
-    const SIGNUP_MUTATION = `
-        query Refresh ($userId: String!) {
-            Refresh(id: $userId) {
-                access_token
-                refresh_token
-            }
-        }`;
-
-    const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${refreshToken}`,
-    };
-
-    try {
-        const response = await axios.post(
-            endpoint,
-            {
-                query: SIGNUP_MUTATION,
-                variables: {
-                    userId: userId
-                },
-            },
-            { headers: headers }
-        );
-        if (response.data.data == null) return null;
-        const decoded = jwtDecode<JwtPayload>(response.data.data.Refresh.access_token);
-
-        const saveData = {
-            "id": decoded.id,
-            "email": decoded.email,
-            "accessToken": response.data.data.Refresh.access_token,
-            "refreshToken": response.data.data.Refresh.refresh_token,
-            "lastUpdated": new Date().toISOString()
-        }
-
-        await deleteDataUserLocal(decoded.id)
-        await saveDataUserLocal(decoded.id, saveData)
-
-        return saveData;
-
     } catch (error) {
         console.error('Error:', error);
         throw error;

@@ -3,9 +3,15 @@ import React from "react";
 import profileStyle from "../../styles/profileStyles";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
-
+import { deleteDataUserLocal } from "../../util";
 const Header = ({ user }) => {
   const navigation = useNavigation();
+
+  const logoutFunction = async (userId) => {
+    await deleteDataUserLocal(userId);
+    navigation.navigate('Login');
+  }
+
   return (
     <View
       style={{
@@ -24,7 +30,14 @@ const Header = ({ user }) => {
           source={require("../../../assets/dummyicon/filter_2_line.png")}
         />
       </TouchableOpacity>
-        
+      <TouchableOpacity
+      style={{padding: 10,}}
+      onPress={() => logoutFunction(user.id)}>
+      <Image
+          style={{ height: 25, width: 25 }}
+          source={require("../../../assets/dummyicon/filter_2_line.png")}
+        />
+      </TouchableOpacity>
     </View>
   );
 };

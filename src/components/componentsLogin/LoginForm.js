@@ -39,7 +39,7 @@ const LoginForm = () => {
 
   const handleSignUp = () => {
     console.log("Sign up clicked");
-    navigation.navigate("Signup");
+    navigation.navigate("fillEmail");
   };
 
   return (
