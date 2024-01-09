@@ -17,7 +17,7 @@ const Edit = ({data}) => {
       }}
     >
       <View style={profileStyle.editContainer}>
-        <TouchableOpacity onPress={()=> navigation.navigate('editField', {data:data})}>
+        <TouchableOpacity onPress={()=> navigation.navigate('editField', {data})}>
           <Text style={profileStyle.textEdit}>Chỉnh sửa</Text>
         </TouchableOpacity>
       </View>

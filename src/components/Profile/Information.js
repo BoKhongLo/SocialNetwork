@@ -23,7 +23,7 @@ const Information = ({ data }) => {
           justifyContent: "space-around",
         }}
       >
-        <Image style={profileStyle.avatar} source={data.avt} />
+        <Image style={profileStyle.avatar} source={data.avatarUrl} />
         <Text>{data.username}</Text>
         <View style={profileStyle.bietdanhContainer}>
           <Text>{data.nickName}</Text>

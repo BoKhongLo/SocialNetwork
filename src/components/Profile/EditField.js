@@ -1,5 +1,5 @@
 import { View, Text, Image, TextInput, Pressable, Platform, Modal, Button } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Divider } from "react-native-elements";
@@ -12,12 +12,24 @@ import {
 } from "react-native-responsive-screen";
 import styles from "../../styles/styles";
 import * as ImagePicker from 'expo-image-picker';
-import { FileUploadDto } from "../../util/dto";
-import { uploadFile, getDataUserLocal, getAllIdUserLocal } from "../../util";
+import { FileUploadDto, ValidateUserDto } from "../../util/dto";
+import { uploadFile, getDataUserLocal, getAllIdUserLocal, validateUserDataAsync } from "../../util";
 const EditField = () => {
   const insets = useSafeAreaInsets();
   const route = useRoute();
   const receivedData = route.params?.data;
+  const [data, setData] = useState({} || null);
+
+  useEffect(()=>{
+    console.log(receivedData);
+  }, [])
+
+  const updateData = (newData) => {
+    setData((oldData) => {
+      return { ...oldData, ...newData };
+    });
+  };
+
   return (
     <View
       style={{
@@ -30,15 +42,40 @@ const EditField = () => {
         marginLeft: 10,
       }}
     >
-      <Header data={receivedData}/>
+      <Header data={data}/>
       <Divider width={1} orientation="vertical" style={{ marginBottom: 20 }} />
-      <Field data={receivedData}/>
+      <Field data={receivedData} onUpdateData={updateData}/>
     </View>
   );
 };
 
 const Header = (data) => {
   const navigation = useNavigation();
+
+  const submitInfo = async () => {
+    console.log(data)
+    if (data.data == null) return;
+
+    if (!("name" in data.data) || !data.data.name) return;
+
+    const dto = new ValidateUserDto(data.data.userId, data.data.name, data.data.nickName, data.data.description, data.data.avatarUrl, data.data.birthday);
+    const keys = await getAllIdUserLocal();
+    const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+    const dataRe = await validateUserDataAsync(dto, dataUserLocal.accessToken)
+
+    if (dataRe == null) {
+      const dataUpdate = await updateAccessTokenAsync(dataUserLocal.id, dataUserLocal.refreshToken)
+      dataRe = await validateUserDataAsync(dto, dataUpdate.accessToken)
+    }
+
+    if ('errors' in dataRe) {
+      console.log(dataRe)
+      return;
+    };
+
+    navigation.replace('Profile', { data: dataUserLocal });
+  };
+
   return (
     <View
       style={{
@@ -48,26 +85,26 @@ const Header = (data) => {
       }}
     >
       <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
-        <Text style={{ fontSize: 18 }}>Hủy </Text>
+        <Text style={{ fontSize: 18 }}>Hủy</Text>
       </TouchableOpacity>
       <Text style={{ fontSize: 18, fontWeight: "500" }}>
         Chỉnh sửa trang cá nhân
       </Text>
-      <TouchableOpacity onPress={() => {console.log(data.data)}}>
+      <TouchableOpacity onPress={submitInfo}>
         <Text style={{ fontSize: 18 }}>Xong</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
-const Field = (data) => {
-  const receivedData = data.data;
-  const [avtImg, setAvtImg] = useState(receivedData.avt || '');
+const Field = ({data, onUpdateData}) => {
+  const receivedData = data;
+  const [avtImg, setAvtImg] = useState(receivedData.avatarUrl);
   const [name, setName] = useState(receivedData.username);
   const [nickName, setNickName] = useState(receivedData.nickName);
   const [description, setDescription] = useState(receivedData.description);
 
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(new Date(receivedData?.birthday));
   const [showPicker, setShowPicker] = useState(false);
   const [dateOfBirth, setDateOfBirth] = useState("");
 
@@ -75,9 +112,43 @@ const Field = (data) => {
 
   const [modalVisible, setModalVisible] = useState(false);
 
+  useEffect(() => {
+    setDateOfBirth(formatDate(receivedData?.birthday))
+    const dataInit =  {
+      name: receivedData.username,
+      nickName: receivedData.nickName,
+      description: receivedData.description,
+      birthday: receivedData.birthday,
+      userId:  receivedData.id
+    }
+    if (typeof receivedData.avatarUrl === 'string') {
+      dataInit.avatarUrl = receivedData.avatarUrl;
+    }
+    else {
+      dataInit.avatarUrl = null;
+    }
+    onUpdateData(dataInit)
+  },[]);
+
   const chooseModal = () => {
     setModalVisible(!modalVisible);
   };
+
+  const handleNameChange = (text) => {
+    setName(text);
+    onUpdateData({ name : text });
+  };
+
+  const handleNickNameChange = (text) => {
+    setNickName(text);
+    onUpdateData({ nickName: text }); 
+  };
+
+  const handleDescriptionChange = (text) => {
+    setDescription(text);
+    onUpdateData({ description: text }); 
+  };
+
   const editAvaImg = async (validate) => {
     if (validate === "Camera") {
       const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
@@ -92,11 +163,19 @@ const Field = (data) => {
         quality: 1,
       });
   
-      console.log(result);
-  
       if (!result.canceled) {
         setImage(result.assets[0].uri);
         setAvtImg({uri : result.assets[0].uri});
+        const keys = await getAllIdUserLocal();
+        const dto = new FileUploadDto(receivedData.id, result.assets[0].uri)
+        const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
+        const data = await uploadFile(dto, dataLocal.accessToken)
+        if (data == null) {
+          const dataUpdate = await updateAccessTokenAsync(dataUserLocal.id, dataUserLocal.refreshToken)
+          data = await validateUserDataAsync(dto, dataUpdate.accessToken)
+        }
+        setAvtImg({uri : data.url});
+        onUpdateData({ avatarUrl: data.url });
       }
     }
     else if (validate === "Gallery") {
@@ -112,16 +191,20 @@ const Field = (data) => {
         quality: 1,
       });
   
-      console.log(result);
   
       if (!result.canceled) {
         setImage(result.assets[0].uri);
-        setAvtImg({uri : result.assets[0].uri});
+        
         const keys = await getAllIdUserLocal();
         const dto = new FileUploadDto(receivedData.id, result.assets[0].uri)
         const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
         const data = await uploadFile(dto, dataLocal.accessToken)
-        console.log(data)
+        if (data == null) {
+          const dataUpdate = await updateAccessTokenAsync(dataUserLocal.id, dataUserLocal.refreshToken)
+          data = await validateUserDataAsync(dto, dataUpdate.accessToken)
+        }
+        setAvtImg({uri : data.url});
+        onUpdateData({ avatarUrl: data.url });
       }
     }
 
@@ -145,10 +228,12 @@ const Field = (data) => {
     if (type == "set") {
       const currentDate = selectDate;
       setDate(currentDate)
+      onUpdateData({ birthday: formatDate(currentDate)});
 
       if (Platform.OS === "android") {
         toggleDatePicker()
         setDateOfBirth(formatDate(currentDate))
+        
       }
     }
     else {
@@ -214,21 +299,23 @@ const Field = (data) => {
         <TextInput
           style={profileStyle.inputField}
           value={name}
-          onChangeText={(text) => setName(text)}
+          onChangeText={handleNameChange}
+          maxLength={25}
         />
       </View>
       <View style={profileStyle.fieldContainer}>
         <Text style={profileStyle.textField}>Biệt danh</Text>
         <TextInput style={profileStyle.inputField}
           value={nickName}
-          onChangeText={(text) => setNickName(text)}
+          onChangeText={handleNickNameChange}
+          maxLength={25}
         />
       </View>
       <View style={profileStyle.fieldContainer}>
         <Text style={profileStyle.textField}>Tiểu sử</Text>
         <TextInput style={profileStyle.inputField}
           value={description}
-          onChangeText={(text) => setDescription(text)}
+          onChangeText={handleDescriptionChange}
         />
       </View>
       <View style={profileStyle.fieldContainer}>
