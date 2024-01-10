@@ -80,9 +80,6 @@ export default function App() {
             <Stack.Screen key="setting" options={{headerShown: false}}  name="setting" component={Setting} />
             <Stack.Screen key="changepassword" options={{headerShown: false}}  name="changepassword" component={ChangePassword} />
 
-
-            
-
       </Stack.Navigator>
     </NavigationContainer>
 );
