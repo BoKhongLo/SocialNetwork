@@ -64,8 +64,9 @@ const chat = StyleSheet.create({
   avtChat: {
     width: 60,
     height: 60,
-    borderRadius: 50,
-    borderWidth: 1
+    borderRadius:50,
+    borderWidth:0.8,
+    borderColor:'black'
   },
   iconVideoCall:{
     marginTop:hp('2%'),

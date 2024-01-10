@@ -13,8 +13,7 @@ const headerPostStyles = StyleSheet.create({
     width: 35,
     height: 35,
     borderRadius: 50,
-    // marginLeft: 6,
-    borderWidth: 3,
+    borderWidth: 1,
   },
 
   userName: {

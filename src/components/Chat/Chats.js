@@ -77,36 +77,36 @@ const ListOfChat = ({ roomchat }) => {
   );
 };
 
-const HeaderRecoments = () => {
-  return (
-    <View style={chat.TinnhanHeader}>
-      <Text style={chat.TinnhanText}>Đề xuất</Text>
-    </View>
-  );
-};
+// const HeaderRecoments = () => {
+//   return (
+//     <View style={chat.TinnhanHeader}>
+//       <Text style={chat.TinnhanText}>Đề xuất</Text>
+//     </View>
+//   );
+// };
 
-const ListOfRecomentChat = ({ recoment }) => {
-  return (
-    <View style={chat.KhungChat}>
-      <TouchableOpacity>
-        <View style={{ flexDirection: "row" }}>
-          <Image style={chat.avtChat} source={recoment.RcmfriendAVT} />
-          <View style={chat.nameChatContainer}>
-            <Text style={chat.chatUSerName}>
-              {recoment.RecomentfriendName}
-            </Text>
-            <Text> {recoment.detail} </Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-      <TouchableOpacity>
-        <Image
-          style={chat.iconVideoCall}
-          source={require("../../../assets/dummyicon/icons8-video-chat-48.png")}
-        />
-      </TouchableOpacity>
-    </View>
-  );
-};
+// const ListOfRecomentChat = ({ recoment }) => {
+//   return (
+//     <View style={chat.KhungChat}>
+//       <TouchableOpacity>
+//         <View style={{ flexDirection: "row" }}>
+//           <Image style={chat.avtChat} source={recoment.RcmfriendAVT} />
+//           <View style={chat.nameChatContainer}>
+//             <Text style={chat.chatUSerName}>
+//               {recoment.RecomentfriendName}
+//             </Text>
+//             <Text> {recoment.detail} </Text>
+//           </View>
+//         </View>
+//       </TouchableOpacity>
+//       <TouchableOpacity>
+//         <Image
+//           style={chat.iconVideoCall}
+//           source={require("../../../assets/dummyicon/icons8-video-chat-48.png")}
+//         />
+//       </TouchableOpacity>
+//     </View>
+//   );
+// };
 
 export default Chats;

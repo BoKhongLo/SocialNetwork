@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     color:"#000000",
     flex: 1,
     fontSize: 16,
-    padding: 15,
+    padding: 10,
   },
 });
 export default ChatWindows;
