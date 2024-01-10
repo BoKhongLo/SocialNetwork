@@ -11,13 +11,14 @@ const Information = ({ data }) => {
   return (
     <View style={{ alignItems: 'center' }}>
       <Image style={profileStyle.avatar} source={data.avatarUrl} />
-      <Text style={{fontWeight: '400', fontSize: 25}}>{data.username}</Text>
-      <Text style={{fontSize: 15,color:'grey' }}>{data.nickName}</Text>
+      <Text style={{fontWeight: '400', fontSize: 25,    marginTop:10}}>{data.username}</Text>
+      <Text style={{fontSize: 15,color:'grey',    marginTop:5 }}>{data.nickName}</Text>
       <View
         style={{
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-around',
+          marginTop:10
         }}
       >
         <View style={profileStyle.numInfor}>

@@ -43,11 +43,13 @@ const profileStyle = StyleSheet.create({
     flex: 0.7,
   },
   numInfor: {
+
     flexDirection:'row',
     justifyContent: "center",
     alignItems: "center",
     marginRight:20,
-    marginLeft:20
+    marginLeft:20,
+
   },
   tell: {
     flex: 0.5,
