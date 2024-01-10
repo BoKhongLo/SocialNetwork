@@ -9,7 +9,7 @@ const Header = ({ user }) => {
 
   const logoutFunction = async (userId) => {
     await deleteDataUserLocal(userId);
-    navigation.navigate('Login');
+    navigation.replace('Login');
   }
 
   return (
@@ -21,21 +21,16 @@ const Header = ({ user }) => {
         alignItems:'center'
       }}
     >
-      <Text style={profileStyle.userNameStyles}>{user.username}</Text>
+      <Text style={profileStyle.userNameStyles}>Profile</Text>
+
       <TouchableOpacity
       style={{padding: 10,}}
-      onPress={() => navigation.navigate('main')}>
+      // onPress={() => logoutFunction(user.id)}
+      onPress={()=>navigation.navigate('setting')}
+      >
       <Image
-          style={{ height: 25, width: 25 }}
-          source={require("../../../assets/dummyicon/filter_2_line.png")}
-        />
-      </TouchableOpacity>
-      <TouchableOpacity
-      style={{padding: 10,}}
-      onPress={() => logoutFunction(user.id)}>
-      <Image
-          style={{ height: 25, width: 25 }}
-          source={require("../../../assets/dummyicon/filter_2_line.png")}
+          style={{ height: 35, width: 35 }}
+          source={require("../../../assets/dummyicon/setting.png")}
         />
       </TouchableOpacity>
     </View>

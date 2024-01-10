@@ -8,17 +8,20 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  TouchableOpacity,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
+import styles from "../../styles/styles";
+import { useNavigation } from "@react-navigation/native";
 
 const LoadStories = ({ route }) => {
+  const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const { imagepost } = route.params; // Nhận dữ liệu avt từ navigation props
-
   return (
     <View
       style={{
@@ -30,10 +33,19 @@ const LoadStories = ({ route }) => {
         flex: 1,
       }}
     >
+      <View style={{ flexDirection: "row" }}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("main")}
+          style={{ marginLeft: 10 }}
+        >
+          <Image
+            style={styles.iconforAll}
+            source={require("../../../assets/dummyicon/left_line_64.png")}
+          />
+        </TouchableOpacity>
+      </View>
       <View
         style={{
-          borderRadius: 15,
-          backgroundColor: "black",
           justifyContent: "center",
           alignItems: "center",
           width: "auto",
@@ -46,7 +58,7 @@ const LoadStories = ({ route }) => {
             height: "100%",
             resizeMode: "contain",
             alignItems: "center",
-            borderRadius: 15,
+            borderRadius:15
           }}
           source={imagepost}
         />
@@ -62,13 +74,15 @@ const Comments = () => {
   const handleInputChange = (inputText) => {
     setText(inputText);
   };
+  const handleSend = () => {
+    setText("");
+  };
 
   return (
     <KeyboardAvoidingView
-    behavior={Platform.OS === 'ios' ? 'padding' : null}
-    style={{ flex: 0.1 }}
-    keyboardShouldPersistTaps="handled"
-
+      behavior={Platform.OS === "ios" ? "padding" : null}
+      style={{ flex: 0.1 }}
+      keyboardShouldPersistTaps="handled"
     >
       <View style={{ flex: 1, justifyContent: "center" }}>
         <View
@@ -78,8 +92,7 @@ const Comments = () => {
             alignItems: "center",
           }}
         >
-          {/* TextInput chiếm 7 phần */}
-          <View style={{ flex: 7, marginLeft: 10 }}>
+          <View style={{ flex: 8, marginLeft: 10 }}>
             <TextInput
               keyboardType="default"
               placeholder="Gửi tin nhắn"
@@ -93,8 +106,6 @@ const Comments = () => {
               value={text}
             />
           </View>
-
-          {/* View chứa hai thành phần Text, chiếm 3 phần */}
           <View
             style={{
               flex: 3,
@@ -102,13 +113,16 @@ const Comments = () => {
               justifyContent: "space-around",
             }}
           >
-            <Text>Tim</Text>
-            <Text>Share</Text>
+            <TouchableOpacity onPress={handleSend}>
+              <Image
+                style={styles.iconforAll}
+                source={require("../../../assets/dummyicon/share.png")}
+              />
+            </TouchableOpacity>
           </View>
         </View>
       </View>
     </KeyboardAvoidingView>
   );
 };
-
 export default LoadStories;

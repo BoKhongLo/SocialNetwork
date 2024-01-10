@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text,Image } from "react-native";
 import React from "react";
 import profileStyle from "../../styles/profileStyles";
 import { useNavigation } from "@react-navigation/native";
@@ -18,7 +18,9 @@ const Edit = ({data}) => {
     >
       <View style={profileStyle.editContainer}>
         <TouchableOpacity onPress={()=> navigation.navigate('editField', {data})}>
-          <Text style={profileStyle.textEdit}>Chỉnh sửa</Text>
+          <Image
+          source={require('../../../assets/dummyicon/setting.png')}
+        />
         </TouchableOpacity>
       </View>
       <View style={profileStyle.editContainer}>

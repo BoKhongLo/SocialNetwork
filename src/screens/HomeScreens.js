@@ -49,108 +49,6 @@ const post = [
       },
     ],
   },
-  {
-    username: "danh_1808",
-    avt: require("../../assets/img/avt.png"),
-    imagepost: require("../../assets/img/baidang.png"),
-    likes: 387553231234560,
-    captions: "ditmecuocsong !!",
-    comments: [
-      {
-        username: "thang ngu 1",
-        comment: "ditmecuocdoi!!!",
-      },
-      {
-        username: "thang ngu 2",
-        comment: "ditmecuocdoi!!@@!!@@!@@!!",
-      },
-    ],
-  },
-  {
-    username: "danh_1808",
-    avt: require("../../assets/img/avt.png"),
-    imagepost: require("../../assets/img/baidang.png"),
-    likes: 30,
-    captions: "ditmecuocsong !!",
-    comments: [
-      {
-        username: "thang ngu 1",
-        comment: "ditmecuocdoi!!!",
-      },
-      {
-        username: "thang ngu 2",
-        comment: "ditmecuocdoi!!@@!!@@!@@!!",
-      },
-    ],
-  },
-  {
-    username: "danh_1808",
-    avt: require("../../assets/img/avt.png"),
-    imagepost: require("../../assets/img/baidang.png"),
-    likes: 88765453,
-    captions: "ditmecuocsong !!",
-    comments: [
-      {
-        username: "thang ngu 1",
-        comment: "ditmecuocdoi!!!",
-      },
-      {
-        username: "thang ngu 2",
-        comment: "ditmecuocdoi!!@@!!@@!@@!!",
-      },
-    ],
-  },
-  {
-    username: "danh_1808",
-    avt: require("../../assets/img/avt.png"),
-    imagepost: require("../../assets/img/baidang.png"),
-    likes: 30,
-    captions: "ditmecuocsong !!",
-    comments: [
-      {
-        username: "thang ngu 1",
-        comment: "ditmecuocdoi!!!",
-      },
-      {
-        username: "thang ngu 2",
-        comment: "ditmecuocdoi!!@@!!@@!@@!!",
-      },
-    ],
-  },
-  {
-    username: "danh_1808",
-    avt: require("../../assets/img/avt.png"),
-    imagepost: require("../../assets/img/baidang.png"),
-    likes: 88765453,
-    captions: "ditmecuocsong !!",
-    comments: [
-      {
-        username: "thang ngu 1",
-        comment: "ditmecuocdoi!!!",
-      },
-      {
-        username: "thang ngu 2",
-        comment: "ditmecuocdoi!!@@!!@@!@@!!",
-      },
-    ],
-  },
-  {
-    username: "danh_1808",
-    avt: require("../../assets/img/avt.png"),
-    imagepost: require("../../assets/img/baidang.png"),
-    likes: 88765453,
-    captions: "ditmecuocsong !!",
-    comments: [
-      {
-        username: "thang ngu 1",
-        comment: "ditmecuocdoi!!!",
-      },
-      {
-        username: "thang ngu 2",
-        comment: "ditmecuocdoi!!@@!!@@!@@!!",
-      },
-    ],
-  },
 ];
 
 const HomeScreen = () => {
@@ -190,7 +88,7 @@ const HomeScreen = () => {
         </ScrollView>
       </View>
       <BottomTabs receivedData={receivedData}
-       />
+/>
     </View>
   );
 };

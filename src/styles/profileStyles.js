@@ -6,10 +6,10 @@ import {
 
 const profileStyle = StyleSheet.create({
   avatar: {
-    width: 90,
-    height: 90,
-    borderRadius: 50,
-    borderWidth: 2,
+    width: 110,
+    height: 110,
+    borderRadius: 80,
+    borderWidth: 0.4,
     borderColor: "black",
   },
   editContainer: {
@@ -43,9 +43,13 @@ const profileStyle = StyleSheet.create({
     flex: 0.7,
   },
   numInfor: {
-    flex: 0.5,
+
+    flexDirection:'row',
     justifyContent: "center",
     alignItems: "center",
+    marginRight:20,
+    marginLeft:20,
+
   },
   tell: {
     flex: 0.5,
@@ -62,7 +66,33 @@ const profileStyle = StyleSheet.create({
     alignContent: "center",
     backgroundColor: "#B0B0B0",
   },
-  
+  container: {
+    marginBottom: 80,
+    justifyContent:'center',
+    marginLeft:10,
+    marginRight:10
+  },
+  input: {
+    borderRadius: 4,
+    padding: 15,
+    marginBottom: 10,
+    borderBottomWidth:0.5,
+    marginTop: 10,
+  },
+  buttonText : {
+    fontWeight: "500",
+    color: "#fff",
+    fontSize: 20,
+    padding: 18,
+  },
+  buttonContainer:{
+    backgroundColor: "black",
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: 50,
+    borderRadius: 40,
+    marginTop:25,
+  }
 });
 
 export default profileStyle;

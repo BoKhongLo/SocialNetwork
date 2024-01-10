@@ -14,6 +14,10 @@ import styles from "../../styles/styles";
 import * as ImagePicker from 'expo-image-picker';
 import { FileUploadDto, ValidateUserDto } from "../../util/dto";
 import { uploadFile, getDataUserLocal, getAllIdUserLocal, validateUserDataAsync } from "../../util";
+import * as Animatable from 'react-native-animatable';
+
+
+
 const EditField = () => {
   const insets = useSafeAreaInsets();
   const route = useRoute();
@@ -200,7 +204,7 @@ const Field = ({data, onUpdateData}) => {
         const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
         const data = await uploadFile(dto, dataLocal.accessToken)
         if (data == null) {
-          const dataUpdate = await updateAccessTokenAsync(dataUserLocal.id, dataUserLocal.refreshToken)
+          const dataUpdate = await updateAccessTokenAsync(dataLocal.id, dataLocal.refreshToken)
           data = await validateUserDataAsync(dto, dataUpdate.accessToken)
         }
         setAvtImg({uri : data.url});
@@ -346,8 +350,6 @@ const Field = ({data, onUpdateData}) => {
                 Cancel
               </Text>
             </TouchableOpacity>
-
-
             <TouchableOpacity style={[
               styles.buttonLogin,
             ]}
