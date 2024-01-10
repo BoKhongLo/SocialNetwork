@@ -3,14 +3,9 @@ import React from "react";
 import profileStyle from "../../styles/profileStyles";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
-import { deleteDataUserLocal } from "../../util";
+
 const Header = ({ user }) => {
   const navigation = useNavigation();
-
-  const logoutFunction = async (userId) => {
-    await deleteDataUserLocal(userId);
-    navigation.replace('Login');
-  }
 
   return (
     <View
@@ -26,7 +21,7 @@ const Header = ({ user }) => {
       <TouchableOpacity
       style={{padding: 10,}}
       // onPress={() => logoutFunction(user.id)}
-      onPress={()=>navigation.navigate('setting')}
+      onPress={()=>navigation.navigate('setting', {data: user})}
       >
       <Image
           style={{ height: 35, width: 35 }}

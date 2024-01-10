@@ -341,3 +341,53 @@ export async function getUserDataAsync(userId: string, accessToken: string) {
         throw error;
     }
 }
+
+export async function getAllRoomchatAsync(userId: string, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const GET_ALL_ROOMCHAT_QUERY = `
+    query GetAllRomchatByUserId ($userId: String!) {
+        getAllRomchatByUserId(id: $userId) {
+            isDisplay
+            isSingle
+            ownerUserId
+            description
+            imgDisplay
+            member
+            created_at
+            updated_at
+            memberOut {
+                memberId
+                messageCount
+                created_at
+                updated_at
+            }
+            id
+            title
+        }
+    }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: GET_ALL_ROOMCHAT_QUERY,
+                variables: {
+                    userId: userId
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.getAllRomchatByUserId
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}

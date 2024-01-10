@@ -3,7 +3,7 @@ import { View,Text, Image, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import styles from '../../styles/styles';
 
-const Header = () => {
+const Header = ({receivedData}) => {
   const navigation = useNavigation();
 
   return (
@@ -17,7 +17,7 @@ const Header = () => {
         </TouchableOpacity>
         <View style={styles.iconContainer}>
           <TouchableOpacity
-          onPress={() => navigation.navigate('noti')}
+          onPress={() => navigation.navigate('noti', {data: receivedData})}
           style={{ marginRight: 20 }}>
             <Image
               style={styles.icon}
@@ -26,7 +26,7 @@ const Header = () => {
           </TouchableOpacity>
           <TouchableOpacity
             style={{ flexDirection: 'row'}}
-            onPress={() => navigation.navigate('chat')}
+            onPress={() => navigation.navigate('chat', {data: receivedData})}
           >
             <Image
               style={styles.icon}
