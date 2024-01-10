@@ -20,7 +20,7 @@ const ChatWindows = ({ user }) => {
     <View
       style={{
         paddingTop: insets.top,
-        paddingBottom: insets.bottom+10,
+        paddingBottom: insets.bottom,
         paddingLeft: insets.left+10,
         paddingRight: insets.right+10,
         flex: 1,
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     color:"#000000",
     flex: 1,
     fontSize: 16,
-    padding: 10,
+    padding: 15,
   },
 });
 export default ChatWindows;
