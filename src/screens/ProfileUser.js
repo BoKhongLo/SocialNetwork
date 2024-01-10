@@ -44,7 +44,7 @@ const ProfileUser = () => {
         const dataUpdate = await updateAccessTokenAsync(dataUserLocal.id, dataUserLocal.refreshToken);
         dataUserLocal.accessToken = dataUpdate.accessToken;
         dataUserAsync = await getUserDataAsync(dataUpdate.id, dataUpdate.accessToken);
-        newProfile.accessToken = dataUpdate.accessToken;
+        // newProfile.accessToken = dataUpdate.accessToken;
       }
 
       console.log(dataUserAsync)
