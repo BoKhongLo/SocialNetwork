@@ -97,7 +97,7 @@ const ChatScreen = ({}) => {
         socket.disconnect()
       }
     }
-  }, []);
+  }, [receivedData]);
 
   useEffect(()=> {
     const dataUserLocal = receivedData;

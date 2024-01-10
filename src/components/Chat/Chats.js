@@ -39,7 +39,7 @@ const ListOfChat = ({ roomchat }) => {
   return (
     <View>
       <View style={chat.KhungChat}>
-        <TouchableOpacity onPress={() => navigation.navigate('chatwindow')}>
+        <TouchableOpacity onPress={() => navigation.navigate('chatwindow', {data: roomchat})}>
           <View style={{ flexDirection: "row" }}>
             <Image style={chat.avtChat} source={roomchat.imgDisplay} />
             <View style={chat.nameChatContainer}>
