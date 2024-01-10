@@ -5,7 +5,7 @@ import {
   Image,
   TouchableOpacity,
   TouchableHighlight,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
 } from "react-native";
 import { Divider } from "react-native-elements";
 import headerPostStyles from "./../../styles/postHeaderStyles";
@@ -122,8 +122,8 @@ const PostFooter = ({
             style={headerPostStyles.commentsIcon}
             source={
               likePressed
-                ? require("../../../assets/dummyicon/heart.png")
-                : require("../../../assets/dummyicon/heart_fill.png")
+                ? require("../../../assets/dummyicon/heart_fill.png")
+                : require("../../../assets/dummyicon/heart.png")
             }
           />
         </TouchableOpacity>
@@ -146,8 +146,8 @@ const PostFooter = ({
             style={headerPostStyles.commentsIcon}
             source={
               bookmarkPressed
-                ? require("../../../assets/dummyicon/bookmarks_line.png")
-                : require("../../../assets/dummyicon/bookmarks_fill.png")
+                ? require("../../../assets/dummyicon/bookmarks_fill.png")
+                : require("../../../assets/dummyicon/bookmarks_line.png")
             }
           />
         </TouchableOpacity>

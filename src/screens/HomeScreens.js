@@ -88,7 +88,7 @@ const HomeScreen = () => {
         </ScrollView>
       </View>
       <BottomTabs receivedData={receivedData}
-       />
+/>
     </View>
   );
 };

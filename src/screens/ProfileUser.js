@@ -57,7 +57,6 @@ const ProfileUser = () => {
 
 
       newProfile.id = id;
- 
 
       if (detail) {
         if (detail.name) newProfile.username = detail.name;
@@ -93,7 +92,7 @@ const ProfileUser = () => {
       <View style={{ flex: 1 }}>
         <ScrollView>
           <Information data={userProfile} />
-          <Edit data={userProfile} />
+          {/* <Edit data={userProfile} /> */}
         </ScrollView>
       </View>
       <BottomTabs />

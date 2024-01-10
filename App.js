@@ -15,6 +15,8 @@ import ChatWindows from "./src/components/Chat/ChatWindows";
 import { getAllIdUserLocal, deleteDataUserLocal, updateAccessTokenAsync, getDataUserLocal } from './src/util'
 import FillEmail from "./src/components/Signup/FillEmail";
 import FillPassword from "./src/components/Signup/FillPassword";
+import Setting from "./src/components/Profile/Setting";
+import ChangePassword from "./src/components/Profile/ChangePassword";
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -75,6 +77,12 @@ export default function App() {
             <Stack.Screen key="chatwindow" options={{headerShown: false}}  name="chatwindow" component={ChatWindows} />
             <Stack.Screen key="fillEmail" options={{headerShown: false}}  name="fillEmail" component={FillEmail} />
             <Stack.Screen key="fillPass" options={{headerShown: false}}  name="fillPass" component={FillPassword} />
+            <Stack.Screen key="setting" options={{headerShown: false}}  name="setting" component={Setting} />
+            <Stack.Screen key="changepassword" options={{headerShown: false}}  name="changepassword" component={ChangePassword} />
+
+
+            
+
       </Stack.Navigator>
     </NavigationContainer>
 );
