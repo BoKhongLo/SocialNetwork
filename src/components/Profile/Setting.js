@@ -14,8 +14,6 @@ const Setting = () => {
   const [userProfile, setUserProfile] = useState({
     username: "",
     avatarUrl: require("../../../assets/img/avt.png"),
-    posted: 0,
-    friends: [],
     nickName: "",
     phoneNumber: -1,
     description: "",
@@ -57,7 +55,6 @@ const Setting = () => {
         if (detail.avatarUrl ) newProfile.avatarUrl = {uri : detail.avatarUrl};
         if (detail.nickName) newProfile.nickName = detail.nickName;
         if (detail.age) newProfile.age = detail.age;
-        if (detail.friend) newProfile.friends = detail.friends;
         if (detail.description) newProfile.description = detail.description;
         else newProfile.description = "..."
         if (detail.phoneNumber) newProfile.phoneNumber = detail.phoneNumber;

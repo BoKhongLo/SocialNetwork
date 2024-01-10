@@ -53,7 +53,7 @@ const ProfileUser = () => {
         navigation.navigate('main');
       }
 
-      const { detail, id } = dataUserAsync;
+      const { detail, id, friends } = dataUserAsync;
 
 
       newProfile.id = id;
@@ -63,13 +63,13 @@ const ProfileUser = () => {
         if (detail.avatarUrl ) newProfile.avatarUrl = {uri : detail.avatarUrl};
         if (detail.nickName) newProfile.nickName = detail.nickName;
         if (detail.age) newProfile.age = detail.age;
-        if (detail.friend) newProfile.friends = detail.friends;
+        newProfile.friends = friends;
         if (detail.description) newProfile.description = detail.description;
         else newProfile.description = "..."
         if (detail.phoneNumber) newProfile.phoneNumber = detail.phoneNumber;
         if (detail.birthday) newProfile.birthday = detail.birthday;
       }
-
+      console.log(newProfile);
       setUserProfile(newProfile);
     };
 

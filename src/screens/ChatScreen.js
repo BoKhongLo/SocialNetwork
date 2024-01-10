@@ -88,7 +88,7 @@ const ChatScreen = ({}) => {
         if (detail.name) newProfile.username = detail.name;
         if (detail.avatarUrl ) newProfile.avatarUrl = {uri : detail.avatarUrl};
         if (detail.nickName) newProfile.nickName = detail.nickName;
-        if (detail.friend) newProfile.friends = detail.friends;
+        newProfile.friends = friends;
       }
       setUserProfile(newProfile);
       setDataRoomchat(dataRoomchatAsync)
