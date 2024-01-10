@@ -7,24 +7,6 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 
-const friendList = [
-  {
-    friendName: "_Mike_",
-    friendAVT: require("../../../assets/img/avt.png"),
-    time: "3 ",
-  },
-  {
-    friendName: "_sieucapbeoy_",
-    friendAVT: require("../../../assets/img/LanAnhAVT.jpg"),
-    time: "2",
-  }, 
-  {
-    friendName: "ban 3",
-    friendAVT: require("../../../assets/img/avt.png"),
-    time: "3",
-  },
-];
-
 
 const Chats = ({dataRoomchat}) => {
 

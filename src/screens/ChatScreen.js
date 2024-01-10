@@ -76,11 +76,8 @@ const ChatScreen = ({}) => {
         }
       }
       console.log(dataRoomchatAsync)
-      // console.log(dataUserAsync)
-      // console.log(dataRoomchatAsync)
 
-
-      const { detail, id } = dataUserAsync;
+      const { detail, id, friends } = dataUserAsync;
 
       newProfile.id = id;
  
@@ -131,7 +128,7 @@ const ChatScreen = ({}) => {
       }
   })
 
-  }, []);
+  }, [socket]);
   return (
     <View style={chat.container}>
       <View
