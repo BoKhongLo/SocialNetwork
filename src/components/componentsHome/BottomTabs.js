@@ -58,6 +58,8 @@ const BottomTabs = ({ receivedData }) => {
         isVisible={isModalVisible}
         style={{ margin: 0, justifyContent: "flex-end" }}
         onBackdropPress={closeModal}
+        animationType="fade"
+
       >
         <View style={styles.modelContainer}>
           <TouchableOpacity

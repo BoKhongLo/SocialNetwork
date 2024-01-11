@@ -7,6 +7,7 @@ import {
   TouchableHighlight,
   TouchableWithoutFeedback,
   StyleSheet,
+  ImageBackground,
 } from "react-native";
 import { Divider } from "react-native-elements";
 import headerPostStyles from "./../../styles/postHeaderStyles";
@@ -16,6 +17,7 @@ import {
   heightPercentageToDP,
   widthPercentageToDP,
 } from "react-native-responsive-screen";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const Post = ({ post }) => {
   return (
@@ -102,8 +104,7 @@ const PostHeader = ({ post, onAvatarPress, onEllipsisPress }) => {
 const PostImage = ({ post }) => {
   const { imagepost } = post[0];
   const [isModalVisible, setModalVisible] = useState(false);
-  const [imageHeight, setImageHeight] = useState(0);
-  const [imageWidth, setImageWidth] = useState(0);
+  const insets = useSafeAreaInsets();
 
   const handleImagePress = () => {
     console.log("Image pressed!");
@@ -113,59 +114,69 @@ const PostImage = ({ post }) => {
   const closeModal = () => {
     setModalVisible(false);
   };
-  useEffect(() => {
-    // Check if the URI is valid and not empty
-    if (imagepost && imagepost.uri) {
-      // Get the dimensions of the image
-      Image.getSize(
-        imagepost.uri,
-        (width, height) => {
-          // Set the height dynamically
-          setImageHeight(height);
-          setImageWidth(width);
-        },
-        (error) => {
-          console.error("Error getting image dimensions:", error);
-        }
-      );
-    }
-  }, [imagepost]);
+
+  const onModalShow = () => {
+    // The modal is shown, update the state to display the close button
+    console.log("Modal is shown!");
+  };
+
+  const onModalDismiss = () => {
+    // The modal is dismissed, update the state to hide the close button
+    console.log("Modal is dismissed!");
+  };
 
   return (
     <TouchableOpacity onPress={handleImagePress}>
-      <View style={headerPostStyles.frame}>
-        <Image style={headerPostStyles.image} source={imagepost} />
-      </View>
+      <Image style={headerPostStyles.image} source={imagepost} />
 
       <Modal
         isVisible={isModalVisible}
         onBackdropPress={closeModal}
         onBackButtonPress={closeModal}
+        onShow={onModalShow}
+        onDismiss={onModalDismiss}
+        backdropOpacity={0.8}
+        animationType="none"
+
+        style={{
+          margin: 0,
+          justifyContent: "center",
+          flex: 1,
+        }}
       >
-        <View
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-            width: "auto",
-            marginBottom: 50,
-            marginTop: 50,
-            height: imageHeight - 3000, // Set the height dynamically
-          }}
-        >
+        <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
           <Image
-            style={{
-              width: "100%",
-              height: "100%",
-              resizeMode: "contain",
-              alignItems: "center",
-            }}
-            source={imagepost}
+            style={{ height: 40, width: 40 }}
+            source={require("../../../assets/dummyicon/close.png")}
           />
-        </View>
+        </TouchableOpacity>
+
+        <Image
+          style={{
+            width: "100%",
+            height: "95%",
+            resizeMode: "contain",
+          }}
+          source={imagepost}
+        />
       </Modal>
     </TouchableOpacity>
   );
 };
+
+const styles = StyleSheet.create({
+  modal: {
+    margin: 0,
+    justifyContent: "center",
+  },
+  closeButton: {
+    position: "absolute",
+    top: 20,
+    right: 15,
+    zIndex: 1,
+    justifyContent: "center",
+  },
+});
 
 const PostFooter = ({
   post,
