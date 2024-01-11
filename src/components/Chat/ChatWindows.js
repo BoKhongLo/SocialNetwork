@@ -13,9 +13,12 @@ import { GiftedChat, Send, Bubble } from "react-native-gifted-chat";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Divider } from "react-native-elements";
 import chat from "../../styles/chatStyles";
-import { getUserDataAsync, getRoomchatAsync, getAllIdUserLocal, getDataUserLocal, updateAccessTokenAsync, getSocketIO } from "../../util";
+import { getUserDataAsync, getRoomchatAsync, getAllIdUserLocal, getDataUserLocal, updateAccessTokenAsync, getSocketIO, uploadFile } from "../../util";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import * as DocumentPicker from 'expo-document-picker';
+import { FileUploadDto } from "../../util/dto";
+import { Video, Audio } from 'expo-av';
 
 const ChatWindows = ({ user }) => {
   const insets = useSafeAreaInsets();
@@ -146,14 +149,16 @@ const Header = ({ userProfile }) => {
 const Content = ({ roomProfile }) => {
   const [messages, setMessages] = useState([])
   const [socket, setSocket] = useState(undefined);
+  const [fileAtt, setFileAtt] = useState(null);
   const navigation = useNavigation();
 
   useEffect(() => {
     let DataRoomInit = []
+    let count = 0;
     for (let message of roomProfile.data) {
       if (message.isDisplay == false) continue;
       let newMessage = {
-        _id: message.id,
+        _id: message.id + count.toString(),
         text: message.content,
         createdAt: new Date(message.created_at),
         user: {
@@ -163,11 +168,38 @@ const Content = ({ roomProfile }) => {
         }
       }
       if (message.fileUrl.length > 0) {
-        newMessage.image = message.fileUrl[0]
+        const imgExt = ["jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp"];
+        const videoExt = ["mp4", "avi", "mkv", "mov", "wmv", "flv", "webm"];
+        const audioExt = ["mp3", "ogg", "wav", "flac", "aac", "wma", "m4a"];
+
+        const lastElement = message.fileUrl[0].split('/').pop();
+        const fileExt = lastElement.split('?')[0].split('.').pop().toLowerCase();
+
+        if (imgExt.includes(fileExt)) {
+          newMessage.image = message.fileUrl[0];
+        }
+        else if (audioExt.includes(fileExt)) {
+          newMessage.video = {
+            type: 'audio',
+            uri: message.fileUrl[0]
+          };
+        }
+        else if (videoExt.includes(fileExt)) {
+          newMessage.video = {
+            type: 'video',
+            uri: message.fileUrl[0]
+          };
+        }
+        else {
+          newMessage.file = message.fileUrl[0];
+        }
+
       }
       DataRoomInit.push(newMessage)
+      count++;
     }
     setMessages(DataRoomInit.reverse());
+
     const fetchData = async () => {
       const keys = await getAllIdUserLocal();
       const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
@@ -181,20 +213,21 @@ const Content = ({ roomProfile }) => {
       dataUserLocal.accessToken = dataUpdate.accessToken;
       const newSocket = getSocketIO(dataUserLocal.accessToken)
       setSocket(newSocket);
+
     }
     fetchData()
-  }, [roomProfile]);
 
-  useEffect(() => {
-    if (socket == undefined) return;
+
+
     if (roomProfile.id === "") return;
+    if (socket == undefined) return;
     socket.on('newMessage', async (message) => {
       if (message.isDisplay == false) return;
 
       if (message.roomId != roomProfile.id) return;
 
       let newMessage = {
-        _id: message.id,
+        _id: message.id + messages.length.toString(),
         text: message.content,
         createdAt: new Date(message.created_at),
         user: {
@@ -204,19 +237,97 @@ const Content = ({ roomProfile }) => {
         }
       }
       if (message.fileUrl.length > 0) {
-        newMessage.image = message.fileUrl[0]
+        const imgExt = ["jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp"];
+        const videoExt = ["mp4", "avi", "mkv", "mov", "wmv", "flv", "webm"];
+        const audioExt = ["mp3", "ogg", "wav", "flac", "aac", "wma", "m4a"];
+        const lastElement = message.fileUrl[0].split('/').pop();
+        const fileExt = lastElement.split('?')[0].split('.').pop().toLowerCase();
+
+        if (imgExt.includes(fileExt)) {
+          newMessage.image = message.fileUrl[0];
+        }
+        else if (audioExt.includes(fileExt)) {
+          newMessage.video = {
+            type: 'audio',
+            uri: message.fileUrl[0]
+          };
+        }
+        else if (videoExt.includes(fileExt)) {
+          newMessage.video = {
+            type: 'video',
+            uri: message.fileUrl[0]
+          };
+        }
+        else {
+          newMessage.file = message.fileUrl[0];
+        }
       }
       setMessages(previousMessages => GiftedChat.append(previousMessages, [newMessage]));
     })
+  }, [roomProfile]);
 
-  }, [socket, roomProfile])
 
   const onSend = useCallback((messages = []) => {
     if (socket == undefined) return;
 
     socket.emit("sendMessage", { userId: roomProfile.currentUserId, content: messages[0].text, fileUrl: [], roomchatId: roomProfile.id })
-    // setMessages(previousMessages => GiftedChat.append(previousMessages, messages));
+
   }, [socket, roomProfile])
+
+  const renderMessageVideo = (props) => {
+    const { currentMessage } = props;
+    return (
+      <View style={chat.videoContainer}>
+        {currentMessage.video.type === 'video' && (
+          <Video
+            style={chat.videoStyles}
+            source={{
+              uri: currentMessage.video.uri,
+            }}
+            useNativeControls
+            resizeMode="contain"
+          />
+        ) }
+        {currentMessage.video.type === 'audio' && (
+            <View>
+            <Video
+              style={chat.audioStyles}
+              source={{
+                uri: currentMessage.video.uri,
+              }}
+              useNativeControls
+              resizeMode="contain"
+            />
+            </View>
+        ) }
+      </View>
+    );
+  };
+
+  const pickDocument = async () => {
+    let result = await DocumentPicker.getDocumentAsync({
+      type: "*/*",
+      multiple: true,
+      copyToCacheDirectory: true
+    });
+    console.log(result);
+    if (!result.canceled) {
+      if (socket == undefined) return;
+      if (roomProfile.id === "") return;
+      const keys = await getAllIdUserLocal();
+      const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
+      const dto = new FileUploadDto(dataLocal.id, result.uri, result.name, result.mimeType)
+      const data = await uploadFile(dto, dataLocal.accessToken)
+      if (data == null) {
+        const dataUpdate = await updateAccessTokenAsync(dataLocal.id, dataLocal.refreshToken)
+        data = await uploadFile(dto, dataUpdate.accessToken)
+      }
+      console.log(data)
+      socket.emit("sendMessage", { userId: dataLocal.id, content: "", fileUrl: [data.url], roomchatId: roomProfile.id })
+    }
+
+
+  };
 
   const renderBubble = (props) => {
     return (
@@ -245,16 +356,27 @@ const Content = ({ roomProfile }) => {
   // Render send button
   const renderSend = (props) => {
     return (
-      <Send {...props}>
-        <View>
-          <MaterialCommunityIcons
-            name="send-circle"
-            style={{ marginBottom: 5, marginRight: 5 }}
-            size={32}
-            color="#2e64e5"
-          />
-        </View>
-      </Send>
+      <View style={{ flexDirection: 'row' }} >
+        <TouchableOpacity onPress={pickDocument}>
+          <View>
+            <FontAwesome
+              name='file'
+              style={{ marginRight: 5, marginTop: 5 }}
+              size={32}
+              color='#2e64e5' />
+          </View>
+        </TouchableOpacity>
+        <Send {...props}>
+          <View>
+            <MaterialCommunityIcons
+              name="send-circle"
+              style={{ marginBottom: 5, marginRight: 5 }}
+              size={32}
+              color="#2e64e5"
+            />
+          </View>
+        </Send>
+      </View>
     );
   };
 
@@ -263,18 +385,18 @@ const Content = ({ roomProfile }) => {
     <GiftedChat
       messages={messages}
       onSend={messages => onSend(messages)}
-      // renderMessage={renderMessage}
-      // renderInputToolbar={renderInputToolbar}
       renderSend={renderSend}
       user={{
         _id: roomProfile.currentUserId,
       }}
+      timeFormat="HH:mm"
       renderBubble={renderBubble}
       scrollToBottom={true}
       scrollToBottomComponent={scrollToBottomComponent}
       alwaysShowSend
       showAvatarForEveryMessage={true}
       showUserAvatar={true}
+      renderMessageVideo={renderMessageVideo}
     />
   );
 };

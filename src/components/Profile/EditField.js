@@ -171,7 +171,7 @@ const Field = ({data, onUpdateData}) => {
         setImage(result.assets[0].uri);
         setAvtImg({uri : result.assets[0].uri});
         const keys = await getAllIdUserLocal();
-        const dto = new FileUploadDto(receivedData.id, result.assets[0].uri)
+        const dto = new FileUploadDto(receivedData.id, result.assets[0].uri, "userAvatar.jpg", "image/jpeg")
         const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
         const data = await uploadFile(dto, dataLocal.accessToken)
         if (data == null) {
@@ -200,7 +200,7 @@ const Field = ({data, onUpdateData}) => {
         setImage(result.assets[0].uri);
         
         const keys = await getAllIdUserLocal();
-        const dto = new FileUploadDto(receivedData.id, result.assets[0].uri)
+        const dto = new FileUploadDto(receivedData.id, result.assets[0].uri, "userAvatar.jpg", "image/jpeg")
         const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
         const data = await uploadFile(dto, dataLocal.accessToken)
         if (data == null) {
