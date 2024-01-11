@@ -17,6 +17,8 @@ import FillEmail from "./src/components/Signup/FillEmail";
 import FillPassword from "./src/components/Signup/FillPassword";
 import Setting from "./src/components/Profile/Setting";
 import ChangePassword from "./src/components/Profile/ChangePassword";
+import NewPost from "./src/screens/NewPost";
+import NewStory from "./src/screens/NewStory";
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -79,6 +81,9 @@ export default function App() {
             <Stack.Screen key="fillPass" options={{headerShown: false}}  name="fillPass" component={FillPassword} />
             <Stack.Screen key="setting" options={{headerShown: false}}  name="setting" component={Setting} />
             <Stack.Screen key="changepassword" options={{headerShown: false}}  name="changepassword" component={ChangePassword} />
+            <Stack.Screen key="newpost" options={{headerShown: false}}  name="newpost" component={NewPost} />
+            <Stack.Screen key="newstory" options={{headerShown: false}}  name="newstory" component={NewStory} />
+
 
       </Stack.Navigator>
     </NavigationContainer>

@@ -18,7 +18,7 @@ const post = [
   {
     username: "danh_1808",
     avt: require("../../assets/img/avt.png"),
-    imagepost: require("../../assets/img/anhmanhinh.png"),
+    imagepost:{uri: 'https://cdn.discordapp.com/attachments/1192452171795533844/1192452355090829403/20230916_033009226_iOS.jpg?ex=65a920cc&is=6596abcc&hm=3130ad3d8dbb3a91ca6d7eb0b11bd06075d7419a7a71a3689c8e6a8a291feb48&'} ,
     likes: 30,
     captions: "ditmecuocsong !!",
     comments: [
@@ -35,7 +35,7 @@ const post = [
   {
     username: "danh_1808",
     avt: require("../../assets/img/avt.png"),
-    imagepost: require("../../assets/img/baidang.png"),
+    imagepost: {uri:'https://cdn.discordapp.com/attachments/1192452171795533844/1192457809250492506/snapedit_1704374457237.png?ex=65a925e0&is=6596b0e0&hm=ad2cb39d627a58bc3ce2bb7bfd4ddd7d1c4e5366db6b18e6553d487c76c329df&'},
     likes: 3890987,
     captions: "ditmecuocsong !!",
     comments: [
@@ -92,5 +92,4 @@ const HomeScreen = () => {
     </View>
   );
 };
-
 export default HomeScreen;

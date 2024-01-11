@@ -75,15 +75,15 @@ const styles = StyleSheet.create({
   // Login form styles
   wrapper: {
     marginBottom: 80,
-    justifyContent:'center',
-    marginLeft:10,
-    marginRight:10
+    justifyContent: "center",
+    marginLeft: 10,
+    marginRight: 10,
   },
   inputField: {
     borderRadius: 4,
     padding: 15,
     marginBottom: 10,
-    borderBottomWidth:0.5,
+    borderBottomWidth: 0.5,
     marginTop: 10,
   },
   buttonLogin: {
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     minHeight: 50,
     borderRadius: 40,
-    marginTop:25,
+    marginTop: 25,
   },
   buttonLoginText: {
     fontWeight: "500",
@@ -120,7 +120,22 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     resizeMode: "contain",
   },
-
+  modelContainer: {
+    backgroundColor: "white",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  modalItem: {
+    flex: 0.4,
+    padding: 15,
+    alignItems: "center",
+    flexDirection: "row",
+  },
+  modalText: { fontSize: 20,margin:10 },
+  modalIcon:{width: 30,
+    height: 30,},
   // Stories styles.
   stroyImg: {
     width: 90,
@@ -130,10 +145,10 @@ const styles = StyleSheet.create({
     borderColor: "#ff8501",
   },
 
-  iconforAll:{
+  iconforAll: {
     width: 40,
     height: 40,
-  }
+  },
 });
 
 export default styles;

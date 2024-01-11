@@ -187,7 +187,6 @@ const Field = ({data, onUpdateData}) => {
       if (galleryPermission.granted === false) {
         return;
       }
-  
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
@@ -267,34 +266,35 @@ const Field = ({data, onUpdateData}) => {
         </Pressable>
         <Text style={{ marginBottom: 10 }}>Chỉnh sửa avatar</Text>
         <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={chooseModal}
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={chooseModal}
+      >
+        <Pressable
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0,0,0,0.5)",
+          }}
+          onPress={chooseModal}  // Xử lý sự kiện khi bấm ra khỏi vùng của modal
         >
           <View
             style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: 'rgba(0,0,0,0.5)',
+              backgroundColor: "white",
+              padding: 20,
+              borderRadius: 10,
+              alignItems: "center",
             }}
           >
-            <View
-              style={{
-                backgroundColor: 'white',
-                padding: 20,
-                borderRadius: 10,
-                alignItems: 'center',
-              }}
-            >
-              <Text>Choose an option:</Text>
-              <Button title="Camera"  style = {{ marginBottom:10 }} onPress={() => editAvaImg("Camera")} />
-              <Button title="Gallery" style = {{ marginBottom:10 }} onPress={() => editAvaImg("Gallery")} />
-              <Button title="Exit" onPress={chooseModal} />
-            </View>
+            <Text>Choose an option:</Text>
+            <Button title="Camera" style={{ marginBottom: 10 }} onPress={() => editAvaImg("Camera")} />
+            <Button title="Gallery" style={{ marginBottom: 10 }} onPress={() => editAvaImg("Gallery")} />
+            {/* <Button title="Exit" onPress={chooseModal} /> */}
           </View>
-        </Modal>
+        </Pressable>
+      </Modal>
       </View>
       <Divider width={1} orientation="vertical" style={{ marginBottom: 20 }} />
 
