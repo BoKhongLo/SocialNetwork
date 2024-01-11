@@ -12,6 +12,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { heightPercentageToDP } from "react-native-responsive-screen";
 import profileStyle from "../../styles/profileStyles";
+import { ChangePasswordDto } from "../../util/dto";
+import { getDataUserLocal, getAllIdUserLocal, changePasswordAsync } from "../../util";
 
 const ChangePassword = () => {
   const insets = useSafeAreaInsets();
@@ -54,10 +56,25 @@ const Form = () => {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const navigation = useNavigation();
 
-  const handlePasswordChange = () => {
-    // Đặt xử lý thay đổi mật khẩu ở đây
-    // Ví dụ: kiểm tra mật khẩu cũ, kiểm tra xác nhận mật khẩu mới, sau đó thực hiện thay đổi mật khẩu
+  const handlePasswordChange = async () => {
+    if (newPassword != confirmPassword) return;
+    const keys = await getAllIdUserLocal();
+    const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+    const dto = new ChangePasswordDto(dataUserLocal.id, oldPassword, newPassword, confirmPassword);
+    const dataRe = await changePasswordAsync(dto, dataUserLocal.accessToken)
+    if ("errors" in dataRe) {
+      const dataUpdate = await updateAccessTokenAsync(dataUserLocal.id, dataUserLocal.refreshToken)
+      dataRe = await changePasswordAsync(dto, dataUpdate.accessToken)
+      if ("errors" in dataRe) return
+      navigation.navigate("main")
+    }
+    else {
+      navigation.navigate("main")
+    }
+
+   
   };
 
   return (
@@ -84,7 +101,10 @@ const Form = () => {
         onChangeText={(text) => setConfirmPassword(text)}
       />
       <TouchableOpacity
-      style={profileStyle.buttonContainer} titleSize={20}>
+        style={profileStyle.buttonContainer} 
+        titleSize={20}
+        onPress={handlePasswordChange}
+      >
         <Text style={profileStyle.buttonText}>Change</Text>
       </TouchableOpacity>
     </View>

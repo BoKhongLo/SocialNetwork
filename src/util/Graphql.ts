@@ -1,5 +1,5 @@
 import axios from "axios";
-import { LoginDto, SignUpDto, ValidateUserDto } from './dto';
+import { LoginDto, SignUpDto, ValidateUserDto, ChangePasswordDto } from './dto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from "jwt-decode";
 import "core-js/stable/atob";
@@ -452,6 +452,55 @@ export async function getRoomchatAsync(id: string, accessToken: string) {
         );
         if ("errors" in response.data) return response.data;
         return response.data.data.getRomchatById
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+
+export async function changePasswordAsync(dto: ChangePasswordDto, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const CHANGE_PASSWORD_QUERY = `
+    mutation ChangePassword ($userId: String!, $currentPassword: String!, $newPassword: String!, $validatePassword: String!) {
+        changePassword(
+            changePassword: {
+                userId: $userId
+                currentPassword: $currentPassword
+                newPassword: $newPassword
+                validatePassword: $validatePassword
+            }
+        ) {
+            id
+            isOnline
+            created_at
+            updated_at
+        }
+    }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: CHANGE_PASSWORD_QUERY,
+                variables: {
+                    userId: dto.userId,
+                    currentPassword: dto.currentPassword,
+                    newPassword: dto.newPassword,
+                    validatePassword: dto.validatePassword
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.changePassword
 
     } catch (error) {
         console.error('Error:', error);
