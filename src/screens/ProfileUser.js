@@ -92,7 +92,6 @@ const ProfileUser = () => {
       <View style={{ flex: 1 }}>
         <ScrollView>
           <Information data={userProfile} />
-          {/* <Edit data={userProfile} /> */}
         </ScrollView>
       </View>
       <BottomTabs />

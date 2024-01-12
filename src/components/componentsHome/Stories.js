@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 const Stories = ({ post }) => {
   const navigation = useNavigation();
 
-  const { username, avt, imagepost } = post[0];
+  const { username, avt, imagepost } = post[1];
 
   const handleStoryPress = () => {
     navigation.navigate("loadStory", { imagepost, username });

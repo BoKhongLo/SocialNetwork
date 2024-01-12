@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,10 +6,19 @@ import {
   TouchableOpacity,
   TouchableHighlight,
   TouchableWithoutFeedback,
+  StyleSheet,
+  ImageBackground,
 } from "react-native";
 import { Divider } from "react-native-elements";
 import headerPostStyles from "./../../styles/postHeaderStyles";
 import highLight from "../../styles/highLightStyles";
+import Modal from "react-native-modal";
+import {
+  heightPercentageToDP,
+  widthPercentageToDP,
+} from "react-native-responsive-screen";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 const Post = ({ post }) => {
   return (
     <View style={{ marginBottom: 30 }}>
@@ -17,7 +26,7 @@ const Post = ({ post }) => {
       <PostHeader post={post} />
       <PostImage post={post} />
       <View>
-        <PostFooter post={post} onAvatarPress={onAvatarPress} />
+        <PostFooter post={post} />
         <Likes post={post} />
         <Caption post={post} />
         <Comments post={post} />
@@ -26,14 +35,9 @@ const Post = ({ post }) => {
   );
 };
 
-const onAvatarPress = () => {};
-const PostHeader = ({
-  post,
-  onAvatarPress,
-  onUsernamePress,
-  onEllipsisPress,
-}) => {
+const PostHeader = ({ post, onAvatarPress, onEllipsisPress }) => {
   const { username, avt } = post[0];
+  const [isModalVisible, setModalVisible] = useState(false);
 
   const handleAvatarPress = () => {
     console.log("Avatar pressed!");
@@ -41,11 +45,14 @@ const PostHeader = ({
       onAvatarPress();
     }
   };
+
   const handleEllipsisPress = () => {
     console.log("3Dots pressed!");
-    if (onEllipsisPress) {
-      onEllipsisPress();
-    }
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
   };
 
   return (
@@ -71,28 +78,95 @@ const PostHeader = ({
           />
         </TouchableWithoutFeedback>
       </View>
+
+      <Modal
+        isVisible={isModalVisible}
+        style={{ margin: 0, justifyContent: "flex-end" }}
+        onBackdropPress={closeModal}
+      >
+        <View
+          style={{
+            backgroundColor: "white",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+            paddingTop: heightPercentageToDP("30%"),
+          }}
+        >
+          <Text>This is your modal content</Text>
+        </View>
+      </Modal>
     </View>
   );
 };
 
-const PostImage = ({ post, onPressImgPost }) => {
+const PostImage = ({ post }) => {
   const { imagepost } = post[0];
+  const [isModalVisible, setModalVisible] = useState(false);
+  const insets = useSafeAreaInsets();
 
   const handleImagePress = () => {
     console.log("Image pressed!");
-    if (onPressImgPost) {
-      onPressImgPost();
-    }
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
+  const onModalShow = () => {
+    console.log("Modal is shown!");
+  };
+
+  const onModalDismiss = () => {
+    console.log("Modal is dismissed!");
   };
 
   return (
-    <TouchableOpacity onPress={handleImagePress}>
-      <View style={headerPostStyles.frame}>
-        <Image style={headerPostStyles.image} source={imagepost} />
-      </View>
-    </TouchableOpacity>
+    <View>
+      <TouchableHighlight
+      underlayColor= 'lightgrey'
+      onPress={handleImagePress}>
+        <Image  style={headerPostStyles.image} source={imagepost} />
+      </TouchableHighlight>
+
+      <Modal
+        isVisible={isModalVisible}
+        onBackdropPress={closeModal}
+        onBackButtonPress={closeModal}
+        onShow={onModalShow}
+        onDismiss={onModalDismiss}
+        backdropOpacity={0.8}
+        animationType="none"
+        style={{
+          margin: 0,
+          justifyContent: "center",
+          flex: 1,
+        }}
+      >
+        <View>
+          <TouchableHighlight underlayColor= 'lightgrey' onPress={closeModal} style={{height:30,width:30}}>
+            <Image
+              style={{ height: 40, width: 40 }}
+              source={require("../../../assets/dummyicon/close_line_white.png")}
+            />
+          </TouchableHighlight>
+
+          <Image
+            style={{
+              width: "100%",
+              height: "95%",
+              resizeMode: "contain",
+            }}
+            source={imagepost}
+          />
+        </View>
+      </Modal>
+    </View>
   );
 };
+
 const PostFooter = ({
   post,
   onPressLike,

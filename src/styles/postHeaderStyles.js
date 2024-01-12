@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 import { useFonts } from 'expo-font';
+import { heightPercentageToDP, widthPercentageToDP } from "react-native-responsive-screen";
 
 const headerPostStyles = StyleSheet.create({
   containerHeaderPost: {
@@ -31,10 +32,9 @@ const headerPostStyles = StyleSheet.create({
     height: 300
   },
   image: {
-    width: "100%",
-    height: "100%",
     resizeMode: "contain",
     alignItems: "center",
+    height:400,
   },
 
   postFooterContainer: {
@@ -66,8 +66,14 @@ const headerPostStyles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: 4,
     justifyContent: "flex-start"
-  }
-
+  },
+  modalContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalImage: {
+    resizeMode: "contain",
+  },
 });
 
 export default headerPostStyles;
