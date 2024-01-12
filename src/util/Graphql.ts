@@ -1,10 +1,8 @@
 import axios from "axios";
-import { LoginDto, SignUpDto, ValidateUserDto, ChangePasswordDto } from './dto';
+import { LoginDto, SignUpDto, ValidateUserDto, ChangePasswordDto, ValidateMessagesDto } from './dto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from "jwt-decode";
 import "core-js/stable/atob";
-
-
 
 class JwtPayload {
     id: string;
@@ -501,6 +499,50 @@ export async function changePasswordAsync(dto: ChangePasswordDto, accessToken: s
         );
         if ("errors" in response.data) return response.data;
         return response.data.data.changePassword
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+
+export async function removeMessageAsync(dto: ValidateMessagesDto, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const GET_USER_QUERY = `
+    mutation RemoveMessageRoomchat ($userId: String!, $roomchatId: String!, $messageId: String!) {
+        removeMessageRoomchat(
+            removeMessage: {
+                roomchatId: $roomchatId
+                userId: $userId
+                messageId: $messageId
+            }
+        ) {
+            data
+        }
+    }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: GET_USER_QUERY,
+                variables: {
+                    userId: dto.userId,
+                    roomchatId: dto.roomchatId,
+                    messageId: dto.messagesId
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.removeMessageRoomchat
 
     } catch (error) {
         console.error('Error:', error);

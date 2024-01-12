@@ -166,7 +166,7 @@ const Field = ({data, onUpdateData}) => {
         aspect: [4, 3],
         quality: 1,
       });
-  
+
       if (!result.canceled) {
         setImage(result.assets[0].uri);
         setAvtImg({uri : result.assets[0].uri});
@@ -195,7 +195,7 @@ const Field = ({data, onUpdateData}) => {
         quality: 1,
       });
   
-  
+
       if (!result.canceled) {
         setImage(result.assets[0].uri);
         

@@ -27,7 +27,7 @@ const ChatScreen = ({}) => {
   });
   const [dataRoomchat, setDataRoomchat] = useState([]);
   const [socket, setSocket] = useState(undefined);
-
+  const [dataRoomchatTmp, setDataRoomchatTmp] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
       if (receivedData == null) {
@@ -75,7 +75,6 @@ const ChatScreen = ({}) => {
           }
         }
       }
-      console.log(dataRoomchatAsync)
 
       const { detail, id, friends } = dataUserAsync;
 
@@ -89,6 +88,7 @@ const ChatScreen = ({}) => {
       }
       setUserProfile(newProfile);
       setDataRoomchat(dataRoomchatAsync)
+      setDataRoomchatTmp(dataRoomchatAsync)
     };
 
     fetchData();
@@ -145,8 +145,8 @@ const ChatScreen = ({}) => {
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
         >
-          <Search dataRoomchat={dataRoomchat} />
-          <Chats dataRoomchat={dataRoomchat}/>
+          <Search dataRoomchat={dataRoomchat} onSearch={setDataRoomchatTmp} />
+          <Chats dataRoomchat={dataRoomchatTmp}/>
         </ScrollView>
       </View>
     </View>

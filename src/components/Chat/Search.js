@@ -2,11 +2,12 @@ import { View, Text, TextInput, StyleSheet  } from 'react-native'
 import React, { useState } from 'react'
 import chat from '../../styles/chatStyles';
 
-const Search = ({dataRoomchat}) => {
+const Search = ({dataRoomchat, onSearch}) => {
   const [searchText, setSearchText] = useState('');
 
-  const handleSearch = () => {
-    // lam gi do voi cai searchText !!
+  const handleSearch = (text) => {
+    onSearch(preRoom => dataRoomchat.filter(room => room.title.includes(text)))
+    setSearchText(text);
   }
 
   return (
@@ -15,7 +16,7 @@ const Search = ({dataRoomchat}) => {
         style={chat.searchInput}
         placeholder="Tìm kiếm"
         value={searchText}
-        onChangeText={(text) => setSearchText(text)}
+        onChangeText={handleSearch}
       />
     </View>
   );
