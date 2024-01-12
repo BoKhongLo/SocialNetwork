@@ -3,11 +3,6 @@ import { View, Text, Image, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Modal from "react-native-modal";
 import styles from "../../styles/styles";
-import {
-  heightPercentageToDP,
-  widthPercentageToDP,
-} from "react-native-responsive-screen";
-
 const BottomTabs = ({ receivedData }) => {
   const navigation = useNavigation();
   const [isModalVisible, setModalVisible] = useState(false);
@@ -58,8 +53,6 @@ const BottomTabs = ({ receivedData }) => {
         isVisible={isModalVisible}
         style={{ margin: 0, justifyContent: "flex-end" }}
         onBackdropPress={closeModal}
-        animationType="fade"
-
       >
         <View style={styles.modelContainer}>
           <TouchableOpacity

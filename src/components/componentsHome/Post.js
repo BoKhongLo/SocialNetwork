@@ -116,18 +116,20 @@ const PostImage = ({ post }) => {
   };
 
   const onModalShow = () => {
-    // The modal is shown, update the state to display the close button
     console.log("Modal is shown!");
   };
 
   const onModalDismiss = () => {
-    // The modal is dismissed, update the state to hide the close button
     console.log("Modal is dismissed!");
   };
 
   return (
-    <TouchableOpacity onPress={handleImagePress}>
-      <Image style={headerPostStyles.image} source={imagepost} />
+    <View>
+      <TouchableHighlight
+      underlayColor= 'lightgrey'
+      onPress={handleImagePress}>
+        <Image  style={headerPostStyles.image} source={imagepost} />
+      </TouchableHighlight>
 
       <Modal
         isVisible={isModalVisible}
@@ -137,46 +139,33 @@ const PostImage = ({ post }) => {
         onDismiss={onModalDismiss}
         backdropOpacity={0.8}
         animationType="none"
-
         style={{
           margin: 0,
           justifyContent: "center",
           flex: 1,
         }}
       >
-        <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
-          <Image
-            style={{ height: 40, width: 40 }}
-            source={require("../../../assets/dummyicon/close.png")}
-          />
-        </TouchableOpacity>
+        <View>
+          <TouchableHighlight underlayColor= 'lightgrey' onPress={closeModal} style={{height:30,width:30}}>
+            <Image
+              style={{ height: 40, width: 40 }}
+              source={require("../../../assets/dummyicon/close_line_white.png")}
+            />
+          </TouchableHighlight>
 
-        <Image
-          style={{
-            width: "100%",
-            height: "95%",
-            resizeMode: "contain",
-          }}
-          source={imagepost}
-        />
+          <Image
+            style={{
+              width: "100%",
+              height: "95%",
+              resizeMode: "contain",
+            }}
+            source={imagepost}
+          />
+        </View>
       </Modal>
-    </TouchableOpacity>
+    </View>
   );
 };
-
-const styles = StyleSheet.create({
-  modal: {
-    margin: 0,
-    justifyContent: "center",
-  },
-  closeButton: {
-    position: "absolute",
-    top: 20,
-    right: 15,
-    zIndex: 1,
-    justifyContent: "center",
-  },
-});
 
 const PostFooter = ({
   post,

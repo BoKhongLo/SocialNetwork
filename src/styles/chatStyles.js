@@ -8,7 +8,21 @@ const chat = StyleSheet.create({
   container: {
     padding: wp("2%"),
   },
-
+  videoContainer: {
+    // flex: 1,
+    justifyContent: 'center',
+    backgroundColor: '#ecf0f1',
+  },
+  videoStyles: {
+    alignSelf: 'center',
+    width: 200,
+    height: 150,
+  },
+  audioStyles: {
+    alignSelf: 'center',
+    width: 200,
+    height: 90,
+  },
   headerContainer: {
     flexDirection: "row",
     justifyContent: "space-between",

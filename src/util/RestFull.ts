@@ -1,14 +1,14 @@
 import axios from "axios";
 import { FileUploadDto } from "./dto";
 
-export async function uploadFile (data: FileUploadDto, authToken: string) {
+export async function uploadFile (data: FileUploadDto, authToken: string,) {
     try {
         const formData = new FormData();
         formData.append('userId', data.userId);
         formData.append('file', {
             uri: data.file,
-            name: `avt${data.userId}.jpg`,
-            type: 'image/jpeg', 
+            name: `avt${data.userId}${data.nameFile}`,
+            type: data.typeFile, 
           });
 
         const response = await axios.post('http://103.144.87.14:3434/media/upload', formData, {
@@ -19,7 +19,6 @@ export async function uploadFile (data: FileUploadDto, authToken: string) {
         });
 
         if (response.data == null) return null;
-        console.log(response.data)
         return response.data
     } catch (error) {
         console.error('Error:', error);
