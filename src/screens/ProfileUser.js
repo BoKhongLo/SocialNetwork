@@ -2,7 +2,7 @@ import { View, Text, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import React, { useState, useEffect } from "react";
 import Header from "../components/Profile/Header";
-import BottomTabs from "../components/componentsHome/BottomTabs";
+import BottomTabs from "../components/Home/BottomTabs";
 import Information from "../components/Profile/Information";
 import Edit from "../components/Profile/Edit";
 import { getUserDataAsync, getAllIdUserLocal, getDataUserLocal, updateAccessTokenAsync } from "../util";

@@ -1,7 +1,7 @@
 import { View, Text, Image } from 'react-native'
 import React from 'react'
 import styles from '../styles/styles'
-import LoginForm from '../components/componentsLogin/LoginForm'
+import LoginForm from '../components/Login/LoginForm'
 
 const LoginScreen = () => {
   return (
