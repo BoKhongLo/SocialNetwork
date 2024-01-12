@@ -84,7 +84,7 @@ const ChoseImg = () => {
 const ReviewImage = () => {
   return (
     <View style={{ marginTop: 10 }}>
-      <Text style={[postSytles.text, { marginBottom: 10 }]}>Review</Text>
+      <Text style={[postSytles.text, { marginBottom: 10 }]}>Preview</Text>
       <Image
         style={[postSytles.image,{backgroundColor:'black'}]} 
         // source={} =>>>>>> thay anh vao day.

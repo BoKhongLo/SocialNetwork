@@ -8,10 +8,10 @@ import {
   Image,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Header from "../components/componentsHome/Header";
-import Stories from "../components/componentsHome/Stories";
-import BottomTabs from "../components/componentsHome/BottomTabs";
-import Post from "../components/componentsHome/Post";
+import Header from "../components/Home/Header";
+import Stories from "../components/Home/Stories";
+import BottomTabs from "../components/Home/BottomTabs";
+import Post from "../components/Home/Post";
 import { useRoute } from "@react-navigation/native"
 import { getAllIdUserLocal, getDataUserLocal, updateAccessTokenAsync } from "../util";
 const post = [

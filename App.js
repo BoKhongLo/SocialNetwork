@@ -10,7 +10,7 @@ import ProfileUser from "./src/screens/ProfileUser";
 import SignupScreen from "./src/screens/SignupScreen";
 import Notify from "./src/components/notification/Notify";
 import EditField from "./src/components/Profile/EditField";
-import LoadStories from "./src/components/componentsHome/LoadStories";
+import LoadStories from "./src/components/Home/LoadStories";
 import ChatWindows from "./src/components/Chat/ChatWindows";
 import { getAllIdUserLocal, deleteDataUserLocal, updateAccessTokenAsync, getDataUserLocal } from './src/util'
 import FillEmail from "./src/components/Signup/FillEmail";
