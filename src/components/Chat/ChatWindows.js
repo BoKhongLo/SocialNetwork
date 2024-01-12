@@ -14,29 +14,12 @@ import { GiftedChat, Send, Bubble } from "react-native-gifted-chat";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Divider } from "react-native-elements";
 import chat from "../../styles/chatStyles";
-<<<<<<< HEAD
 import { getUserDataAsync, getRoomchatAsync, getAllIdUserLocal, getDataUserLocal, updateAccessTokenAsync, getSocketIO, uploadFile, removeMessageAsync } from "../../util";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import * as DocumentPicker from 'expo-document-picker';
 import { FileUploadDto, ValidateMessagesDto } from "../../util/dto";
 import { Video, Audio } from 'expo-av';
-=======
-import {
-  getUserDataAsync,
-  getRoomchatAsync,
-  getAllIdUserLocal,
-  getDataUserLocal,
-  updateAccessTokenAsync,
-  getSocketIO,
-  uploadFile,
-} from "../../util";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
-import * as DocumentPicker from "expo-document-picker";
-import { FileUploadDto } from "../../util/dto";
-import { Video, Audio } from "expo-av";
->>>>>>> b8953fa747441e334d879c67fe491f612001ff82
 
 const ChatWindows = ({ user }) => {
   const insets = useSafeAreaInsets();
@@ -247,14 +230,8 @@ const Content = ({ roomProfile }) => {
       dataUserLocal.accessToken = dataUpdate.accessToken;
       const newSocket = getSocketIO(dataUserLocal.accessToken);
       setSocket(newSocket);
-<<<<<<< HEAD
-
     }
     fetchData()
-=======
-    };
-    fetchData();
->>>>>>> b8953fa747441e334d879c67fe491f612001ff82
 
     if (roomProfile.id === "") return;
     if (socket == undefined) return;
@@ -299,7 +276,6 @@ const Content = ({ roomProfile }) => {
           newMessage.file = message.fileUrl[0];
         }
       }
-<<<<<<< HEAD
       setMessages(previousMessages => GiftedChat.append(previousMessages, [newMessage]));
     });
 
@@ -308,12 +284,6 @@ const Content = ({ roomProfile }) => {
         return previousState.filter(messages => messages._id !== message.messageId)
       });
     })
-=======
-      setMessages((previousMessages) =>
-        GiftedChat.append(previousMessages, [newMessage])
-      );
-    });
->>>>>>> b8953fa747441e334d879c67fe491f612001ff82
   }, [roomProfile]);
 
   const onSend = useCallback(
@@ -393,11 +363,8 @@ const Content = ({ roomProfile }) => {
             resizeMode="contain"
           />
         )}
-<<<<<<< HEAD
+
         {currentMessage.video.type === 'audio' && (
-=======
-        {currentMessage.video.type === "audio" && (
->>>>>>> b8953fa747441e334d879c67fe491f612001ff82
           <View>
             <Video
               style={chat.audioStyles}
@@ -419,7 +386,6 @@ const Content = ({ roomProfile }) => {
       multiple: true,
       copyToCacheDirectory: true,
     });
-<<<<<<< HEAD
   
     if (result.type !== "success") return
     if (socket == undefined) return;
@@ -436,36 +402,6 @@ const Content = ({ roomProfile }) => {
 
     socket.emit("sendMessage", { userId: dataLocal.id, content: "", fileUrl: [data.url], roomchatId: roomProfile.id })
   
-=======
-    console.log(result);
-    if (!result.canceled) {
-      if (socket == undefined) return;
-      if (roomProfile.id === "") return;
-      const keys = await getAllIdUserLocal();
-      const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
-      const dto = new FileUploadDto(
-        dataLocal.id,
-        result.uri,
-        result.name,
-        result.mimeType
-      );
-      const data = await uploadFile(dto, dataLocal.accessToken);
-      if (data == null) {
-        const dataUpdate = await updateAccessTokenAsync(
-          dataLocal.id,
-          dataLocal.refreshToken
-        );
-        data = await uploadFile(dto, dataUpdate.accessToken);
-      }
-      console.log(data);
-      socket.emit("sendMessage", {
-        userId: dataLocal.id,
-        content: "",
-        fileUrl: [data.url],
-        roomchatId: roomProfile.id,
-      });
-    }
->>>>>>> b8953fa747441e334d879c67fe491f612001ff82
   };
 
   const renderBubble = (props) => {
@@ -499,14 +435,8 @@ const Content = ({ roomProfile }) => {
             <FontAwesome
               name="file"
               style={{ marginRight: 5, marginTop: 5 }}
-<<<<<<< HEAD
               size={30}
               color='#2e64e5' />
-=======
-              size={32}
-              color="#2e64e5"
-            />
->>>>>>> b8953fa747441e334d879c67fe491f612001ff82
           </View>
         </TouchableOpacity>
         <Send {...props}>
