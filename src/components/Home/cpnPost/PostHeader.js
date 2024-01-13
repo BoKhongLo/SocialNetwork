@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import highLight from "./../../../styles/highLightStyles";
 import Modal from "react-native-modal";
-import headerPostStyles from './../../../styles/postHeaderStyles';
+import headerPostStyles from "./../../../styles/postHeaderStyles";
 import {
   heightPercentageToDP,
   widthPercentageToDP,
@@ -17,7 +17,6 @@ import {
 
 const PostHeader = ({ post, onAvatarPress, onEllipsisPress }) => {
   const { username, avt } = post[0];
-  const [isModalVisible, setModalVisible] = useState(false);
 
   const handleAvatarPress = () => {
     console.log("Avatar pressed!");
@@ -25,16 +24,6 @@ const PostHeader = ({ post, onAvatarPress, onEllipsisPress }) => {
       onAvatarPress();
     }
   };
-
-  const handleEllipsisPress = () => {
-    console.log("3Dots pressed!");
-    setModalVisible(true);
-  };
-
-  const closeModal = () => {
-    setModalVisible(false);
-  };
-
   return (
     <View style={headerPostStyles.containerHeaderPost}>
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
@@ -49,34 +38,6 @@ const PostHeader = ({ post, onAvatarPress, onEllipsisPress }) => {
           <Text style={headerPostStyles.userName}>{username}</Text>
         </View>
       </View>
-
-      <View>
-        <TouchableWithoutFeedback onPress={handleEllipsisPress}>
-          <Image
-            style={{ width: 30, height: 30 }}
-            source={require("../../../../assets/dummyicon/more_1_line.png")}
-          />
-        </TouchableWithoutFeedback>
-      </View>
-
-      <Modal
-        isVisible={isModalVisible}
-        style={{ margin: 0, justifyContent: "flex-end" }}
-        onBackdropPress={closeModal}
-      >
-        <View
-          style={{
-            backgroundColor: "white",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
-            paddingTop: heightPercentageToDP("30%"),
-          }}
-        >
-          <Text>This is your modal content</Text>
-        </View>
-      </Modal>
     </View>
   );
 };
