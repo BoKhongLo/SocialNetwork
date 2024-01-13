@@ -1,11 +1,7 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, } from 'react-native';
 import profileStyle from '../../styles/profileStyles';
 import { widthPercentageToDP } from 'react-native-responsive-screen';
-
-const Divider = ({ width }) => {
-  return <View style={[styles.divider, { width: width }]} />;
-};
 
 const Information = ({ data }) => {
   return (
@@ -38,17 +34,8 @@ const Information = ({ data }) => {
           <Text style={{ fontWeight: '400', fontSize: 20 }}>{data.posted}</Text>
         </View>
       </View>
-      <Divider width={widthPercentageToDP('80%')} />
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  divider: {
-    height: 1,
-    backgroundColor: 'black',
-    marginVertical: 10,
-  },
-});
 
 export default Information;

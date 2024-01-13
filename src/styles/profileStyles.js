@@ -13,16 +13,12 @@ const profileStyle = StyleSheet.create({
     borderColor: "black",
   },
   editContainer: {
-    backgroundColor: "grey",
-    padding: 4,
+    backgroundColor: "lightgrey",
     borderRadius: 7,
-    paddingVertical: 5,
-    flex: 0.5,
-    marginRight: 5,
   },
   textEdit: {
-    marginHorizontal: 10,
-    alignSelf: "center",
+    paddingHorizontal:30,
+    paddingVertical:10
   },
   userNameStyles: {
     fontWeight: "700",

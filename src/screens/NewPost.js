@@ -108,7 +108,6 @@ const ChoseImg = () => {
           />
         </TouchableOpacity>
       </View>
-      <Divider width={1} orientation="vertical" />
     </View>
   );
 };

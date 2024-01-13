@@ -6,7 +6,7 @@ import {
 
 const chat = StyleSheet.create({
   container: {
-    padding: wp("2%"),
+    
   },
   videoContainer: {
     // flex: 1,
@@ -51,25 +51,25 @@ const chat = StyleSheet.create({
   },
   searchInput: {
     fontSize: 16,
+    backgroundColor:'lightgrey',
+    padding:15,
+    borderRadius:30,
   },
 
   TinnhanHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     height: hp("6%"),
-    // backgroundColor: "black",
   },
   TinnhanText: {
     paddingTop: hp("2%"),
     fontWeight: "700",
     fontSize: hp("2%"),
-    // color:'white'
   },
   dangchoText: {
     paddingTop: hp("2%"),
     fontWeight: "300",
     fontSize: 12
-    // color:'white'
   },
 
   chatUSerName: {
@@ -86,7 +86,6 @@ const chat = StyleSheet.create({
     marginTop:hp('2%'),
     width: 25,
     height: 25,
-    // backgroundColor:'black'
   },
   KhungChat:{
     flexDirection: "row",

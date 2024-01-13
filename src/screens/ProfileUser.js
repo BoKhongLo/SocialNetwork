@@ -1,19 +1,25 @@
 import { View, Text, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import React, { useState, useEffect } from "react";
+
 import Header from "../components/Profile/Header";
 import BottomTabs from "../components/Home/BottomTabs";
 import Information from "../components/Profile/Information";
-import Edit from "../components/Profile/Edit";
-import { getUserDataAsync, getAllIdUserLocal, getDataUserLocal, updateAccessTokenAsync } from "../util";
-import { useNavigation, useRoute } from '@react-navigation/native';
+import Options from "../components/Profile/Options";
+
+import {
+  getUserDataAsync,
+  getAllIdUserLocal,
+  getDataUserLocal,
+  updateAccessTokenAsync,
+} from "../util";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
 const ProfileUser = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const receivedData = route.params?.data;
   const insets = useSafeAreaInsets();
-
 
   const [userProfile, setUserProfile] = useState({
     username: "",
@@ -30,7 +36,7 @@ const ProfileUser = () => {
   useEffect(() => {
     const fetchData = async () => {
       if (receivedData == null) {
-        navigation.navigate('main');
+        navigation.navigate("main");
       }
       const dataUserLocal = receivedData;
 
@@ -41,31 +47,36 @@ const ProfileUser = () => {
       const newProfile = { ...userProfile };
 
       if ("errors" in dataUserAsync) {
-        const dataUpdate = await updateAccessTokenAsync(dataUserLocal.id, dataUserLocal.refreshToken);
+        const dataUpdate = await updateAccessTokenAsync(
+          dataUserLocal.id,
+          dataUserLocal.refreshToken
+        );
         dataUserLocal.accessToken = dataUpdate.accessToken;
-        dataUserAsync = await getUserDataAsync(dataUpdate.id, dataUpdate.accessToken);
+        dataUserAsync = await getUserDataAsync(
+          dataUpdate.id,
+          dataUpdate.accessToken
+        );
         // newProfile.accessToken = dataUpdate.accessToken;
       }
 
-      console.log(dataUserAsync)
+      console.log(dataUserAsync);
 
       if ("errors" in dataUserAsync) {
-        navigation.navigate('main');
+        navigation.navigate("main");
       }
 
       const { detail, id, friends } = dataUserAsync;
-
 
       newProfile.id = id;
 
       if (detail) {
         if (detail.name) newProfile.username = detail.name;
-        if (detail.avatarUrl ) newProfile.avatarUrl = {uri : detail.avatarUrl};
+        if (detail.avatarUrl) newProfile.avatarUrl = { uri: detail.avatarUrl };
         if (detail.nickName) newProfile.nickName = detail.nickName;
         if (detail.age) newProfile.age = detail.age;
         newProfile.friends = friends;
         if (detail.description) newProfile.description = detail.description;
-        else newProfile.description = "..."
+        else newProfile.description = "...";
         if (detail.phoneNumber) newProfile.phoneNumber = detail.phoneNumber;
         if (detail.birthday) newProfile.birthday = detail.birthday;
       }
@@ -92,11 +103,11 @@ const ProfileUser = () => {
       <View style={{ flex: 1 }}>
         <ScrollView>
           <Information data={userProfile} />
+          <Options />
         </ScrollView>
       </View>
       <BottomTabs />
     </View>
   );
 };
-
 export default ProfileUser;

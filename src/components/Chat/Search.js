@@ -14,7 +14,7 @@ const Search = ({dataRoomchat, onSearch}) => {
     <View style={chat.searchContainer}>
       <TextInput
         style={chat.searchInput}
-        placeholder="Tìm kiếm"
+        placeholder="Search"
         value={searchText}
         onChangeText={handleSearch}
       />

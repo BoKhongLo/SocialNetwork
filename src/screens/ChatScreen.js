@@ -12,8 +12,13 @@ import Chats from "./../components/Chat/Chats";
 import Header from "./../components/Chat/Header";
 import Search from "./../components/Chat/Search";
 import chat from "../styles/chatStyles";
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { getUserDataAsync, getAllRoomchatAsync, updateAccessTokenAsync, getSocketIO } from "../util";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import {
+  getUserDataAsync,
+  getAllRoomchatAsync,
+  updateAccessTokenAsync,
+  getSocketIO,
+} from "../util";
 const ChatScreen = ({}) => {
   const route = useRoute();
   const navigation = useNavigation();
@@ -31,7 +36,7 @@ const ChatScreen = ({}) => {
   useEffect(() => {
     const fetchData = async () => {
       if (receivedData == null) {
-        navigation.navigate('main');
+        navigation.navigate("main");
       }
       const dataUserLocal = receivedData;
 
@@ -40,36 +45,54 @@ const ChatScreen = ({}) => {
         dataUserLocal.accessToken
       );
 
-      const dataRoomchatAsync  = await getAllRoomchatAsync(
+      const dataRoomchatAsync = await getAllRoomchatAsync(
         dataUserLocal.id,
         dataUserLocal.accessToken
-      )
+      );
 
       const newProfile = { ...userProfile };
 
       if ("errors" in dataUserAsync) {
-        const dataUpdate = await updateAccessTokenAsync(dataUserLocal.id, dataUserLocal.refreshToken)
+        const dataUpdate = await updateAccessTokenAsync(
+          dataUserLocal.id,
+          dataUserLocal.refreshToken
+        );
         dataUserLocal.accessToken = dataUpdate.accessToken;
-        dataUserAsync = await getUserDataAsync(dataUpdate.id, dataUpdate.accessToken)
-        dataRoomchatAsync = await getAllRoomchatAsync(dataUpdate.id, dataUpdate.accessToken)
+        dataUserAsync = await getUserDataAsync(
+          dataUpdate.id,
+          dataUpdate.accessToken
+        );
+        dataRoomchatAsync = await getAllRoomchatAsync(
+          dataUpdate.id,
+          dataUpdate.accessToken
+        );
       }
 
       if ("errors" in dataUserAsync) {
-        navigation.navigate('main');
+        navigation.navigate("main");
       }
 
-      const newSocket = await getSocketIO(dataUserLocal.accessToken)
+      const newSocket = await getSocketIO(dataUserLocal.accessToken);
       setSocket(newSocket);
       if (!("errors" in dataRoomchatAsync)) {
-        for (let item in dataRoomchatAsync) { 
-          if(dataRoomchatAsync[item].isSingle == true) {
+        for (let item in dataRoomchatAsync) {
+          if (dataRoomchatAsync[item].isSingle == true) {
             for (let user of dataRoomchatAsync[item].member) {
               if (user == dataUserLocal.id) continue;
-              const dataFriend = await getUserDataAsync(user, dataUserLocal.accessToken)
+              const dataFriend = await getUserDataAsync(
+                user,
+                dataUserLocal.accessToken
+              );
               dataRoomchatAsync[item].title = dataFriend.detail.name;
 
-              if (!dataFriend.detail.avatarUrl) dataRoomchatAsync[item].imgDisplay = require("../../assets/img/avt.png");
-              else dataRoomchatAsync[item].imgDisplay = {uri : dataFriend.detail.avatarUrl};
+              if (!dataFriend.detail.avatarUrl)
+                dataRoomchatAsync[
+                  item
+                ].imgDisplay = require("../../assets/img/avt.png");
+              else
+                dataRoomchatAsync[item].imgDisplay = {
+                  uri: dataFriend.detail.avatarUrl,
+                };
               break;
             }
           }
@@ -79,55 +102,66 @@ const ChatScreen = ({}) => {
       const { detail, id, friends } = dataUserAsync;
 
       newProfile.id = id;
- 
+
       if (detail) {
         if (detail.name) newProfile.username = detail.name;
-        if (detail.avatarUrl ) newProfile.avatarUrl = {uri : detail.avatarUrl};
+        if (detail.avatarUrl) newProfile.avatarUrl = { uri: detail.avatarUrl };
         if (detail.nickName) newProfile.nickName = detail.nickName;
         newProfile.friends = friends;
       }
       setUserProfile(newProfile);
-      setDataRoomchat(dataRoomchatAsync)
-      setDataRoomchatTmp(dataRoomchatAsync)
+      setDataRoomchat(dataRoomchatAsync);
+      setDataRoomchatTmp(dataRoomchatAsync);
     };
 
     fetchData();
     return () => {
       if (socket != undefined) {
-        socket.disconnect()
+        socket.disconnect();
       }
-    }
+    };
   }, [receivedData]);
 
-  useEffect(()=> {
+  useEffect(() => {
     const dataUserLocal = receivedData;
     if (socket == undefined) return;
-    socket.on('newRoomCreated', async (roomchat) => {
-      const newRoom = {...roomchat}
+    socket.on("newRoomCreated", async (roomchat) => {
+      const newRoom = { ...roomchat };
       if (roomchat.isSingle == true) {
-        const userContact = roomchat.member.filter(item => item !== receivedData.id)[0];
-        const dataFriend = await getUserDataAsync(userContact, receivedData.accessToken);
+        const userContact = roomchat.member.filter(
+          (item) => item !== receivedData.id
+        )[0];
+        const dataFriend = await getUserDataAsync(
+          userContact,
+          receivedData.accessToken
+        );
         if ("errors" in dataFriend) {
-          const dataUpdate = await updateAccessTokenAsync(dataUserLocal.id, dataUserLocal.refreshToken)
+          const dataUpdate = await updateAccessTokenAsync(
+            dataUserLocal.id,
+            dataUserLocal.refreshToken
+          );
           dataUserLocal.accessToken = dataUpdate.accessToken;
-          dataFriend = await getUserDataAsync(dataUpdate.id, dataUpdate.accessToken)
+          dataFriend = await getUserDataAsync(
+            dataUpdate.id,
+            dataUpdate.accessToken
+          );
         }
         if ("errors" in dataFriend) return;
 
         newRoom.title = dataFriend.detail.name;
-        if (!dataFriend.detail.avatarUrl) newRoom.imgDisplay = require("../../assets/img/avt.png");
-        else newRoom.imgDisplay = {uri : dataFriend.detail.avatarUrl};
+        if (!dataFriend.detail.avatarUrl)
+          newRoom.imgDisplay = require("../../assets/img/avt.png");
+        else newRoom.imgDisplay = { uri: dataFriend.detail.avatarUrl };
       }
 
       setDataRoomchat((preRoom) => [...preRoom, newRoom]);
 
       return () => {
         if (socket != undefined) {
-          socket.disconnect()
+          socket.disconnect();
         }
-      }
-  })
-
+      };
+    });
   }, [socket]);
   return (
     <View style={chat.container}>
@@ -135,8 +169,8 @@ const ChatScreen = ({}) => {
         style={{
           paddingTop: insets.top,
           paddingBottom: insets.bottom,
-          paddingLeft: insets.left,
-          paddingRight: insets.right,
+          paddingLeft: insets.left + 10,
+          paddingRight: insets.right + 10,
         }}
       >
         <Header user={userProfile} />
@@ -146,7 +180,7 @@ const ChatScreen = ({}) => {
           showsHorizontalScrollIndicator={false}
         >
           <Search dataRoomchat={dataRoomchat} onSearch={setDataRoomchatTmp} />
-          <Chats dataRoomchat={dataRoomchatTmp}/>
+          <Chats dataRoomchat={dataRoomchatTmp} />
         </ScrollView>
       </View>
     </View>
