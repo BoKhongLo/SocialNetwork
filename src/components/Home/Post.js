@@ -6,12 +6,12 @@ import {
   TouchableHighlight,
   ImageBackground,
 } from "react-native";
-import { Divider } from "react-native-elements";
 import headerPostStyles from "../../styles/postHeaderStyles";
 
 import PostHeader from "./cpnPost/PostHeader";
 import PostFooter from "./cpnPost/PostFooter";
 import PostImage from "./cpnPost/PostImage";
+import { Divider } from 'react-native-elements';
 
 const Post = ({ post }) => {
   return (

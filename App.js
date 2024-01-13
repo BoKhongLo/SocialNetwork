@@ -19,6 +19,7 @@ import Setting from "./src/components/Profile/Setting";
 import ChangePassword from "./src/components/Profile/ChangePassword";
 import NewPost from "./src/screens/NewPost";
 import NewStory from "./src/screens/NewStory";
+import SearchScreen from "./src/screens/SearchScreen";
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -83,8 +84,7 @@ export default function App() {
             <Stack.Screen key="changepassword" options={{headerShown: false}}  name="changepassword" component={ChangePassword} />
             <Stack.Screen key="newpost" options={{headerShown: false}}  name="newpost" component={NewPost} />
             <Stack.Screen key="newstory" options={{headerShown: false}}  name="newstory" component={NewStory} />
-
-
+            <Stack.Screen key="search" options={{headerShown: false}}  name="search" component={SearchScreen} />
       </Stack.Navigator>
     </NavigationContainer>
 );

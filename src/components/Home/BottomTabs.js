@@ -16,22 +16,42 @@ const BottomTabs = ({ receivedData }) => {
 
   return (
     <View style={styles.BottomTabContainer}>
-      {/* Các TouchableOpacity khác ... */}
-      <TouchableOpacity onPress={() => navigation.navigate("main")}>
+      <TouchableOpacity
+        style={{
+          alignContent: "center",
+          paddingVertical: 10,
+          paddingHorizontal: 20,
+        }}
+        onPress={() => navigation.navigate("main")}
+      >
         <Image
-          style={styles.BottomTabIcon}
+          style={[styles.BottomTabIcon]}
           source={require("../../../assets/dummyicon/home_6_line.png")}
           onPress={() => console.log("da nhan nut home")}
         />
       </TouchableOpacity>
-      <TouchableOpacity>
+      <TouchableOpacity
+        style={{
+          alignContent: "center",
+          paddingVertical: 10,
+          paddingHorizontal: 20,
+        }}
+        onPress={() => navigation.navigate("search")}
+      >
         <Image
           style={styles.BottomTabIcon}
           source={require("../../../assets/dummyicon/search_line.png")}
           onPress={() => console.log("da nhan nut search")}
         />
       </TouchableOpacity>
-      <TouchableOpacity onPress={toggleModal}>
+      <TouchableOpacity
+        style={{
+          alignContent: "center",
+          paddingVertical: 10,
+          paddingHorizontal: 20,
+        }}
+        onPress={toggleModal}
+      >
         <Image
           style={styles.BottomTabIcon}
           source={require("../../../assets/dummyicon/new.png")}
@@ -40,6 +60,11 @@ const BottomTabs = ({ receivedData }) => {
       </TouchableOpacity>
 
       <TouchableOpacity
+        style={{
+          alignContent: "center",
+          paddingVertical: 10,
+          paddingHorizontal: 20,
+        }}
         onPress={() => navigation.navigate("Profile", { data: receivedData })}
       >
         <Image
@@ -56,8 +81,9 @@ const BottomTabs = ({ receivedData }) => {
       >
         <View style={styles.modelContainer}>
           <TouchableOpacity
-          onPress={()=>navigation.navigate('newpost')}
-          style={[styles.modalItem,{marginLeft:20}]}>
+            onPress={() => navigation.navigate("newpost")}
+            style={[styles.modalItem, { marginLeft: 20 }]}
+          >
             <Text style={styles.modalText}>Post</Text>
             <Image
               style={styles.modalIcon}
@@ -65,8 +91,9 @@ const BottomTabs = ({ receivedData }) => {
             />
           </TouchableOpacity>
           <TouchableOpacity
-          onPress={()=>navigation.navigate('newstory')}
-          style={[styles.modalItem,{}]}>
+            onPress={() => navigation.navigate("newstory")}
+            style={[styles.modalItem, {}]}
+          >
             <Text style={styles.modalText}>Story</Text>
             <Image
               style={styles.modalIcon}

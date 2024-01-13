@@ -111,14 +111,11 @@ const styles = StyleSheet.create({
   BottomTabContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
-    height: 50,
-    paddingTop: 10,
+    alignItems: "center",
   },
   BottomTabIcon: {
     width: 30,
     height: 30,
-    marginLeft: 10,
-    resizeMode: "contain",
   },
   modelContainer: {
     backgroundColor: "white",
@@ -133,9 +130,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
   },
-  modalText: { fontSize: 20,margin:10 },
-  modalIcon:{width: 30,
-    height: 30,},
+  modalText: { fontSize: 20, margin: 10 },
+  modalIcon: { width: 30, height: 30 },
   // Stories styles.
   stroyImg: {
     width: 90,
