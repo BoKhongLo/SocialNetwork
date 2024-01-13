@@ -51,22 +51,17 @@ const headerPostStyles = StyleSheet.create({
 
   likes:{
     fontWeight: '600',
-    marginLeft: 10
   },
-  likesContainer:{
+  ItemFooterContainer:{
     flexDirection: 'row',
-    marginTop: 4
+    paddingVertical:5,
+    justifyContent: "flex-start",
   },
 
   caption:{
     fontWeight: '400',
-    marginLeft: 1
   },
-  captionContainer:{
-    flexDirection: 'row',
-    marginTop: 4,
-    justifyContent: "flex-start"
-  },
+
   modalContainer: {
     justifyContent: "center",
     alignItems: "center",

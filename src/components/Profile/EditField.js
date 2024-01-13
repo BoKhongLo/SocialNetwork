@@ -6,7 +6,6 @@ import {
   Pressable,
   Platform,
   Modal,
-  Button,
   TouchableOpacity,
 } from "react-native";
 import React, { useEffect, useState } from "react";

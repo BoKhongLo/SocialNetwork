@@ -1,29 +1,24 @@
-import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  TouchableHighlight,
-  ImageBackground,
-} from "react-native";
+import React, { useState, useRef } from "react";
+import { View, Text, TouchableOpacity, Modal } from "react-native";
 import headerPostStyles from "../../styles/postHeaderStyles";
 
 import PostHeader from "./cpnPost/PostHeader";
 import PostFooter from "./cpnPost/PostFooter";
 import PostImage from "./cpnPost/PostImage";
-import { Divider } from 'react-native-elements';
+import { Divider } from "react-native-elements";
 
 const Post = ({ post }) => {
   return (
-    <View style={{ marginBottom: 30 }}>
+    <View>
       <Divider width={1} orientation="vertical" />
       <PostHeader post={post} />
       <PostImage post={post} />
       <View>
         <PostFooter post={post} />
-        <Likes post={post} />
-        <Caption post={post} />
-        <Comments post={post} />
+        <View style={{ marginLeft: 10 }}>
+          <Likes post={post} />
+          <Caption post={post} />
+        </View>
       </View>
     </View>
   );
@@ -31,29 +26,80 @@ const Post = ({ post }) => {
 
 const Likes = ({ post }) => {
   const { likes } = post[0];
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const openModal = () => {
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
   return (
-    <View style={headerPostStyles.likesContainer}>
-      <Text style={headerPostStyles.likes}> {likes} likes</Text>
-    </View>
+    <TouchableOpacity
+      style={[headerPostStyles.ItemFooterContainer]}
+      onPress={openModal}
+    >
+      <Text style={headerPostStyles.likes}>{likes} likes</Text>
+
+      {/* Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={closeModal}
+      >
+        <TouchableOpacity
+          style={{
+            flex: 1,
+            justifyContent: "flex-end",
+            alignItems: "center",
+            backgroundColor: "rgba(0,0,0,0.5)",
+          }}
+          onPress={closeModal}
+        >
+          <View
+            style={{
+              backgroundColor: "white",
+              width: "100%",
+              height: "60%",
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
+              padding: 20,
+            }}
+          >
+            <TouchableOpacity
+              onPress={() => {
+                /* Optional: Add additional logic before closing the modal */
+              }}
+              style={{
+                position: "absolute",
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+              }}
+            />
+            {/* Content of the modal */}
+            <Text>Modal Content</Text>
+
+            <TouchableOpacity onPress={closeModal}>
+              <Text>Close Modal</Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+    </TouchableOpacity>
   );
 };
 
 const Caption = ({ post }) => {
   const { username, captions } = post[0];
   return (
-    <View style={headerPostStyles.captionContainer}>
-      <Text style={{ fontWeight: "600", marginLeft: 10 }}>{username}</Text>
+    <View style={[headerPostStyles.ItemFooterContainer, { marginBottom: 30 }]}>
+      <Text style={{ fontWeight: "600" }}>{username}</Text>
       <Text style={headerPostStyles.caption}> {captions}</Text>
-    </View>
-  );
-};
-
-const Comments = ({ post }) => {
-  const { comments } = post;
-
-  return (
-    <View style={{ marginTop: 5 }}>
-      <Text style={{ color: "gray", marginHorizontal: 10 }}>View comments</Text>
     </View>
   );
 };

@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 10,
     alignItems: "center",
-    height: heightPercentageToDP("70%"),
+    height: heightPercentageToDP("60%"),
   },
 });
 

@@ -9,7 +9,6 @@ const chat = StyleSheet.create({
     
   },
   videoContainer: {
-    // flex: 1,
     justifyContent: 'center',
     backgroundColor: '#ecf0f1',
   },
@@ -29,14 +28,12 @@ const chat = StyleSheet.create({
     height: hp("5%"),
     paddingTop: wp("2%"),
     alignItems:'center'
-    // backgroundColor: 'black'
+
   },
 
   userNameStyles: {
     fontWeight: "700",
     fontSize: hp("3%"),
-
-    // color: 'white',
   },
 
   createIcon: {
@@ -44,16 +41,17 @@ const chat = StyleSheet.create({
     width: 30,
   },
   searchContainer: {
-    padding: 10,
     backgroundColor: "#f0f0f0",
     borderRadius: 10,
-    marginTop: 3,
+    marginTop:5,
+    backgroundColor:'lightgrey',
+    borderRadius:30,
+
   },
   searchInput: {
-    fontSize: 16,
-    backgroundColor:'lightgrey',
-    padding:15,
-    borderRadius:30,
+    fontSize: 18,
+    padding:13,
+    marginLeft:10
   },
 
   TinnhanHeader: {

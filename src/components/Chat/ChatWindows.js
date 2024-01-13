@@ -151,7 +151,7 @@ const Header = ({ userProfile }) => {
       </Text>
       <TouchableOpacity style={{ padding: 10 }}>
         <Image
-          style={{ height: 30, width: 30 }}
+          style={{ height: 25, width: 25 }}
           source={require("../../../assets/dummyicon/menu.png")}
         />
       </TouchableOpacity>
@@ -466,7 +466,7 @@ const Content = ({ roomProfile }) => {
       scrollToBottom={true}
       scrollToBottomComponent={scrollToBottomComponent}
       alwaysShowSend
-      showAvatarForEveryMessage={true}
+      showAvatarForEveryMessage={false}
       showUserAvatar={true}
       renderMessageVideo={renderMessageVideo}
       onLongPress={onLongPress}
