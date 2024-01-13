@@ -23,6 +23,7 @@ import {
   uploadFile,
   getDataUserLocal,
   getAllIdUserLocal,
+  updateAccessTokenAsync,
   validateUserDataAsync,
 } from "../../util";
 
@@ -80,7 +81,7 @@ const Header = (data) => {
     );
     const keys = await getAllIdUserLocal();
     const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
-    const dataRe = await validateUserDataAsync(dto, dataUserLocal.accessToken);
+    let dataRe = await validateUserDataAsync(dto, dataUserLocal.accessToken);
 
     if (dataRe == null) {
       const dataUpdate = await updateAccessTokenAsync(
@@ -184,20 +185,20 @@ const Field = ({ data, onUpdateData }) => {
         aspect: [4, 3],
         quality: 1,
       });
-
+      console.log(result);
       if (!result.canceled) {
         setImage(result.assets[0].uri);
         setAvtImg({ uri: result.assets[0].uri });
         const keys = await getAllIdUserLocal();
-        const dto = new FileUploadDto(receivedData.id, result.assets[0].uri);
+        const dto = new FileUploadDto(receivedData.id, result.assets[0].uri, "userAvatar.jps", "image/jpeg");
         const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
-        const data = await uploadFile(dto, dataLocal.accessToken);
+        let data = await uploadFile(dto, dataLocal.accessToken);
         if (data == null) {
           const dataUpdate = await updateAccessTokenAsync(
-            dataUserLocal.id,
-            dataUserLocal.refreshToken
+            dataLocal.id,
+            dataLocal.refreshToken
           );
-          data = await validateUserDataAsync(dto, dataUpdate.accessToken);
+          data = await uploadFile(dto, dataUpdate.accessToken);
         }
         setAvtImg({ uri: data.url });
         onUpdateData({ avatarUrl: data.url });
@@ -219,15 +220,15 @@ const Field = ({ data, onUpdateData }) => {
         setImage(result.assets[0].uri);
 
         const keys = await getAllIdUserLocal();
-        const dto = new FileUploadDto(receivedData.id, result.assets[0].uri);
+        const dto = new FileUploadDto(receivedData.id, result.assets[0].uri, "userAvatar.jps", "image/jpeg");
         const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
-        const data = await uploadFile(dto, dataLocal.accessToken);
+        let data = await uploadFile(dto, dataLocal.accessToken);
         if (data == null) {
           const dataUpdate = await updateAccessTokenAsync(
             dataLocal.id,
             dataLocal.refreshToken
           );
-          data = await validateUserDataAsync(dto, dataUpdate.accessToken);
+          data = await uploadFile(dto, dataUpdate.accessToken);
         }
         setAvtImg({ uri: data.url });
         onUpdateData({ avatarUrl: data.url });

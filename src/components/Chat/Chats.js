@@ -1,5 +1,5 @@
 import { View, Text, Image, TouchableOpacity } from "react-native";
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import chat from "../../styles/chatStyles";
 import { useNavigation } from '@react-navigation/native';
 import {
@@ -8,7 +8,7 @@ import {
 } from "react-native-responsive-screen";
 
 
-const Chats = ({dataRoomchat}) => {
+const Chats = ({ dataRoomchat }) => {
 
   return (
     <View style={{ flex: 1, height: hp("100%") }}>
@@ -36,15 +36,17 @@ const HeaderChats = () => {
 
 const ListOfChat = ({ roomchat }) => {
   const navigation = useNavigation();
+  const options = { day: 'numeric', month: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric'};
   return (
     <View>
       <View style={chat.KhungChat}>
-        <TouchableOpacity onPress={() => navigation.navigate('chatwindow', {data: roomchat})}>
+        <TouchableOpacity onPress={() => navigation.navigate('chatwindow', { data: roomchat })}>
           <View style={{ flexDirection: "row" }}>
             <Image style={chat.avtChat} source={roomchat.imgDisplay} />
             <View style={chat.nameChatContainer}>
               <Text style={chat.chatUSerName}> {roomchat.title}</Text>
-              {/* <Text> Hoạt động {friend.time} giờ trước</Text> */}
+              <Text>{new Date(roomchat.updated_at).toLocaleString('vi-VN', options)}</Text>
+
             </View>
           </View>
         </TouchableOpacity>

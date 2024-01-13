@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TextInput,
 } from "react-native";
+import * as Clipboard from 'expo-clipboard';
 import React, { useState, useEffect, useCallback } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { heightPercentageToDP } from "react-native-responsive-screen";
@@ -13,20 +14,12 @@ import { GiftedChat, Send, Bubble } from "react-native-gifted-chat";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Divider } from "react-native-elements";
 import chat from "../../styles/chatStyles";
-import {
-  getUserDataAsync,
-  getRoomchatAsync,
-  getAllIdUserLocal,
-  getDataUserLocal,
-  updateAccessTokenAsync,
-  getSocketIO,
-  uploadFile,
-} from "../../util";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
-import * as DocumentPicker from "expo-document-picker";
-import { FileUploadDto } from "../../util/dto";
-import { Video, Audio } from "expo-av";
+import { getUserDataAsync, getRoomchatAsync, getAllIdUserLocal, getDataUserLocal, updateAccessTokenAsync, getSocketIO, uploadFile, removeMessageAsync } from "../../util";
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import * as DocumentPicker from 'expo-document-picker';
+import { FileUploadDto, ValidateMessagesDto } from "../../util/dto";
+import { Video, Audio } from 'expo-av';
 
 const ChatWindows = ({ user }) => {
   const insets = useSafeAreaInsets();
@@ -177,8 +170,9 @@ const Content = ({ roomProfile }) => {
     let count = 0;
     for (let message of roomProfile.data) {
       if (message.isDisplay == false) continue;
+
       let newMessage = {
-        _id: message.id + count.toString(),
+        _id: message.id,
         text: message.content,
         createdAt: new Date(message.created_at),
         user: {
@@ -236,8 +230,8 @@ const Content = ({ roomProfile }) => {
       dataUserLocal.accessToken = dataUpdate.accessToken;
       const newSocket = getSocketIO(dataUserLocal.accessToken);
       setSocket(newSocket);
-    };
-    fetchData();
+    }
+    fetchData()
 
     if (roomProfile.id === "") return;
     if (socket == undefined) return;
@@ -247,7 +241,7 @@ const Content = ({ roomProfile }) => {
       if (message.roomId != roomProfile.id) return;
 
       let newMessage = {
-        _id: message.id + messages.length.toString(),
+        _id: message.id,
         text: message.content,
         createdAt: new Date(message.created_at),
         user: {
@@ -282,10 +276,14 @@ const Content = ({ roomProfile }) => {
           newMessage.file = message.fileUrl[0];
         }
       }
-      setMessages((previousMessages) =>
-        GiftedChat.append(previousMessages, [newMessage])
-      );
+      setMessages(previousMessages => GiftedChat.append(previousMessages, [newMessage]));
     });
+
+    socket.on('removeMessage', async (message) => {
+      setMessages(previousState => {
+        return previousState.filter(messages => messages._id !== message.messageId)
+      });
+    })
   }, [roomProfile]);
 
   const onSend = useCallback(
@@ -302,6 +300,55 @@ const Content = ({ roomProfile }) => {
     [socket, roomProfile]
   );
 
+  const onDelete = useCallback( async (messageIdToDelete) => {
+    if (roomProfile.id === "") return;
+    const dto = new ValidateMessagesDto(roomProfile.currentUserId, roomProfile.id, messageIdToDelete)
+    const keys = await getAllIdUserLocal();
+    const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+
+    const data = await removeMessageAsync(dto, dataUserLocal.accessToken)
+    if ("errors" in data) {
+      const dataUpdate = await updateAccessTokenAsync(dataUserLocal.id, dataUserLocal.refreshToken);
+      data = await removeMessageAsync(dto, dataUpdate.accessToken)
+    }
+  }, [roomProfile])
+
+  const onLongPress = async (context, message) => {
+    if (roomProfile.id === "") return;
+    
+    if (message.user._id  === roomProfile.currentUserId) {
+      const options = ['Copy', "Delete Message" ,'Cancel']
+      const cancelButtonIndex =  options.length - 1;
+      context.actionSheet().showActionSheetWithOptions({
+        options,
+        cancelButtonIndex
+      }, async (buttonIndex) => {
+        switch (buttonIndex) {
+          case 0:
+            await Clipboard.setStringAsync(message.text)
+            break;
+          case 1:
+            onDelete(message._id)
+            break;
+        }
+      });
+    }
+    else {
+      const options = ['Copy', 'Cancel'];
+      const cancelButtonIndex = options.length - 1;
+      context.actionSheet().showActionSheetWithOptions({
+        options,
+        cancelButtonIndex
+      }, async (buttonIndex) => {
+        switch (buttonIndex) {
+          case 0:
+            await Clipboard.setStringAsync(message.text)
+            break;
+        }
+      });
+    }
+  }
+
   const renderMessageVideo = (props) => {
     const { currentMessage } = props;
     return (
@@ -316,7 +363,8 @@ const Content = ({ roomProfile }) => {
             resizeMode="contain"
           />
         )}
-        {currentMessage.video.type === "audio" && (
+
+        {currentMessage.video.type === 'audio' && (
           <View>
             <Video
               style={chat.audioStyles}
@@ -338,34 +386,22 @@ const Content = ({ roomProfile }) => {
       multiple: true,
       copyToCacheDirectory: true,
     });
-    console.log(result);
-    if (!result.canceled) {
-      if (socket == undefined) return;
-      if (roomProfile.id === "") return;
-      const keys = await getAllIdUserLocal();
-      const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
-      const dto = new FileUploadDto(
-        dataLocal.id,
-        result.uri,
-        result.name,
-        result.mimeType
-      );
-      const data = await uploadFile(dto, dataLocal.accessToken);
-      if (data == null) {
-        const dataUpdate = await updateAccessTokenAsync(
-          dataLocal.id,
-          dataLocal.refreshToken
-        );
-        data = await uploadFile(dto, dataUpdate.accessToken);
-      }
-      console.log(data);
-      socket.emit("sendMessage", {
-        userId: dataLocal.id,
-        content: "",
-        fileUrl: [data.url],
-        roomchatId: roomProfile.id,
-      });
+  
+    if (result.type !== "success") return
+    if (socket == undefined) return;
+    if (roomProfile.id === "") return;
+
+    const keys = await getAllIdUserLocal();
+    const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
+    const dto = new FileUploadDto(dataLocal.id, result.uri, result.name, result.mimeType)
+    const data = await uploadFile(dto, dataLocal.accessToken)
+    if (data == null) {
+      const dataUpdate = await updateAccessTokenAsync(dataLocal.id, dataLocal.refreshToken)
+      data = await uploadFile(dto, dataUpdate.accessToken)
     }
+
+    socket.emit("sendMessage", { userId: dataLocal.id, content: "", fileUrl: [data.url], roomchatId: roomProfile.id })
+  
   };
 
   const renderBubble = (props) => {
@@ -399,9 +435,8 @@ const Content = ({ roomProfile }) => {
             <FontAwesome
               name="file"
               style={{ marginRight: 5, marginTop: 5 }}
-              size={32}
-              color="#2e64e5"
-            />
+              size={30}
+              color='#2e64e5' />
           </View>
         </TouchableOpacity>
         <Send {...props}>
@@ -434,6 +469,7 @@ const Content = ({ roomProfile }) => {
       showAvatarForEveryMessage={true}
       showUserAvatar={true}
       renderMessageVideo={renderMessageVideo}
+      onLongPress={onLongPress}
     />
   );
 };
