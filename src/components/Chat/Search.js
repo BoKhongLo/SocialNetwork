@@ -1,6 +1,6 @@
 import { View, Text, TextInput, StyleSheet  } from 'react-native'
 import React, { useState } from 'react'
-import chat from '../../styles/chatStyles';
+import chat from '../../styles/ChatStyles/chatStyles';
 
 const Search = ({dataRoomchat, onSearch}) => {
   const [searchText, setSearchText] = useState('');

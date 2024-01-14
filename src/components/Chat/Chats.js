@@ -1,6 +1,6 @@
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import React, { useState, useEffect } from "react";
-import chat from "../../styles/chatStyles";
+import chat from "../../styles/ChatStyles/chatStyles";
 import { useNavigation } from '@react-navigation/native';
 import {
   widthPercentageToDP as wp,

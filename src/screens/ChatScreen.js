@@ -11,7 +11,7 @@ import React, { useState, useEffect } from "react";
 import Chats from "./../components/Chat/Chats";
 import Header from "./../components/Chat/Header";
 import Search from "./../components/Chat/Search";
-import chat from "../styles/chatStyles";
+import chat from "../styles/ChatStyles/chatStyles";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import {
   getUserDataAsync,

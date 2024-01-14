@@ -3,8 +3,8 @@ import React from "react";
 import { Divider } from "react-native-elements";
 import { useNavigation } from '@react-navigation/native';
 
-import chatStyles from "./../../styles/chatStyles";
-import chat from "./../../styles/chatStyles";
+import chatStyles from "../../styles/ChatStyles/chatStyles";
+import chat from "../../styles/ChatStyles/chatStyles";
 import { color } from 'react-native-elements/dist/helpers';
 import styles from "../../styles/styles";
 

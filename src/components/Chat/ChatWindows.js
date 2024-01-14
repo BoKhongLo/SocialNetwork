@@ -13,7 +13,7 @@ import { heightPercentageToDP } from "react-native-responsive-screen";
 import { GiftedChat, Send, Bubble } from "react-native-gifted-chat";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Divider } from "react-native-elements";
-import chat from "../../styles/chatStyles";
+import chat from "../../styles/ChatStyles/chatStyles";
 import { getUserDataAsync, getRoomchatAsync, getAllIdUserLocal, getDataUserLocal, updateAccessTokenAsync, getSocketIO, uploadFile, removeMessageAsync } from "../../util";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';

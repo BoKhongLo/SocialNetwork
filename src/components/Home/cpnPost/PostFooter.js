@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  FlatList,
 } from "react-native";
 import Modal from "react-native-modal";
 import headerPostStyles from "./../../../styles/postHeaderStyles";
@@ -14,6 +15,11 @@ import {
   widthPercentageToDP,
 } from "react-native-responsive-screen";
 import { Divider } from "react-native-elements";
+
+const commentsData = [
+  { id: 1, name: "John Doe", content: "Great post!", likes: 10 },
+];
+
 const PostFooter = ({
   post,
   onPressLike,
@@ -89,9 +95,7 @@ const PostFooter = ({
       >
         <View style={styles.modalContent}>
           <Header />
-          <ScrollView>
-            <ItemComment />
-          </ScrollView>
+          <ItemComment />
         </View>
       </Modal>
     </View>
@@ -106,7 +110,13 @@ const Header = () => {
   );
 };
 const ItemComment = () => {
-  return (
+  const [isLiked, setIsLiked] = useState(false);
+
+  const handleLikePress = () => {
+    setIsLiked(!isLiked);
+  };
+
+  const renderItem = ({ item }) => (
     <View
       style={{
         flexDirection: "row",
@@ -117,31 +127,45 @@ const ItemComment = () => {
       }}
     >
       <View>
-        <Image
-          style={{
-            height: 40,
-            width: 40,
-            borderRadius: 20,
-            borderWidth: 0.3,
-            backgroundColor: "black",
-          }}
-          source={{}}
-        />
+        <TouchableOpacity>
+          <Image
+            style={{
+              height: 45,
+              width: 45,
+              borderRadius: 40,
+              borderWidth: 0.3,
+              backgroundColor: "black",
+            }}
+            source={{ uri: item.avatar }} // Replace with the actual avatar URL
+          />
+        </TouchableOpacity>
       </View>
       <View style={{ flex: 0.9 }}>
-        <Text style={{ fontWeight: "700" }}>name</Text>
-        <Text style={{ fontSize: 17 }}>content</Text>
-        <Text style={{ color: "#A9A9A9" }}>luot like</Text>
+        <Text style={{ fontWeight: "700" }}>{item.name}</Text>
+        <Text style={{ fontSize: 17 }}>{item.content}</Text>
+        <Text style={{ color: "#A9A9A9" }}>{`${item.likes} likes`}</Text>
       </View>
-      <TouchableOpacity>
+      <TouchableOpacity onPress={handleLikePress}>
         <View>
           <Image
             style={{ height: 25, width: 25 }}
-            source={require("../../../../assets/dummyicon/heart.png")}
+            source={
+              isLiked
+                ? require("../../../../assets/dummyicon/heart_fill.png")
+                : require("../../../../assets/dummyicon/heart.png")
+            }
           />
         </View>
       </TouchableOpacity>
     </View>
+  );
+
+  return (
+    <FlatList
+      data={commentsData}
+      renderItem={renderItem}
+      keyExtractor={(item) => item.id.toString()}
+    />
   );
 };
 

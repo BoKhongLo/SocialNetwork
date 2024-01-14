@@ -1,4 +1,4 @@
-import { View, Text, Image } from "react-native";
+import { View, Text, } from "react-native";
 import React, { useState } from "react";
 import profileStyle from "../../styles/profileStyles";
 import { useNavigation } from "@react-navigation/native";
