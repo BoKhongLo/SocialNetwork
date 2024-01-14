@@ -57,7 +57,13 @@ const SearchScreen = () => {
       }}
     >
       <View style={{ flex: 1, padding: 16 }}>
-        <View style={{ flexDirection: "row", justifyContent: "space-between",alignItems:'center' }}>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <TextInput
             style={{
               height: 50,
@@ -67,13 +73,20 @@ const SearchScreen = () => {
               borderRadius: 40,
               paddingLeft: 20, // Vị trí của chữ từ bên trái
               backgroundColor: "lightgray",
-              flex:0.9
+              flex: 0.9,
             }}
             placeholder="Search"
             value={searchText}
             onChangeText={handleSearch}
           />
-          <TouchableOpacity style={{paddingHorizontal:20,paddingVertical:10,backgroundColor:'lightgrey',borderRadius:20}}>
+          <TouchableOpacity
+            style={{
+              paddingHorizontal: 20,
+              paddingVertical: 10,
+              backgroundColor: "lightgrey",
+              borderRadius: 20,
+            }}
+          >
             <Text>Nút</Text>
           </TouchableOpacity>
         </View>

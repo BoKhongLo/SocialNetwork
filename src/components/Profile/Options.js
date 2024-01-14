@@ -26,7 +26,7 @@ const Options = () => {
         style={[
           profileStyle.editContainer,
           isFriendAdded ? { backgroundColor: "#1E90FF" } : null,
-          { marginHorizontal: 12 },
+          { marginHorizontal: 1 },
         ]}
         onPress={handleAddFriendPress}
       >
@@ -36,7 +36,12 @@ const Options = () => {
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={[profileStyle.editContainer, { paddingHorizontal: 18 }]}
+        style={[profileStyle.editContainer, { paddingHorizontal: 18,marginHorizontal: 1 }]}
+      >
+        <Text style={profileStyle.textEdit}>Deny</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[profileStyle.editContainer, { paddingHorizontal: 18,marginHorizontal: 1 }]}
       >
         <Text style={profileStyle.textEdit}>Chat</Text>
       </TouchableOpacity>
