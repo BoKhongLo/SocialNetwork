@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { View, TextInput, FlatList } from "react-native";
+import { View, TextInput, FlatList, Button, Text } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import UserItem from "../components/Search/UserItem";
 import { Divider } from "react-native-elements";
 import BottomTabs from "../components/Home/BottomTabs";
+import Search from './../components/Chat/Search';
+
 const SearchScreen = () => {
   const insets = useSafeAreaInsets();
   const [searchText, setSearchText] = useState("");
@@ -28,7 +30,7 @@ const SearchScreen = () => {
     const filteredUsers = users.filter(
       (user) =>
         user.username.toLowerCase().includes(text.toLowerCase()) ||
-        user.nickname.toLowerCase().includes(text.toLowerCase())
+        user.nickName.toLowerCase().includes(text.toLowerCase())
     );
     setFilteredUsers(filteredUsers);
     setSearchText(text);
@@ -60,9 +62,9 @@ const SearchScreen = () => {
             height: 50,
             marginBottom: 10,
             padding: 10,
-            fontSize: 18, // Đặt kích thước font theo mong muốn
+            fontSize: 18, 
             borderRadius: 40,
-            paddingLeft:20, // Vị trí của chữ từ bên trái
+            paddingLeft:20, 
             backgroundColor:'lightgray'
           }}
           placeholder="Search"

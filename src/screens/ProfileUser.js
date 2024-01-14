@@ -20,7 +20,7 @@ const ProfileUser = () => {
   const navigation = useNavigation();
   const receivedData = route.params?.data;
   const insets = useSafeAreaInsets();
-
+  const [isUser, setIsUser ]= useState(false);
   const [userProfile, setUserProfile] = useState({
     username: "",
     avatarUrl: require("../../assets/img/avt.png"),
@@ -40,6 +40,9 @@ const ProfileUser = () => {
       }
       const dataUserLocal = receivedData;
 
+      const keys = await getAllIdUserLocal();
+      const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
+      if (dataUserLocal === dataLocal) (setIsUser(true))
       const dataUserAsync = await getUserDataAsync(
         dataUserLocal.id,
         dataUserLocal.accessToken
@@ -101,9 +104,15 @@ const ProfileUser = () => {
     >
       <Header user={userProfile} />
       <View style={{ flex: 1 }}>
-        <ScrollView>
+        <ScrollView
+          style={{
+            borderBottomWidth: 0.7,
+          }}
+        >
           <Information data={userProfile} />
-          <Options />
+          {isUser && (
+            <Options data={userProfile}/>
+          )}
         </ScrollView>
       </View>
       <BottomTabs />
