@@ -312,7 +312,6 @@ export async function getUserDataAsync(userId: string, accessToken: string) {
                     updated_at
                 }
                 friends
-                member
                 bookMarks
                 isOnline
             }
@@ -678,7 +677,6 @@ export async function findFriendAsync(content: string, accessToken: string) {
         findUser(content: $content) {
             id
             email
-            friends
             created_at
             updated_at
             detail {
