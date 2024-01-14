@@ -37,4 +37,12 @@ const Notification = () => {
   );
 };
 
+const addFriendnoti = () => {
+  return;
+}
+
+const notiPost = () => {
+  return;
+}
+
 export default Notification;

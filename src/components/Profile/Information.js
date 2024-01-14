@@ -30,7 +30,7 @@ const Information = ({ data }) => {
           />
         </View>
         <View style={profileStyle.numInfor}>
-          <Text style={{ fontWeight: '400', marginRight: 5 }}>Post</Text>
+          <Text style={{ fontWeight: '400', marginRight: 5 }}>Bookmark</Text>
           <Text style={{ fontWeight: '400', fontSize: 20 }}>{data.posted}</Text>
         </View>
       </View>
