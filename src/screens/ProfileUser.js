@@ -102,8 +102,10 @@ const ProfileUser = () => {
       <Header user={userProfile} />
       <View style={{ flex: 1 }}>
         <ScrollView>
-          <Information data={userProfile} />
-          <Options />
+          <View style={{borderBottomWidth:0.4}}>
+            <Information data={userProfile} />
+            <Options />
+          </View>
         </ScrollView>
       </View>
       <BottomTabs />

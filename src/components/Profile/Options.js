@@ -17,7 +17,7 @@ const Options = () => {
       style={{
         flexDirection: "row",
         marginVertical: 10,
-        borderBottomWidth: 0.7,
+
         paddingBottom: 15,
         justifyContent: "center",
       }}

@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { View, TextInput, FlatList } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import UserItem from "../components/Search/UserItem";
-import { Divider } from "react-native-elements";
+import { Divider, Text } from "react-native-elements";
 import BottomTabs from "../components/Home/BottomTabs";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { widthPercentageToDP } from "react-native-responsive-screen";
 const SearchScreen = () => {
   const insets = useSafeAreaInsets();
   const [searchText, setSearchText] = useState("");
@@ -55,20 +57,26 @@ const SearchScreen = () => {
       }}
     >
       <View style={{ flex: 1, padding: 16 }}>
-        <TextInput
-          style={{
-            height: 50,
-            marginBottom: 10,
-            padding: 10,
-            fontSize: 18, // Đặt kích thước font theo mong muốn
-            borderRadius: 40,
-            paddingLeft:20, // Vị trí của chữ từ bên trái
-            backgroundColor:'lightgray'
-          }}
-          placeholder="Search"
-          value={searchText}
-          onChangeText={handleSearch}
-        />
+        <View style={{ flexDirection: "row", justifyContent: "space-between",alignItems:'center' }}>
+          <TextInput
+            style={{
+              height: 50,
+              marginBottom: 10,
+              padding: 10,
+              fontSize: 18, // Đặt kích thước font theo mong muốn
+              borderRadius: 40,
+              paddingLeft: 20, // Vị trí của chữ từ bên trái
+              backgroundColor: "lightgray",
+              flex:0.9
+            }}
+            placeholder="Search"
+            value={searchText}
+            onChangeText={handleSearch}
+          />
+          <TouchableOpacity style={{paddingHorizontal:20,paddingVertical:10,backgroundColor:'lightgrey',borderRadius:20}}>
+            <Text>Nút</Text>
+          </TouchableOpacity>
+        </View>
 
         {showResults && (
           <FlatList
@@ -78,7 +86,7 @@ const SearchScreen = () => {
           />
         )}
       </View>
-      <BottomTabs/>
+      <BottomTabs />
     </View>
   );
 };

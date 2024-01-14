@@ -145,7 +145,9 @@ const Header = ({ userProfile, userData }) => {
       <Text style={{ fontSize: 20, fontWeight: "500" }}>
         {userProfile.title}
       </Text>
-      <TouchableOpacity style={{ padding: 10 }}>
+      <TouchableOpacity
+      onPress={()=> navigation.navigate('settingChat')}
+      style={{ padding: 10 }}>
         <Image
           style={{ height: 25, width: 25 }}
           source={require("../../../assets/dummyicon/menu.png")}
