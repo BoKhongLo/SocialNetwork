@@ -40,6 +40,7 @@ const ChatWindows = ({ user }) => {
     imgMembers: {},
     nameMembers: {},
   });
+  const [userCurrentData, setUserCurrentData] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,7 +50,7 @@ const ChatWindows = ({ user }) => {
 
       const keys = await getAllIdUserLocal();
       const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
-
+      setUserCurrentData({...dataUserLocal})
       const dataRoomchatAsync = await getRoomchatAsync(
         receivedData.id,
         dataUserLocal.accessToken
@@ -98,11 +99,6 @@ const ChatWindows = ({ user }) => {
     };
 
     fetchData();
-    return () => {
-      if (socket != undefined) {
-        socket.disconnect();
-      }
-    };
   }, []);
 
   return (
@@ -116,7 +112,7 @@ const ChatWindows = ({ user }) => {
         backgroundColor: "#FFFFFF",
       }}
     >
-      <Header userProfile={receivedData} />
+      <Header userProfile={receivedData} userData={userCurrentData} />
       <Divider width={1} orientation="vertical" />
       <Content roomProfile={dataRoomchat} />
       <View>
@@ -126,7 +122,7 @@ const ChatWindows = ({ user }) => {
   );
 };
 //justificontent:'space-between'
-const Header = ({ userProfile }) => {
+const Header = ({ userProfile, userData }) => {
   const navigation = useNavigation();
   return (
     <View
@@ -138,7 +134,7 @@ const Header = ({ userProfile }) => {
       }}
     >
       <TouchableOpacity
-        onPress={() => navigation.navigate("chat")}
+        onPress={() => navigation.navigate("chat", {data: userData})}
         style={{ padding: 10 }}
       >
         <Image
