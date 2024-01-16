@@ -15,8 +15,8 @@ import {
   widthPercentageToDP,
 } from "react-native-responsive-screen";
 
-const PostHeader = ({ post, onAvatarPress, onEllipsisPress }) => {
-  const { username, avt } = post[0];
+const PostHeader = ({ post, onAvatarPress, onEllipsisPress, users }) => {
+  const { username, avt } = post;
 
   const handleAvatarPress = () => {
     console.log("Avatar pressed!");
@@ -32,10 +32,15 @@ const PostHeader = ({ post, onAvatarPress, onEllipsisPress }) => {
           underlayColor="lightgray"
           onPress={handleAvatarPress}
         >
-          <Image style={headerPostStyles.avatar} source={avt} />
+        {users[post.ownerUserId].detail.avatarUrl ? (
+          <Image style={headerPostStyles.avatar} source={{uri: users[post.ownerUserId].detail.avatarUrl}} />
+        ): (
+          <Image style={headerPostStyles.avatar}/>
+        )}
+
         </TouchableHighlight>
         <View>
-          <Text style={headerPostStyles.userName}>{username}</Text>
+          <Text style={headerPostStyles.userName}>{users[post.ownerUserId].detail.name}</Text>
         </View>
       </View>
     </View>

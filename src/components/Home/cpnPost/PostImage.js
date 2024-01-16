@@ -1,14 +1,15 @@
 import React, { useState } from "react";
-import { View, Image, TouchableOpacity, Modal as RNModal } from "react-native";
+import { View, Image, TouchableOpacity, Modal as RNModal, StyleSheet, FlatList } from "react-native";
 import Swiper from "react-native-swiper";
 import headerPostStyles from "./../../../styles/postHeaderStyles";
 
-const PostImage = ({ post }) => {
-  const { imagepost } = post[0];
+const PostImage = ({ post, users }) => {
+
   const [isModalVisible, setModalVisible] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  const handleImagePress = () => {
+  const handleImagePress = (index) => {
+    setCurrentImageIndex(index);
     setModalVisible(true);
   };
 
@@ -16,14 +17,26 @@ const PostImage = ({ post }) => {
     setModalVisible(false);
   };
 
+  const renderItem = ({ item, index }) => (
+    <TouchableOpacity
+      onPress={() => handleImagePress(index)}
+      style={styles.gridItem}
+    >
+      <Image style={styles.image} source={{ uri: item }} />
+    </TouchableOpacity>
+  );
+
   return (
     <View>
-      <TouchableOpacity
-        onPress={handleImagePress}
-        style={{ borderWidth: 0.2, borderColor: "lightgrey" }}
-      >
-        <Image style={headerPostStyles.image} source={imagepost[1]} />
-      </TouchableOpacity>
+      <View> 
+        <FlatList
+          data={post.fileUrl}
+          numColumns={2}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={renderItem}
+          contentContainerStyle={styles.gridContainer}
+        />
+      </View>
 
       <RNModal
         visible={isModalVisible}
@@ -37,7 +50,7 @@ const PostImage = ({ post }) => {
             onIndexChanged={(index) => setCurrentImageIndex(index)}
             activeDotStyle={{ backgroundColor: 'white', width: 8, height: 8 }}
           >
-            {Object.values(imagepost).map((image, index) => (
+            {post.fileUrl.map((image, index) => (
               <View key={index}>
                 <Image
                   style={{
@@ -46,7 +59,7 @@ const PostImage = ({ post }) => {
                     resizeMode: "contain",
                     backgroundColor: 'rgba(0,0,0,0.5)',
                   }}
-                  source={{ uri: image.uri }}
+                  source={{ uri: image }}
                 />
               </View>
             ))}
@@ -67,4 +80,20 @@ const PostImage = ({ post }) => {
   );
 };
 
+const styles = StyleSheet.create({
+  gridContainer: {
+    padding: 8,
+  },
+  gridItem: {
+    flex: 1,
+    margin: 4,
+    borderWidth: 0.2,
+    borderColor: 'lightgrey',
+  },
+  image: {
+    flex: 1,
+    aspectRatio: 1,
+    resizeMode: 'cover',
+  },
+});
 export default PostImage;

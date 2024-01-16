@@ -21,29 +21,27 @@ import {
 } from "react-native-responsive-screen";
 import profileStyle from "../../styles/profileStyles";
 
-const commentsData = [
-  { id: 1, name: "John Doe", content: "Great post!", likes: 10, status: 1 },
-];
 
-const Post = ({ post }) => {
+const Post = ({ post, users }) => {
   return (
     <View>
       <Divider width={1} orientation="vertical" />
-      <PostHeader post={post} />
-      <PostImage post={post} />
+      <PostHeader post={post} users={users} />
+      <View style={{ marginLeft: 10 }}>
+        <Caption post={post} users={users}/>
+      </View>
+      <PostImage post={post} users={users} />
       <View>
-        <PostFooter post={post} />
+        <PostFooter post={post} users={users}/>
         <View style={{ marginLeft: 10 }}>
-          <Likes post={post} />
-          <Caption post={post} />
+          <Likes post={post} users={users} />
         </View>
       </View>
     </View>
   );
 };
 
-const Likes = ({ post }) => {
-  const { likes } = post[0];
+const Likes = ({ post, users }) => {
   const [isCommentModalVisible, setCommentModalVisible] = useState(false);
 
   const handlePress = (action) => {
@@ -62,7 +60,7 @@ const Likes = ({ post }) => {
       style={[headerPostStyles.ItemFooterContainer]}
       onPress={() => handlePress("Comment")}
     >
-      <Text style={headerPostStyles.likes}>{likes} likes</Text>
+      <Text style={headerPostStyles.likes}>{post.interaction.length} likes</Text>
 
       <Modal
         isVisible={isCommentModalVisible}
@@ -71,14 +69,14 @@ const Likes = ({ post }) => {
       >
         <View style={styles.modalContent}>
           <Header />
-          <ItemLike data={commentsData} />
+          <ItemLike post={post} users={users} />
         </View>
       </Modal>
     </TouchableOpacity>
   );
 };
 
-const ItemLike = ({ data }) => {
+const ItemLike = ({ post, users }) => {
   const [isFriendAdded, setFriendAdded] = useState(false);
 
   const handleAddFriendPress = () => {
@@ -106,13 +104,15 @@ const ItemLike = ({ data }) => {
               borderWidth: 0.3,
               backgroundColor: "black",
             }}
-            source={{ uri: item.avatar }}
+            source={{ uri: users[item.userId].detail.avatarUrl }}
           />
         </TouchableOpacity>
       </View>
       <View style={{ flex: 0.9 }}>
-        <Text style={{ fontWeight: "700" }}>{item.name}</Text>
-        <Text style={{ color: "#A9A9A9" }}>nickname</Text>
+        <Text style={{ fontWeight: "700" }}>{users[item.userId].detail.name}</Text>
+        {users[item.userId].detail.nickName && (
+          <Text style={{ color: "#A9A9A9" }}>{users[item.userId].detail.nickName}</Text>
+        )}
       </View>
       <TouchableOpacity
         style={[
@@ -138,7 +138,7 @@ const ItemLike = ({ data }) => {
 
   return (
     <FlatList
-      data={data}
+      data={post.interaction}
       renderItem={renderItem}
       keyExtractor={(item) => item.id.toString()}
     />
@@ -158,12 +158,11 @@ const Header = () => {
   );
 };
 
-const Caption = ({ post }) => {
-  const { username, captions } = post[0];
+const Caption = ({ post, users }) => {
   return (
     <View style={[headerPostStyles.ItemFooterContainer, { marginBottom: 30 }]}>
-      <Text style={{ fontWeight: "600" }}>{username}</Text>
-      <Text style={headerPostStyles.caption}> {captions}</Text>
+      <Text style={{ fontWeight: "600" }}>{users[post.ownerUserId].detail.name}</Text>
+      <Text style={headerPostStyles.caption}> {post.content}</Text>
     </View>
   );
 };

@@ -104,7 +104,6 @@ const SearchScreen = () => {
             renderItem={renderItem}
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
-          
           />
         )}
       </View>

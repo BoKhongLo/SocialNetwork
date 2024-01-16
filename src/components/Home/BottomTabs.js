@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Modal from "react-native-modal";
@@ -13,7 +13,15 @@ const BottomTabs = ({ receivedData }) => {
   const closeModal = () => {
     setModalVisible(false);
   };
+  useEffect( () => {
+    const fetData = async() => {
+      const keys = await getAllIdUserLocal();
+      const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+      receivedData = {...dataUserLocal};
+    }
 
+    fetData
+  })
   return (
     <View style={styles.BottomTabContainer}>
       <TouchableOpacity
@@ -65,7 +73,7 @@ const BottomTabs = ({ receivedData }) => {
           paddingVertical: 10,
           paddingHorizontal: 20,
         }}
-        onPress={() => navigation.navigate("Profile", { data: receivedData })}
+        onPress={() => navigation.replace("Profile", { data: receivedData })}
       >
         <Image
           style={styles.BottomTabIcon}

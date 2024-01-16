@@ -1,5 +1,13 @@
 import axios from "axios";
-import { LoginDto, SignUpDto, ValidateUserDto, ChangePasswordDto, ValidateMessagesDto, RoomchatDto } from './dto';
+import {
+    LoginDto,
+    SignUpDto,
+    ValidateUserDto,
+    ChangePasswordDto,
+    ValidateMessagesDto,
+    RoomchatDto,
+    PostDto
+} from './dto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from "jwt-decode";
 import "core-js/stable/atob";
@@ -226,7 +234,7 @@ export async function validateUserDataAsync(dto: ValidateUserDto, accessToken: s
         );
         if ("errors" in response.data) return response.data;
         return response.data.data.validateUser
-        
+
     } catch (error) {
         console.error('Error:', error);
         throw error;
@@ -335,7 +343,50 @@ export async function getUserDataAsync(userId: string, accessToken: string) {
         );
         if ("errors" in response.data) return response.data;
         return response.data.data.getUser
-        
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+export async function getUserDataLiteAsync(userId: string, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const GET_USER_QUERY = `
+        query GetUser($userId: String!) {
+            getUser(id: $userId) {
+                id
+                email
+                detail {
+                    name
+                    nickName
+                    avatarUrl
+                }
+                created_at
+                updated_at
+            }
+        }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: GET_USER_QUERY,
+                variables: {
+                    userId: userId
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.getUser
+
     } catch (error) {
         console.error('Error:', error);
         throw error;
@@ -554,7 +605,7 @@ export async function removeMessageAsync(dto: ValidateMessagesDto, accessToken: 
 
 
 
-export async function createRoomchatAsync(dto : RoomchatDto, accessToken: string) {
+export async function createRoomchatAsync(dto: RoomchatDto, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
     const GET_USER_QUERY = `
@@ -857,7 +908,7 @@ export async function removeFriendAsync(userId: string, friendId: string, access
     }
 }
 
-export async function getFriendRequestAsync(userId: string, accessToken: string) : Promise<[]> {
+export async function getFriendRequestAsync(userId: string, accessToken: string): Promise<[]> {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
     const GET_USER_QUERY = `
@@ -891,6 +942,225 @@ export async function getFriendRequestAsync(userId: string, accessToken: string)
         );
         if ("errors" in response.data) return response.data;
         return response.data.data.getFriendRequest
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+
+export async function createPostAsync(dto: PostDto, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const CREATE_POST_QUERY = `
+    mutation CreatePost ($userId: String!, $type: String!, $content: String, $fileUrl: [String!]!) {
+        createPost(
+            createPost: {
+                userId: $userId
+                type: $type
+                content: $content
+                fileUrl: $fileUrl
+            }
+        ) {
+            id
+            ownerUserId
+            type
+            linkedShare
+            content
+            fileUrl
+            isDisplay
+            created_at
+            updated_at
+            comment {
+                id
+                userId
+                roomId
+                isDisplay
+                content
+                fileUrl
+                created_at
+                updated_at
+                interaction {
+                    id
+                    content
+                    userId
+                    isDisplay
+                    created_at
+                    updated_at
+                }
+            }
+            interaction {
+                id
+                content
+                userId
+                isDisplay
+                created_at
+                updated_at
+            }
+        }
+    }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: CREATE_POST_QUERY,
+                variables: {
+                    userId: dto.userId,
+                    type: dto.type,
+                    content: dto.content,
+                    fileUrl: dto.fileUrl
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.createPost
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+
+export async function findPostAsync(content: string, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const FIND_POST_QUERY = `
+    query SearchPost ($content: String!) {
+        searchPost(content: $content) {
+            id
+            ownerUserId
+            type
+            linkedShare
+            content
+            fileUrl
+            isDisplay
+            created_at
+            updated_at
+            interaction {
+                id
+                content
+                userId
+                isDisplay
+                created_at
+                updated_at
+            }
+            comment {
+                id
+                userId
+                roomId
+                isDisplay
+                content
+                fileUrl
+                created_at
+                updated_at
+                interaction {
+                    id
+                    content
+                    userId
+                    isDisplay
+                    created_at
+                    updated_at
+                }
+            }
+        }
+    }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: FIND_POST_QUERY,
+                variables: {
+                    content: content
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.searchPost
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+
+export async function getPostDailyAsync(userId: string, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const FIND_POST_QUERY = `
+    query GetDailyPostByUserId($userId: String!) {
+        getDailyPostByUserId(userId: $userId) {
+            id
+            ownerUserId
+            type
+            updated_at
+            created_at
+            comment {
+                id
+                userId
+                roomId
+                isDisplay
+                content
+                fileUrl
+                created_at
+                updated_at
+                interaction {
+                    id
+                    content
+                    userId
+                    isDisplay
+                    created_at
+                    updated_at
+                }
+            }
+            interaction {
+                id
+                content
+                userId
+                isDisplay
+                created_at
+                updated_at
+            }
+            isDisplay
+            fileUrl
+            content
+            linkedShare
+        }
+    }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: FIND_POST_QUERY,
+                variables: {
+                    userId: userId
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.getDailyPostByUserId
+
     } catch (error) {
         console.error('Error:', error);
         throw error;

@@ -12,19 +12,18 @@ import {
   addFriendAsync,
   removeFriendAsync,
   acceptFriendAsync,
-  getFriendRequestAsync
+  getFriendRequestAsync,
+  createRoomchatAsync,
 } from "../../util";
-
+import { RoomchatDto } from "../../util/dto"
 const Options = ({data}) => {
   const navigation = useNavigation();
   const [isFriendAdded, setFriendAdded] = useState(false);
   const [isFriend, setIsFriend] = useState("Added");
+  const [isPending, setPending] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      if (receivedData == null) {
-        navigation.navigate("main");
-      }
 
       const keys = await getAllIdUserLocal();
       const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
@@ -51,14 +50,18 @@ const Options = ({data}) => {
       }
 
       if (dataUserAsync.friends.includes(data.id)) {
-        setFriendAdded("Friend")
+        setIsFriend("Friend")
         setFriendAdded(true);
-      }
 
-      for (let friends of dataRequest) {
-        if (friends.createdUserId === data.id) {
-          setFriendAdded("Accept")
-          setFriendAdded(false)
+      }
+      else {
+        for (let friends of dataRequest) {
+          if (friends.createdUserId === data.id) {
+            setIsFriend("Accept")
+            setPending(true);
+            setFriendAdded(true);
+            break;
+          }
         }
       }
 
@@ -67,24 +70,45 @@ const Options = ({data}) => {
     fetchData();
   }, [data]);
 
-  const handleAddFriendPress = () => {
-    // if (isFriendAdded === "Friend" && isFriendAdded) {
-    //   await removeFriendAsync()
-    // }
-    // else if (isFriendAdded === "Accept" && !isFriendAdded) {
-    //   setIsFriend("Friend");
-    //   await acceptFriendAsync
-    // }
-    // else if (isFriendAdded === "Added" && isFriendAdded) {
-    //   await removeFriendAsync()
-    // }
-    // else {
-    //   await addFriendAsync()
-    // }
+  const handleAddFriendPress =  async () => {
+    const keys = await getAllIdUserLocal();
+    const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+    const dataUpdate = await updateAccessTokenAsync(
+      dataUserLocal.id,
+      dataUserLocal.refreshToken
+    );
+    if (isFriend === "Friend" && isFriendAdded) {
+      await removeFriendAsync(dataUserLocal.id, data.id, dataUpdate.accessToken)
+    }
+    else if (isFriend === "Accept" && isFriendAdded) {
+      await acceptFriendAsync(dataUserLocal.id, data.id, dataUpdate.accessToken)
+      const dto = new RoomchatDto(
+        dataUserLocal.id, 
+        [data.id], 
+        dataUserLocal.id + data.id,
+        true)
+      await createRoomchatAsync(dto, dataUpdate.accessToken);
+      setIsFriend("Friend");
+      setPending(false)
+      return;
+    }
+    else {
+      await addFriendAsync(dataUserLocal.id, data.id, dataUpdate.accessToken)
+    }
     setFriendAdded(!isFriendAdded);
-
   };
 
+  const handleDenyFriend = async () => {
+    const keys = await getAllIdUserLocal();
+    const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+    const dataUpdate = await updateAccessTokenAsync(
+      dataUserLocal.id,
+      dataUserLocal.refreshToken
+    );
+    await removeFriendAsync(dataUserLocal.id, data.id, dataUpdate.accessToken)
+    setFriendAdded(!isFriendAdded);
+    setPending(false);
+  }
   return (
     <View
       style={{
@@ -99,7 +123,7 @@ const Options = ({data}) => {
         style={[
           profileStyle.editContainer,
           isFriendAdded ? { backgroundColor: "#1E90FF" } : null,
-          { marginHorizontal: 12 },
+          { marginHorizontal: 1 },
         ]}
         onPress={handleAddFriendPress}
       >
@@ -107,9 +131,18 @@ const Options = ({data}) => {
           {isFriendAdded ? isFriend : "Add Friend"}
         </Text>
       </TouchableOpacity>
+      
+      {isPending &&(
+        <TouchableOpacity
+        onPress={handleDenyFriend}
+        style={[profileStyle.editContainer, { paddingHorizontal: 18,marginHorizontal: 1 }]}
+      >
+        <Text style={profileStyle.textEdit}>Deny</Text>
+      </TouchableOpacity>
+      )}
 
       <TouchableOpacity
-        style={[profileStyle.editContainer, { paddingHorizontal: 18 }]}
+        style={[profileStyle.editContainer, { paddingHorizontal: 18,marginHorizontal: 1 }]}
       >
         <Text style={profileStyle.textEdit}>Chat</Text>
       </TouchableOpacity>
