@@ -510,6 +510,73 @@ export async function getRoomchatAsync(id: string, accessToken: string) {
     }
 }
 
+export async function getRoomchatByTitleAsync(id: string, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const GET_ROOMCHAT_QUERY = `
+    query GetRomchatByTitle ($roomchatId: String!) {
+        getRomchatByTitle (roomchatId: $roomchatId) {
+            id
+            isDisplay
+            ownerUserId
+            description
+            imgDisplay
+            isSingle
+            member
+            created_at
+            updated_at
+            data {
+                id
+                userId
+                isDisplay
+                content
+                fileUrl
+                created_at
+                updated_at
+                interaction {
+                    id
+                    content
+                    userId
+                    isDisplay
+                    created_at
+                    updated_at
+                }
+            }
+            memberOut {
+                memberId
+                messageCount
+                created_at
+                updated_at
+            }
+            title
+        }
+    }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: GET_ROOMCHAT_QUERY,
+                variables: {
+                    roomchatId: id
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.getRomchatByTitle
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
 
 export async function changePasswordAsync(dto: ChangePasswordDto, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';

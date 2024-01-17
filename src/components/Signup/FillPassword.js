@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigation, useRoute} from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import styles from '../../styles/styles';
+import ToastManager from 'toastify-react-native'
 
 const FillPassword = () => {
   const insets = useSafeAreaInsets()
@@ -38,6 +39,7 @@ const FillPassword = () => {
         flex: 1,
       }}
     >
+            <ToastManager  />
       <View
         style={{
           flexDirection: "row",

@@ -4,23 +4,27 @@ import styles from "../../styles/styles";
 import highLight from "../../styles/highLightStyles";
 import { useNavigation } from '@react-navigation/native';
 
-const Stories = ({ post }) => {
+const Stories = ({ post, users }) => {
   const navigation = useNavigation();
 
-  const { username, avt, imagepost } = post[1];
-
-  const handleStoryPress = () => {
-    navigation.navigate("loadStory", { imagepost, username });
+  const handleStoryPress = (item) => {
+    navigation.navigate("loadStory", { data: { post: item, users: users}});
   };
+  
   const renderItem = ({ item }) => (
     <View style={{ alignItems: "center", marginHorizontal: 5 }}>
       <TouchableHighlight
         style={highLight.highLightStories}
-        onPress={handleStoryPress}
+        onPress={() => handleStoryPress(item)}
       >
-        <Image style={styles.stroyImg} source={item.avt} />
+        { users[item.ownerUserId].detail.avatarUrl ? (
+        <Image style={styles.stroyImg} source={{uri : users[item.ownerUserId].detail.avatarUrl}} />
+        ) : (
+          <Image style={styles.stroyImg}  />
+        )}
+
       </TouchableHighlight>
-      <Text style={{ color: "black" }}>{item.username}</Text>
+      <Text style={{ color: "black" }}>{users[item.ownerUserId].detail.name}</Text>
     </View>
   );
 
