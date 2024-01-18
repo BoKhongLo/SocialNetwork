@@ -98,7 +98,6 @@ export default function App() {
             <Stack.Screen key="verify" options={{headerShown: false}}  name="verify" component={VerifyScreen} />
             <Stack.Screen key="newPass" options={{headerShown: false}}  name="newPass" component={NewPassScreen} />
             <Stack.Screen key="settingGroupChat" options={{headerShown: false}}  name="settingGroupChat" component={SettingGroupChat} />
-
       </Stack.Navigator>
     </NavigationContainer>
 );
