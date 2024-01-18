@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "Instagram",
-    "slug": "Instagram",
+    "name": "BlackCat",
+    "slug": "BlackCat",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icon.jpg",
     "userInterfaceStyle": "light",
     "plugins": [
       "expo-image-picker",
@@ -36,10 +36,20 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ],
+      "package": "BlackCat.com"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "fcb57af5-8f09-4112-a56c-5d18839200d6"
+      }
     }
   }
 }

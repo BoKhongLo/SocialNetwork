@@ -21,9 +21,7 @@ const LoginForm = () => {
   const navigation = useNavigation();
 
   const handleForgotPassword = () => {
-    console.log("Forgot password clicked");
     navigation.navigate('forgotPass')
-    // Add your logic here
   };
 
   const handleLogin = async () => {

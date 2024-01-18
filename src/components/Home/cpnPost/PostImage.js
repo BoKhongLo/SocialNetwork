@@ -2,11 +2,32 @@ import React, { useState } from "react";
 import { View, Image, TouchableOpacity, Modal as RNModal, StyleSheet, FlatList } from "react-native";
 import Swiper from "react-native-swiper";
 import headerPostStyles from "./../../../styles/postHeaderStyles";
+import { Video, Audio } from 'expo-av';
 
 const PostImage = ({ post, users }) => {
 
   const [isModalVisible, setModalVisible] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const validateFile = (file) => {
+    const imgExt = ["jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp", "raf"];
+    const videoExt = ["mp4", "avi", "mkv", "mov", "wmv", "flv", "webm"];
+    const audioExt = ["mp3", "ogg", "wav", "flac", "aac", "wma", "m4a"];
+    const lastElement = file.split("/").pop();
+    const fileExt = lastElement
+      .split("?")[0]
+      .split(".")
+      .pop()
+      .toLowerCase();
+
+    if (imgExt.includes(fileExt)) {
+      return "IMAGE"
+    } else if (audioExt.includes(fileExt)) {
+      return "AUDIO"
+    } else if (videoExt.includes(fileExt)) {
+      return "VIDEO"
+    }
+  }
 
   const handleImagePress = (index) => {
     setCurrentImageIndex(index);
@@ -22,13 +43,32 @@ const PostImage = ({ post, users }) => {
       onPress={() => handleImagePress(index)}
       style={styles.gridItem}
     >
-      <Image style={styles.image} source={{ uri: item }} />
+      {validateFile(item) === "IMAGE" ? (
+        <Image
+          source={{ uri: item }}
+          style={styles.image}
+        />
+      ) : validateFile(item) === "VIDEO" ? (
+        <Video
+          style={styles.image}
+          source={{ uri: item }}
+          useNativeControls
+          resizeMode="contain"
+        />
+      ) : (
+        <Video
+          style={styles.image}
+          source={{ uri: item }}
+          useNativeControls
+          resizeMode="contain"
+        />
+      )}
     </TouchableOpacity>
   );
 
   return (
     <View>
-      <View> 
+      <View>
         <FlatList
           data={post.fileUrl}
           numColumns={2}
@@ -52,15 +92,41 @@ const PostImage = ({ post, users }) => {
           >
             {post.fileUrl.map((image, index) => (
               <View key={index}>
-                <Image
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    resizeMode: "contain",
-                    backgroundColor: 'rgba(0,0,0,0.5)',
-                  }}
-                  source={{ uri: image }}
-                />
+                {validateFile(image) === "IMAGE" ? (
+                  <Image
+                    source={{ uri: image }}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      resizeMode: "contain",
+                      backgroundColor: 'rgba(0,0,0,0.5)',
+                    }}
+                  />
+                ) : validateFile(image) === "VIDEO" ? (
+                  <Video
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      resizeMode: "contain",
+                      backgroundColor: 'rgba(0,0,0,0.5)',
+                    }}
+                    source={{ uri: image }}
+                    useNativeControls
+                    resizeMode="contain"
+                  />
+                ) : (
+                  <Video
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      resizeMode: "contain",
+                      backgroundColor: 'rgba(0,0,0,0.5)',
+                    }}
+                    source={{ uri: image }}
+                    useNativeControls
+                    resizeMode="contain"
+                  />
+                )}
               </View>
             ))}
           </Swiper>

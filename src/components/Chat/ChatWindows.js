@@ -380,7 +380,7 @@ const Content = ({ roomProfile }) => {
 
   const pickDocument = async () => {
     let result = await DocumentPicker.getDocumentAsync({
-      type: "*/*",
+      type: ['image/*','video/*','audio/*'],
       multiple: true,
       copyToCacheDirectory: true,
     });

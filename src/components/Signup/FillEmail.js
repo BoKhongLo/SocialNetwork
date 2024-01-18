@@ -4,6 +4,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import styles from "../../styles/styles";
 import ToastManager from 'toastify-react-native'
+import { Toast } from 'toastify-react-native'
 
 const FillEmail = () => {
   const insets = useSafeAreaInsets();

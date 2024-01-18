@@ -230,7 +230,7 @@ const ChoseImg = ({ upFile, postData, onUpdateData }) => {
   }
   const handleGallery = async () => {
     let result = await DocumentPicker.getDocumentAsync({
-      type: 'image/*,video/*,audio/*',
+      type: ['image/*','video/*','audio/*'],
       multiple: true,
     });
 
@@ -296,6 +296,26 @@ const ReviewImage = ({ fileData, setFile, postData, onUpdateData }) => {
     setImageList(fileData);
   }, [fileData])
 
+  const validateFile = (file) => {
+    const imgExt = ["jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp", "raf"];
+    const videoExt = ["mp4", "avi", "mkv", "mov", "wmv", "flv", "webm"];
+    const audioExt = ["mp3", "ogg", "wav", "flac", "aac", "wma", "m4a"];
+    const lastElement = file.split("/").pop();
+    const fileExt = lastElement
+      .split("?")[0]
+      .split(".")
+      .pop()
+      .toLowerCase();
+
+    if (imgExt.includes(fileExt)) {
+      return "IMAGE"
+    } else if (audioExt.includes(fileExt)) {
+      return "AUDIO"
+    } else if (videoExt.includes(fileExt)) {
+      return "VIDEO"
+    }
+  }
+
   const renderItem = ({ item }) => {
     const isSelected = selectedImages.includes(item.id);
 
@@ -318,16 +338,44 @@ const ReviewImage = ({ fileData, setFile, postData, onUpdateData }) => {
           onPress={() => toggleImageSelection(item.id)}
 
         >
-          <Image
-            source={{ uri: item.source.uri }}
-            style={[
-              postSytles.image,
-              {
-                backgroundColor: isSelected ? 'gray' : 'lightgrey', width: 90,
-                height: 90,
-              },
-            ]}
-          />
+          {validateFile(item.source.uri) === "IMAGE" ? (
+            <Image
+              source={{ uri: item.source.uri }}
+              style={[
+                postSytles.image,
+                {
+                  backgroundColor: isSelected ? 'gray' : 'lightgrey', width: 90,
+                  height: 90,
+                },
+              ]}
+            />
+          ) : validateFile(item.source.uri) === "VIDEO" ? (
+            <Video
+              style={[
+                postSytles.image,
+                {
+                  backgroundColor: isSelected ? 'gray' : 'lightgrey', width: 90,
+                  height: 90,
+                },
+              ]}
+              source={{ uri: item.source.uri }}
+              useNativeControls
+              resizeMode="contain"
+            />
+          ) : (
+            <Video
+              style={[
+                postSytles.image,
+                {
+                  backgroundColor: isSelected ? 'gray' : 'lightgrey', width: 90,
+                  height: 90,
+                },
+              ]}
+              source={{ uri: item.source.uri }}
+              useNativeControls
+              resizeMode="contain"
+            />
+          )}
 
           {isSelected && (
             <TouchableOpacity

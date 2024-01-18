@@ -24,12 +24,15 @@ import SettingChat from "./src/components/Chat/SettingChat";
 import ForgotPassScreen from "./src/screens/ForgotPassScreen";
 import VerifyScreen from "./src/screens/VerifyScreen";
 import NewPassScreen from "./src/screens/NewPassScreen";
+import registerNNPushToken from 'native-notify';
+
 const Stack = createStackNavigator();
 
 export default function App() {
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
+  registerNNPushToken(18604, '8sbEFbNYoDaZJKMDeIAWoc');
+  
   useEffect(() => {
     // Function to check user login status
     const checkLoginStatus = async () => {

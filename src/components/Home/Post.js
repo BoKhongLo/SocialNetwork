@@ -19,7 +19,7 @@ import {
   heightPercentageToDP,
   widthPercentageToDP,
 } from "react-native-responsive-screen";
-import profileStyle from "../../styles/profileStyles";
+
 
 
 const Post = ({ post, users }) => {
@@ -161,7 +161,7 @@ const Header = () => {
 const Caption = ({ post, users }) => {
   return (
     <View style={[headerPostStyles.ItemFooterContainer, { marginBottom: 30 }]}>
-      <Text style={{ fontWeight: "600" }}>{users[post.ownerUserId].detail.name}</Text>
+      {/* <Text style={{ fontWeight: "600" }}>{users[post.ownerUserId].detail.name}</Text> */}
       <Text style={headerPostStyles.caption}> {post.content}</Text>
     </View>
   );
