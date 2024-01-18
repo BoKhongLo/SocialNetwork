@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "849192922914",
+    "project_id": "social-network-a0b1d",
+    "storage_bucket": "social-network-a0b1d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:849192922914:android:284bd302a88ee3a259ff7b",
+        "android_client_info": {
+          "package_name": "BlackCat.com"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHKW3iTdqjTAPAgEy1GxreV-8UGdd48Sg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

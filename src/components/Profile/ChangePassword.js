@@ -15,6 +15,7 @@ import profileStyle from "../../styles/profileStyles";
 import { ChangePasswordDto } from "../../util/dto";
 import { getDataUserLocal, getAllIdUserLocal, changePasswordAsync } from "../../util";
 
+
 const ChangePassword = () => {
   const insets = useSafeAreaInsets();
 

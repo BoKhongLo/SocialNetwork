@@ -31,7 +31,7 @@ const Stack = createStackNavigator();
 export default function App() {
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  registerNNPushToken(18604, '8sbEFbNYoDaZJKMDeIAWoc');
+  // registerNNPushToken(18604, '8sbEFbNYoDaZJKMDeIAWoc');
   
   useEffect(() => {
     // Function to check user login status

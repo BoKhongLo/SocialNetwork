@@ -22,8 +22,10 @@ import {
   updateAccessTokenAsync,
   getPostDailyAsync,
   getUserDataLiteAsync,
-  getSocketIO
+  getSocketIO,
+  saveDataUserLocal
 } from "../util";
+import { registerIndieID, unregisterIndieDevice } from 'native-notify';
 
 const HomeScreen = () => {
   const route = useRoute();
@@ -57,6 +59,7 @@ const HomeScreen = () => {
           dataUpdate.accessToken
         );
       }
+      // registerIndieID(dataUserLocal.id, 18604, '8sbEFbNYoDaZJKMDeIAWoc');
       let tmpPost = [];
       let tmpUserData = {};
       let tmpStory = [];

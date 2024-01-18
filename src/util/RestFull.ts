@@ -1,5 +1,6 @@
 import axios from "axios";
-import { FileUploadDto } from "./dto";
+import { FileUploadDto, NotiNativeDto } from "./dto";
+import { Toast } from 'toastify-react-native';
 
 export async function uploadFile (data: FileUploadDto, authToken: string,) {
     try {
@@ -24,3 +25,21 @@ export async function uploadFile (data: FileUploadDto, authToken: string,) {
         console.error('Error:', error);
     }
 };
+
+export async function sendNotification(dto: NotiNativeDto) {
+    try {
+
+        const response = await axios.post(`https://app.nativenotify.com/api/indie/notification`, {
+            subID: dto.userId,
+            appId: 18604,
+            appToken: '8sbEFbNYoDaZJKMDeIAWoc',
+            title: dto.title,
+            message: dto.message,
+       });
+
+        if (response.data == null) return null;
+        return response.data
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
