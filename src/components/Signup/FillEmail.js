@@ -79,7 +79,7 @@ const FillEmail = () => {
         style={styles.buttonLogin}
         onPress={nextStep}
       >
-        <Text style={styles.buttonLoginText}> Next </Text>
+        <Text style={styles.buttonLoginText}>Next</Text>
       </TouchableOpacity>
     </View>
   );

@@ -8,7 +8,7 @@ import LoginScreen from "./src/screens/LoginScreen";
 import ChatScreen from "./src/screens/ChatScreen";
 import ProfileUser from "./src/screens/ProfileUser";
 import SignupScreen from "./src/screens/SignupScreen";
-import Notify from "./src/components/notification/Notify";
+import NotiScreen from "./src/screens/NotiScreen";
 import EditField from "./src/components/Profile/EditField";
 import LoadStories from "./src/components/Home/LoadStories";
 import ChatWindows from "./src/components/Chat/ChatWindows";
@@ -21,6 +21,9 @@ import NewPost from "./src/screens/NewPost";
 import NewStory from "./src/screens/NewStory";
 import SearchScreen from "./src/screens/SearchScreen";
 import SettingChat from "./src/components/Chat/SettingChat";
+import ForgotPassScreen from "./src/screens/ForgotPassScreen";
+import VerifyScreen from "./src/screens/VerifyScreen";
+import NewPassScreen from "./src/screens/NewPassScreen";
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -72,7 +75,7 @@ export default function App() {
       <Stack.Navigator initialRouteName={isLoggedIn ? "main" : "Login"}>
             <Stack.Screen key="main" options={{ headerShown: false }} name="main" component={HomeScreens} />
             <Stack.Screen key="chat" options={{ headerShown: false }} name="chat" component={ChatScreen} />
-            <Stack.Screen key="noti" options={{ headerShown: false }} name="noti" component={Notify} />
+            <Stack.Screen key="noti" options={{ headerShown: false }} name="noti" component={NotiScreen} />
             <Stack.Screen key="Login" options={{ headerShown: false }} name="Login" component={LoginScreen} />
             <Stack.Screen key="Signup" options={{ headerShown: false }} name="Signup" component={SignupScreen} />
             <Stack.Screen key="Profile" options={{ headerShown: false }} name="Profile" component={ProfileUser} />
@@ -87,6 +90,10 @@ export default function App() {
             <Stack.Screen key="newstory" options={{headerShown: false}}  name="newstory" component={NewStory} />
             <Stack.Screen key="search" options={{headerShown: false}}  name="search" component={SearchScreen} />
             <Stack.Screen key="settingChat" options={{headerShown: false}}  name="settingChat" component={SettingChat} />
+            <Stack.Screen key="forgotPass" options={{headerShown: false}}  name="forgotPass" component={ForgotPassScreen} />
+            <Stack.Screen key="verify" options={{headerShown: false}}  name="verify" component={VerifyScreen} />
+            <Stack.Screen key="newPass" options={{headerShown: false}}  name="newPass" component={NewPassScreen} />
+
       </Stack.Navigator>
     </NavigationContainer>
 );

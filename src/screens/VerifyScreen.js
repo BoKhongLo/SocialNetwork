@@ -1,11 +1,9 @@
 import { View, Text } from "react-native";
 import React from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Header from "./SettingChat/Header";
-import Edit from "./SettingChat/Edit";
-import Infor from "./SettingChat/Infor";
-
-const SettingChat = () => {
+import Header from "./../components/Verify/Header";
+import Form from "./../components/Verify/Form";
+const VerifyScreen = () => {
   const insets = useSafeAreaInsets();
 
   return (
@@ -15,16 +13,12 @@ const SettingChat = () => {
         paddingBottom: insets.bottom,
         paddingLeft: insets.left + 10,
         paddingRight: insets.right + 10,
-        flex:1,
-        backgroundColor:'white'
-
       }}
     >
-      <Header/>
-      <Infor/>
-      <Edit/>
+      <Header />
+      <Form />
     </View>
   );
 };
 
-export default SettingChat;
+export default VerifyScreen;

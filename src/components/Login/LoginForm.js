@@ -22,6 +22,7 @@ const LoginForm = () => {
 
   const handleForgotPassword = () => {
     console.log("Forgot password clicked");
+    navigation.navigate('forgotPass')
     // Add your logic here
   };
 
