@@ -26,21 +26,28 @@ const LoginForm = () => {
   };
 
   const handleLogin = async () => {
-    console.log("Login clicked");
-    Toast.success('Promised is resolved')
-    // const dto = new LoginDto(email, password);
-    // try {
-    //   const dataLogin = await LoginAsync(dto);
-    //   if (dataLogin != null && dataLogin != undefined) {
-    //     navigation.navigate("main", { data: dataLogin });
-    //   }
-    // } catch (err) {
-    //   console.log(err);
-    // }
+    if (email === "" || password === "" ) return;
+    if (!email.includes("@")) {
+      Toast.error("This is a not email!");
+      return;
+    };
+    const dto = new LoginDto(email, password);
+    try {
+      const dataLogin = await LoginAsync(dto);
+      if ("errors" in dataLogin) {
+        Toast.error(dataLogin.errors[0].message);
+        return;
+      }
+      if (dataLogin != null && dataLogin != undefined) {
+        navigation.navigate("main", { data: dataLogin });
+      }
+
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const handleSignUp = () => {
-    console.log("Sign up clicked");
     navigation.navigate("fillEmail");
   };
 
