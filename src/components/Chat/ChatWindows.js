@@ -6,7 +6,7 @@ import {
   StyleSheet,
   TextInput,
 } from "react-native";
-import * as Clipboard from 'expo-clipboard';
+import * as Clipboard from "expo-clipboard";
 import React, { useState, useEffect, useCallback } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { heightPercentageToDP } from "react-native-responsive-screen";
@@ -14,12 +14,21 @@ import { GiftedChat, Send, Bubble } from "react-native-gifted-chat";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Divider } from "react-native-elements";
 import chat from "../../styles/ChatStyles/chatStyles";
-import { getUserDataAsync, getRoomchatAsync, getAllIdUserLocal, getDataUserLocal, updateAccessTokenAsync, getSocketIO, uploadFile, removeMessageAsync } from "../../util";
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import * as DocumentPicker from 'expo-document-picker';
+import {
+  getUserDataAsync,
+  getRoomchatAsync,
+  getAllIdUserLocal,
+  getDataUserLocal,
+  updateAccessTokenAsync,
+  getSocketIO,
+  uploadFile,
+  removeMessageAsync,
+} from "../../util";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import * as DocumentPicker from "expo-document-picker";
 import { FileUploadDto, ValidateMessagesDto } from "../../util/dto";
-import { Video, Audio } from 'expo-av';
+import { Video, Audio } from "expo-av";
 
 const ChatWindows = ({ user }) => {
   const insets = useSafeAreaInsets();
@@ -50,7 +59,7 @@ const ChatWindows = ({ user }) => {
 
       const keys = await getAllIdUserLocal();
       const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
-      setUserCurrentData({...dataUserLocal})
+      setUserCurrentData({ ...dataUserLocal });
       const dataRoomchatAsync = await getRoomchatAsync(
         receivedData.id,
         dataUserLocal.accessToken
@@ -134,20 +143,21 @@ const Header = ({ userProfile, userData }) => {
       }}
     >
       <TouchableOpacity
-        onPress={() => navigation.navigate("chat", {data: userData})}
+        onPress={() => navigation.navigate("chat", { data: userData })}
         style={{ padding: 10 }}
       >
         <Image
           style={{ height: 40, width: 40 }}
           source={require("../../../assets/dummyicon/left_line_64.png")}
         />
-      </TouchableOpacity>  
+      </TouchableOpacity>
       <Text style={{ fontSize: 20, fontWeight: "500" }}>
         {userProfile.title}
       </Text>
       <TouchableOpacity
-      onPress={()=> navigation.navigate('settingChat')}
-      style={{ padding: 10 }}>
+        onPress={() => navigation.navigate("settingChat")}
+        style={{ padding: 10 }}
+      >
         <Image
           style={{ height: 25, width: 25 }}
           source={require("../../../assets/dummyicon/menu.png")}
@@ -228,8 +238,8 @@ const Content = ({ roomProfile }) => {
       dataUserLocal.accessToken = dataUpdate.accessToken;
       const newSocket = getSocketIO(dataUserLocal.accessToken);
       setSocket(newSocket);
-    }
-    fetchData()
+    };
+    fetchData();
 
     if (roomProfile.id === "") return;
     if (socket == undefined) return;
@@ -249,7 +259,16 @@ const Content = ({ roomProfile }) => {
         },
       };
       if (message.fileUrl.length > 0) {
-        const imgExt = ["jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp","raf"];
+        const imgExt = [
+          "jpg",
+          "jpeg",
+          "png",
+          "gif",
+          "bmp",
+          "tiff",
+          "webp",
+          "raf",
+        ];
         const videoExt = ["mp4", "avi", "mkv", "mov", "wmv", "flv", "webm"];
         const audioExt = ["mp3", "ogg", "wav", "flac", "aac", "wma", "m4a"];
         const lastElement = message.fileUrl[0].split("/").pop();
@@ -274,14 +293,18 @@ const Content = ({ roomProfile }) => {
           newMessage.file = message.fileUrl[0];
         }
       }
-      setMessages(previousMessages => GiftedChat.append(previousMessages, [newMessage]));
+      setMessages((previousMessages) =>
+        GiftedChat.append(previousMessages, [newMessage])
+      );
     });
 
-    socket.on('removeMessage', async (message) => {
-      setMessages(previousState => {
-        return previousState.filter(messages => messages._id !== message.messageId)
+    socket.on("removeMessage", async (message) => {
+      setMessages((previousState) => {
+        return previousState.filter(
+          (messages) => messages._id !== message.messageId
+        );
       });
-    })
+    });
   }, [roomProfile]);
 
   const onSend = useCallback(
@@ -298,54 +321,69 @@ const Content = ({ roomProfile }) => {
     [socket, roomProfile]
   );
 
-  const onDelete = useCallback( async (messageIdToDelete) => {
-    if (roomProfile.id === "") return;
-    const dto = new ValidateMessagesDto(roomProfile.currentUserId, roomProfile.id, messageIdToDelete)
-    const keys = await getAllIdUserLocal();
-    const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+  const onDelete = useCallback(
+    async (messageIdToDelete) => {
+      if (roomProfile.id === "") return;
+      const dto = new ValidateMessagesDto(
+        roomProfile.currentUserId,
+        roomProfile.id,
+        messageIdToDelete
+      );
+      const keys = await getAllIdUserLocal();
+      const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
 
-    const data = await removeMessageAsync(dto, dataUserLocal.accessToken)
-    if ("errors" in data) {
-      const dataUpdate = await updateAccessTokenAsync(dataUserLocal.id, dataUserLocal.refreshToken);
-      data = await removeMessageAsync(dto, dataUpdate.accessToken)
-    }
-  }, [roomProfile])
+      const data = await removeMessageAsync(dto, dataUserLocal.accessToken);
+      if ("errors" in data) {
+        const dataUpdate = await updateAccessTokenAsync(
+          dataUserLocal.id,
+          dataUserLocal.refreshToken
+        );
+        data = await removeMessageAsync(dto, dataUpdate.accessToken);
+      }
+    },
+    [roomProfile]
+  );
 
   const onLongPress = async (context, message) => {
     if (roomProfile.id === "") return;
-    
-    if (message.user._id  === roomProfile.currentUserId) {
-      const options = ['Copy', "Delete Message" ,'Cancel']
-      const cancelButtonIndex =  options.length - 1;
-      context.actionSheet().showActionSheetWithOptions({
-        options,
-        cancelButtonIndex
-      }, async (buttonIndex) => {
-        switch (buttonIndex) {
-          case 0:
-            await Clipboard.setStringAsync(message.text)
-            break;
-          case 1:
-            onDelete(message._id)
-            break;
-        }
-      });
-    }
-    else {
-      const options = ['Copy', 'Cancel'];
+
+    if (message.user._id === roomProfile.currentUserId) {
+      const options = ["Copy", "Delete Message", "Cancel"];
       const cancelButtonIndex = options.length - 1;
-      context.actionSheet().showActionSheetWithOptions({
-        options,
-        cancelButtonIndex
-      }, async (buttonIndex) => {
-        switch (buttonIndex) {
-          case 0:
-            await Clipboard.setStringAsync(message.text)
-            break;
+      context.actionSheet().showActionSheetWithOptions(
+        {
+          options,
+          cancelButtonIndex,
+        },
+        async (buttonIndex) => {
+          switch (buttonIndex) {
+            case 0:
+              await Clipboard.setStringAsync(message.text);
+              break;
+            case 1:
+              onDelete(message._id);
+              break;
+          }
         }
-      });
+      );
+    } else {
+      const options = ["Copy", "Cancel"];
+      const cancelButtonIndex = options.length - 1;
+      context.actionSheet().showActionSheetWithOptions(
+        {
+          options,
+          cancelButtonIndex,
+        },
+        async (buttonIndex) => {
+          switch (buttonIndex) {
+            case 0:
+              await Clipboard.setStringAsync(message.text);
+              break;
+          }
+        }
+      );
     }
-  }
+  };
 
   const renderMessageVideo = (props) => {
     const { currentMessage } = props;
@@ -362,7 +400,7 @@ const Content = ({ roomProfile }) => {
           />
         )}
 
-        {currentMessage.video.type === 'audio' && (
+        {currentMessage.video.type === "audio" && (
           <View>
             <Video
               style={chat.audioStyles}
@@ -384,22 +422,34 @@ const Content = ({ roomProfile }) => {
       multiple: true,
       copyToCacheDirectory: true,
     });
-  
-    if (result.type !== "success") return
+
+    if (result.type !== "success") return;
     if (socket == undefined) return;
     if (roomProfile.id === "") return;
 
     const keys = await getAllIdUserLocal();
     const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
-    const dto = new FileUploadDto(dataLocal.id, result.uri, result.name, result.mimeType)
-    const data = await uploadFile(dto, dataLocal.accessToken)
+    const dto = new FileUploadDto(
+      dataLocal.id,
+      result.uri,
+      result.name,
+      result.mimeType
+    );
+    const data = await uploadFile(dto, dataLocal.accessToken);
     if (data == null) {
-      const dataUpdate = await updateAccessTokenAsync(dataLocal.id, dataLocal.refreshToken)
-      data = await uploadFile(dto, dataUpdate.accessToken)
+      const dataUpdate = await updateAccessTokenAsync(
+        dataLocal.id,
+        dataLocal.refreshToken
+      );
+      data = await uploadFile(dto, dataUpdate.accessToken);
     }
 
-    socket.emit("sendMessage", { userId: dataLocal.id, content: "", fileUrl: [data.url], roomchatId: roomProfile.id })
-  
+    socket.emit("sendMessage", {
+      userId: dataLocal.id,
+      content: "",
+      fileUrl: [data.url],
+      roomchatId: roomProfile.id,
+    });
   };
 
   const renderBubble = (props) => {
@@ -434,7 +484,8 @@ const Content = ({ roomProfile }) => {
               name="file"
               style={{ marginRight: 5, marginTop: 5 }}
               size={30}
-              color='#2e64e5' />
+              color="#2e64e5"
+            />
           </View>
         </TouchableOpacity>
         <Send {...props}>

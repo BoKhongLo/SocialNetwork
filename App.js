@@ -24,6 +24,7 @@ import SettingChat from "./src/components/Chat/SettingChat";
 import ForgotPassScreen from "./src/screens/ForgotPassScreen";
 import VerifyScreen from "./src/screens/VerifyScreen";
 import NewPassScreen from "./src/screens/NewPassScreen";
+import SettingGroupChat from "./src/components/Chat/SettingGroup";
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -93,6 +94,7 @@ export default function App() {
             <Stack.Screen key="forgotPass" options={{headerShown: false}}  name="forgotPass" component={ForgotPassScreen} />
             <Stack.Screen key="verify" options={{headerShown: false}}  name="verify" component={VerifyScreen} />
             <Stack.Screen key="newPass" options={{headerShown: false}}  name="newPass" component={NewPassScreen} />
+            <Stack.Screen key="settingGroupChat" options={{headerShown: false}}  name="settingGroupChat" component={SettingGroupChat} />
 
       </Stack.Navigator>
     </NavigationContainer>

@@ -181,6 +181,7 @@ const ChatScreen = ({}) => {
         >
           <Search dataRoomchat={dataRoomchat} onSearch={setDataRoomchatTmp} />
           <Chats dataRoomchat={dataRoomchatTmp} />
+          
         </ScrollView>
       </View>
     </View>

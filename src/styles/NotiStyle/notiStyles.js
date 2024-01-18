@@ -23,9 +23,10 @@ const cpnNotiStyles = StyleSheet.create({
   button: {
     flex: 1,
     justifyContent: "center",
-    backgroundColor: "grey",
-    borderRadius: 20,
+    backgroundColor: "lightgrey",
+    borderRadius: 10,
     alignSelf: "center",
+    marginHorizontal:2
   },
   buttonText: {
     textAlign: "center",

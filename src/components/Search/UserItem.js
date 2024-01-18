@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import { Divider } from "react-native-elements";
+import searchStyles from "../../styles/searchScreen";
 const UserItem = ({ user, onPress }) => {
   const handleAddFriendPress = () => {
     // Thực hiện các hành động khi nút được nhấn để thêm bạn bè
@@ -20,24 +21,12 @@ const UserItem = ({ user, onPress }) => {
         <View style={{ flexDirection: "row" }}>
           {user.detail.avatarUrl ? (
           <Image
-          style={{
-            height: 45,
-            width: 45,
-            borderRadius: 30,
-            resizeMode: "contain",
-            borderWidth: 0.3,
-          }}
+          style={searchStyles.avt}
             source={{uri: user.detail.avatarUrl}} 
         />
           ) : (
             <Image
-            style={{
-              height: 45,
-              width: 45,
-              borderRadius: 30,
-              resizeMode: "contain",
-              borderWidth: 0.3,
-            }}
+            style={searchStyles.avt}
           />
           )}
 
@@ -49,11 +38,9 @@ const UserItem = ({ user, onPress }) => {
           </View>
         </View>
 
-        <TouchableOpacity onPress={handleAddFriendPress}>
-          <Image
-            style={{ height: 30, width: 30 }}
-            source={require("../../../assets/dummyicon/user_add_line.png")}
-          />
+        <TouchableOpacity
+        style={searchStyles.addButton} onPress={handleAddFriendPress}>
+          <Text>Add</Text>
         </TouchableOpacity>
       </View>
       <Divider orientation="horizontal" />
