@@ -8,7 +8,7 @@ const UserItem = ({ user, onPress }) => {
     // Gọi hàm hoặc thực hiện logic thêm bạn bè ở đây
   };
   return (
-    <TouchableOpacity onPress={() => onPress(user)}>
+    <TouchableOpacity onPress={async () => await onPress(user)}>
       <View
         style={{
           borderBottomColor: "gray",
@@ -18,7 +18,19 @@ const UserItem = ({ user, onPress }) => {
         }}
       >
         <View style={{ flexDirection: "row" }}>
+          {user.detail.avatarUrl ? (
           <Image
+          style={{
+            height: 45,
+            width: 45,
+            borderRadius: 30,
+            resizeMode: "contain",
+            borderWidth: 0.3,
+          }}
+            source={{uri: user.detail.avatarUrl}} 
+        />
+          ) : (
+            <Image
             style={{
               height: 45,
               width: 45,
@@ -26,11 +38,14 @@ const UserItem = ({ user, onPress }) => {
               resizeMode: "contain",
               borderWidth: 0.3,
             }}
-            //   source={{}}   avatar!!!!
           />
+          )}
+
           <View style={{ marginLeft: 10 }}>
-            <Text style={{ fontWeight: "500" }}>{user.username}</Text>
-            <Text style={{ color: "gray" }}>{user.nickname}</Text>
+            <Text style={{ fontWeight: "500" }}>{user.detail.name}</Text>
+            {user.detail.nickName && (
+              <Text style={{ color: "gray" }}>{user.detail.nickName}</Text>
+            )}
           </View>
         </View>
 

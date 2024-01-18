@@ -1,8 +1,9 @@
 import { View, Text, TouchableOpacity, Image, TextInput } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import { useNavigation, useRoute} from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import styles from '../../styles/styles';
+import ToastManager from 'toastify-react-native'
 
 const FillPassword = () => {
   const insets = useSafeAreaInsets()
@@ -16,16 +17,17 @@ const FillPassword = () => {
     const fetchData = async () => {
       if (receivedData == null) {
         navigation.navigate('Login');
-      }};
+      }
+    };
     fetchData();
   }, []);
 
   const nextStep = async () => {
     if (password == "") return;
     if (password != confirmPassword) return;
-    const data = {...receivedData}
+    const data = { ...receivedData }
     data.password = password
-    navigation.navigate('Signup', {data: data});
+    navigation.navigate('Signup', { data: data });
   }
 
   return (
@@ -38,6 +40,7 @@ const FillPassword = () => {
         flex: 1,
       }}
     >
+      <ToastManager />
       <View
         style={{
           flexDirection: "row",

@@ -1,47 +1,50 @@
 import React, { useState } from "react";
-import { View, TextInput, FlatList } from "react-native";
+import { View, TextInput, FlatList, Button, Text } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import UserItem from "../components/Search/UserItem";
-import { Divider, Text } from "react-native-elements";
+import { Divider } from "react-native-elements";
 import BottomTabs from "../components/Home/BottomTabs";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { widthPercentageToDP } from "react-native-responsive-screen";
+import Search from './../components/Chat/Search';
+import { TouchableOpacity } from "react-native";
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {
+  getUserDataAsync,
+  getAllIdUserLocal,
+  getDataUserLocal,
+  updateAccessTokenAsync,
+  findFriendAsync
+} from "../util";
+import { useNavigation } from "@react-navigation/native";
+
 const SearchScreen = () => {
   const insets = useSafeAreaInsets();
   const [searchText, setSearchText] = useState("");
-  const [showResults, setShowResults] = useState(false);
-  const [users, setUsers] = useState([
-    { id: "1", username: "Tuan Anh 1", nickname: "user1@example.com" },
-    { id: "2", username: "Duc Anh 2", nickname: "user2@example.com" },
-    { id: "3", username: "Lan Anh 3", nickname: "user3@example.com" },
-    { id: "4", username: "Lan Anh 4", nickname: "user3@example.com" },
-    { id: "5", username: "Lan Anh 5", nickname: "user3@example.com" },
-    { id: "6", username: "Lan Anh 6", nickname: "user3@example.com" },
-    { id: "7", username: "Lan Anh 7", nickname: "user3@example.com" },
-    { id: "8", username: "Lan Anh 8", nickname: "user3@example.com" },
-    { id: "9", username: "Lan Anh 9", nickname: "user3@example.com" },
-    { id: "10", username: "Lan Anh 10", nickname: "user3@example.com" },
-    { id: "11", username: "Lan Anh 11", nickname: "user3@example.com" },
-    { id: "12", username: "Lan Anh 12", nickname: "user3@example.com" },
-  ]);
-  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [dataSearch, setDataSearch] = useState([]);
+  const navigation = useNavigation();
 
-  const handleSearch = (text) => {
-    const filteredUsers = users.filter(
-      (user) =>
-        user.username.toLowerCase().includes(text.toLowerCase()) ||
-        user.nickname.toLowerCase().includes(text.toLowerCase())
-    );
-    setFilteredUsers(filteredUsers);
-    setSearchText(text);
-    setShowResults(text.length > 0);
+  const handleUserPress = async (user) => {
+    const keys = await getAllIdUserLocal();
+    const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+    const receivedData = {...dataUserLocal}
+    receivedData.id = user.id;
+    navigation.navigate("Profile", { data: receivedData })
   };
 
-  const handleUserPress = (user) => {
-    // Xử lý sự kiện khi một người dùng được chạm
-    console.log(`User ${user.username} pressed`);
-  };
+  const handleSearch = async (content) => {
 
+    const keys = await getAllIdUserLocal();
+    const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+    const dataRequest = await findFriendAsync(searchText, dataUserLocal.accessToken);
+    if ("errors" in dataRequest) {
+      const dataUpdate = await updateAccessTokenAsync(
+        dataUserLocal.id,
+        dataUserLocal.refreshToken
+      );
+      dataRequest = await findFriendAsync(content, dataUpdate.accessToken)
+    }
+
+    setDataSearch(dataRequest)
+  }
   const renderItem = ({ item }) => (
     <UserItem user={item} onPress={handleUserPress} />
   );
@@ -57,45 +60,50 @@ const SearchScreen = () => {
       }}
     >
       <View style={{ flex: 1, padding: 16 }}>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
+        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: 'center' }}>
           <TextInput
             style={{
               height: 50,
               marginBottom: 10,
               padding: 10,
-              fontSize: 18, // Đặt kích thước font theo mong muốn
+              fontSize: 18, 
               borderRadius: 40,
-              paddingLeft: 20, // Vị trí của chữ từ bên trái
+              paddingLeft: 20, 
               backgroundColor: "lightgray",
-              flex: 0.9,
+              flex: 0.9
             }}
             placeholder="Search"
             value={searchText}
-            onChangeText={handleSearch}
+            onChangeText={text => setSearchText(text)}
           />
           <TouchableOpacity
             style={{
               paddingHorizontal: 20,
               paddingVertical: 10,
-              backgroundColor: "lightgrey",
-              borderRadius: 20,
+              marginBottom: 10,
+              backgroundColor: 'lightgrey',
+              borderRadius: 20
             }}
+            onPress={async () => await handleSearch(searchText)}
           >
-            <Text>Nút</Text>
+            <Text>
+              <MaterialCommunityIcons
+                name="send-circle"
+                style={{ marginBottom: 5, marginRight: 5 }}
+                size={32}
+                color="black"
+              />
+            </Text>
           </TouchableOpacity>
         </View>
 
-        {showResults && (
+        {dataSearch.length > 0 && (
           <FlatList
-            data={filteredUsers}
+            data={dataSearch}
             keyExtractor={(user) => user.id}
             renderItem={renderItem}
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
           />
         )}
       </View>

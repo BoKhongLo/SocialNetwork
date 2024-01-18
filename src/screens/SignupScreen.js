@@ -4,7 +4,7 @@ import styles from "../styles/styles";
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import SignupForm from "../components/Signup/SignupForm";
-
+import ToastManager from 'toastify-react-native'
 const SignupScreen = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
@@ -19,6 +19,7 @@ const SignupScreen = () => {
         flex: 1,
       }}
     >
+      <ToastManager  />
       <View style={{ flexDirection: "row", justifyContent: "flex-start",padding:5 }}>
         <TouchableOpacity onPress={()=> navigation.navigate('Login')}>
           <Image
@@ -30,7 +31,6 @@ const SignupScreen = () => {
           Create Account
         </Text>
       </View>
-
       <ScrollView>
         <SignupForm />
       </ScrollView>

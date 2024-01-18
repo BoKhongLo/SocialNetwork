@@ -3,6 +3,7 @@ import React, {useState} from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import styles from "../../styles/styles";
+import ToastManager from 'toastify-react-native'
 
 const FillEmail = () => {
   const insets = useSafeAreaInsets();
@@ -13,7 +14,10 @@ const FillEmail = () => {
   const nextStep = async () => {
     console.log("data: " ,email)
     if (email == "") return;
-    if (email.indexOf("@") == -1) return;
+    if (!email.includes("@")) {
+      Toast.error("This is a not email!");
+      return;
+    };
     navigation.navigate('fillPass', {data: {email: email}});
   }
 
@@ -27,6 +31,7 @@ const FillEmail = () => {
         flex: 1,
       }}
     >
+      <ToastManager  />
       <View
         style={{
           flexDirection: "row",

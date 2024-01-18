@@ -46,7 +46,6 @@ const ListOfChat = ({ roomchat }) => {
             <View style={chat.nameChatContainer}>
               <Text style={chat.chatUSerName}> {roomchat.title}</Text>
               <Text>{new Date(roomchat.updated_at).toLocaleString('vi-VN', options)}</Text>
-
             </View>
           </View>
         </TouchableOpacity>

@@ -1,7 +1,6 @@
 import { View, Text, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import React, { useState, useEffect } from "react";
-
 import Header from "../components/Profile/Header";
 import BottomTabs from "../components/Home/BottomTabs";
 import Information from "../components/Profile/Information";
@@ -18,9 +17,9 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 const ProfileUser = () => {
   const route = useRoute();
   const navigation = useNavigation();
-  const receivedData = route.params?.data;
+  const [receivedData, setReceivedData] = useState(route.params?.data || null);
   const insets = useSafeAreaInsets();
-
+  const [isUser, setIsUser] = useState(false);
   const [userProfile, setUserProfile] = useState({
     username: "",
     avatarUrl: require("../../assets/img/avt.png"),
@@ -35,16 +34,20 @@ const ProfileUser = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (receivedData == null) {
+      if (!receivedData) {
         navigation.navigate("main");
+        return;
       }
-      const dataUserLocal = receivedData;
+      const dataUserLocal = {...receivedData};
 
-      const dataUserAsync = await getUserDataAsync(
+      const keys = await getAllIdUserLocal();
+      const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
+      if (dataUserLocal.id === dataLocal.id) setIsUser(true);
+
+      let dataUserAsync = await getUserDataAsync(
         dataUserLocal.id,
         dataUserLocal.accessToken
       );
-      const newProfile = { ...userProfile };
 
       if ("errors" in dataUserAsync) {
         const dataUpdate = await updateAccessTokenAsync(
@@ -56,18 +59,17 @@ const ProfileUser = () => {
           dataUpdate.id,
           dataUpdate.accessToken
         );
-        // newProfile.accessToken = dataUpdate.accessToken;
       }
 
       console.log(dataUserAsync);
 
       if ("errors" in dataUserAsync) {
         navigation.navigate("main");
+        return; 
       }
 
       const { detail, id, friends } = dataUserAsync;
-
-      newProfile.id = id;
+      const newProfile = { ...userProfile, id };
 
       if (detail) {
         if (detail.name) newProfile.username = detail.name;
@@ -85,7 +87,7 @@ const ProfileUser = () => {
     };
 
     fetchData();
-  }, []);
+  }, [receivedData, navigation]);
 
   return (
     <View
@@ -101,11 +103,15 @@ const ProfileUser = () => {
     >
       <Header user={userProfile} />
       <View style={{ flex: 1 }}>
-        <ScrollView>
-          <View style={{borderBottomWidth:0.4}}>
-            <Information data={userProfile} />
-            <Options />
-          </View>
+        <ScrollView
+          style={{
+            borderBottomWidth: 0.7,
+          }}
+        >
+          <Information data={userProfile} />
+          {!isUser && (
+            <Options data={userProfile} />
+          )}
         </ScrollView>
       </View>
       <BottomTabs />

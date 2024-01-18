@@ -26,6 +26,7 @@ const PostFooter = ({
   onPressComment,
   onPressShare,
   onPressBookmark,
+  users
 }) => {
   const { likes } = post;
 
@@ -95,7 +96,7 @@ const PostFooter = ({
       >
         <View style={styles.modalContent}>
           <Header />
-          <ItemComment />
+          <ItemComment post={post} users={users}/>
         </View>
       </Modal>
     </View>
@@ -109,7 +110,7 @@ const Header = () => {
     </View>
   );
 };
-const ItemComment = () => {
+const ItemComment = ({post, users}) => {
   const [isLiked, setIsLiked] = useState(false);
 
   const handleLikePress = () => {
@@ -136,14 +137,14 @@ const ItemComment = () => {
               borderWidth: 0.3,
               backgroundColor: "black",
             }}
-            source={{ uri: item.avatar }} // Replace with the actual avatar URL
+            source={{ uri: users[item.userId].detail.avatarUrl }} // Replace with the actual avatar URL
           />
         </TouchableOpacity>
       </View>
       <View style={{ flex: 0.9 }}>
-        <Text style={{ fontWeight: "700" }}>{item.name}</Text>
+        <Text style={{ fontWeight: "700" }}>{users[item.userId].detail.name}</Text>
         <Text style={{ fontSize: 17 }}>{item.content}</Text>
-        <Text style={{ color: "#A9A9A9" }}>{`${item.likes} likes`}</Text>
+        <Text style={{ color: "#A9A9A9" }}>{`${item.interaction.length} likes`}</Text>
       </View>
       <TouchableOpacity onPress={handleLikePress}>
         <View>
@@ -162,7 +163,7 @@ const ItemComment = () => {
 
   return (
     <FlatList
-      data={commentsData}
+      data={post.comment}
       renderItem={renderItem}
       keyExtractor={(item) => item.id.toString()}
     />

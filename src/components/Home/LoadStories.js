@@ -16,32 +16,16 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import styles from "../../styles/styles";
-import { useNavigation } from "@react-navigation/native";
-
-const LoadStories = ({ route }) => {
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { getAllIdUserLocal, getDataUserLocal, updateAccessTokenAsync, getSocketIO, getRoomchatByTitleAsync,  } from "../../util";
+const LoadStories = () => {
+  const route = useRoute();
+  const [receivedData, setReceivedData] = useState(route.params?.data || null);
   const [imageHeight, setImageHeight] = useState(0);
   const [imageWidth, setImageWidth] = useState(0);
-  useEffect(() => {
-    // Check if the URI is valid and not empty
-    if (imagepost && imagepost.uri) {
-      // Get the dimensions of the image
-      Image.getSize(
-        imagepost.uri,
-        (width, height) => {
-          // Set the height dynamically
-          setImageHeight(height);
-          setImageWidth(width)
-        },
-        (error) => {
-          console.error('Error getting image dimensions:', error);
-        }
-      );
-    }
-  }, [imagepost]);
-
-  const navigation = useNavigation();
   const insets = useSafeAreaInsets();
-  const { imagepost } = route.params; // Nhận dữ liệu avt từ navigation props
+  const navigation = useNavigation();
+
   return (
     <View
       style={{
@@ -81,23 +65,83 @@ const LoadStories = ({ route }) => {
           resizeMode: 'contain',
           alignItems: 'center',
         }}
-        source={imagepost}
+        source={{uri: receivedData.post.fileUrl[0]}}
       />
     </View>
 
 
-      <Comments />
+      <Comments data={receivedData.post} users={receivedData.users}/>
     </View>
   );
 };
 
-const Comments = () => {
+const Comments = ({data, users}) => {
   const [text, setText] = useState("");
-
+  const navigation = useNavigation();
   const handleInputChange = (inputText) => {
     setText(inputText);
   };
-  const handleSend = () => {
+  const [dataRoomchat, setDataRoomchat] = useState(null);
+  const [socket, setSocket] = useState(undefined);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const keys = await getAllIdUserLocal();
+      const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
+      const dataUserLocal = {...dataLocal};
+
+      let dataRoomchatAsync = await getRoomchatByTitleAsync(
+        dataUserLocal.id + data.ownerUserId,
+        dataUserLocal.accessToken
+      );
+
+      if ("errors" in dataRoomchatAsync && dataRoomchatAsync.errors[0].message !== "This roomchat does not exist") {
+        const dataUpdate = await updateAccessTokenAsync(
+          dataUserLocal.id,
+          dataUserLocal.refreshToken
+        );
+        dataUserLocal.accessToken = dataUpdate.accessToken;
+        dataRoomchatAsync = await getRoomchatByTitleAsync(
+          dataUserLocal.id + data.ownerUserId,
+          dataUpdate.accessToken
+        );
+      }
+      if ("errors" in dataRoomchatAsync && dataRoomchatAsync.errors[0].message === "This roomchat does not exist") {
+        dataRoomchatAsync = await getRoomchatByTitleAsync(
+          data.ownerUserId + dataUserLocal.id,
+          dataUserLocal.accessToken
+        );
+      }
+      if ("errors" in dataRoomchatAsync) {
+        return;
+      }
+      dataRoomchatAsync.imgDisplay = users[data.ownerUserId].detail.avatarUrl;
+      dataRoomchatAsync.title = users[data.ownerUserId].detail.name;
+      const newSocket = await getSocketIO(dataUserLocal.accessToken);
+      setSocket(newSocket);
+      setDataRoomchat(dataRoomchatAsync);
+    };
+
+    fetchData();
+    return () => {
+      if (socket != undefined) {
+        socket.disconnect();
+      }
+    };
+  }, []);
+
+  const handleSend = async() => {
+    if (socket == undefined) return;
+    if (dataRoomchat == null) return;
+    const keys = await getAllIdUserLocal();
+    const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
+    socket.emit("sendMessage", {
+      userId: dataLocal.id,
+      content: text,
+      fileUrl: [data.fileUrl[0]],
+      roomchatId: dataRoomchat.id,
+    });
+    navigation.navigate('chatwindow', { data: dataRoomchat });
     setText("");
   };
 
