@@ -19,6 +19,7 @@ import { SignUpDto } from "../../util/dto";
 
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Toast } from 'toastify-react-native'
 
 const SignupForm = () => {
   const route = useRoute();
@@ -76,6 +77,10 @@ const SignupForm = () => {
     const dto = new SignUpDto();
     dto.email = receivedData.email;
     dto.password = receivedData.password;
+    if (name === "" ) {
+      Toast.error("Name must not be empty!")
+      return;
+    }
     dto.name = name;
     dto.phoneNumber = parseFloat(phoneNumber.replace(/\D/g, ''));
     dto.birthday = dateOfBirth;

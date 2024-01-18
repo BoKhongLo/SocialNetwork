@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Image, } from 'react-native';
 import profileStyle from '../../styles/profileStyles';
 import { widthPercentageToDP } from 'react-native-responsive-screen';
+import styles from './../../styles/styles';
 
 const Information = ({ data }) => {
   return (

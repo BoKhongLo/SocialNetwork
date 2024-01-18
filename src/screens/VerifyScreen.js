@@ -3,6 +3,8 @@ import React from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Header from "./../components/Verify/Header";
 import Form from "./../components/Verify/Form";
+import ToastManager from 'toastify-react-native'
+
 const VerifyScreen = () => {
   const insets = useSafeAreaInsets();
 
@@ -15,6 +17,7 @@ const VerifyScreen = () => {
         paddingRight: insets.right + 10,
       }}
     >
+      <ToastManager  />
       <Header />
       <Form />
     </View>

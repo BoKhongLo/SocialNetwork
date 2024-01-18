@@ -16,6 +16,7 @@ import {
   createRoomchatAsync,
 } from "../../util";
 import { RoomchatDto } from "../../util/dto"
+import styles from './../../styles/styles';
 const Options = ({data}) => {
   const navigation = useNavigation();
   const [isFriendAdded, setFriendAdded] = useState(false);

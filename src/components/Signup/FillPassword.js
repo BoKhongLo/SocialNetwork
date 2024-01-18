@@ -4,6 +4,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import styles from '../../styles/styles';
 import ToastManager from 'toastify-react-native'
+import { Toast } from 'toastify-react-native'
 
 const FillPassword = () => {
   const insets = useSafeAreaInsets()
@@ -24,7 +25,15 @@ const FillPassword = () => {
 
   const nextStep = async () => {
     if (password == "") return;
-    if (password != confirmPassword) return;
+    if (password.length < 6) {
+      Toast.error("Password is at least 6 characters!")
+      return;
+    }
+    if (password != confirmPassword) {
+      Toast.error("Validate password is not correct!")
+      return;
+    };
+
     const data = { ...receivedData }
     data.password = password
     navigation.navigate('Signup', { data: data });

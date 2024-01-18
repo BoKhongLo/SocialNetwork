@@ -29,7 +29,7 @@ const headerPostStyles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     width: "auto",
-    height: 300
+    height: "auto"
   },
   image: {
     resizeMode: "contain",

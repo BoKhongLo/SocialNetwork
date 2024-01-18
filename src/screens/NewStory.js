@@ -213,7 +213,7 @@ const ChoseImg = ({ upFile, postData, onUpdateData }) => {
   }
   const handleGallery = async () => {
     let result = await DocumentPicker.getDocumentAsync({
-      type: 'image/*,video/*,audio/*',
+      type: ['image/*','video/*','audio/*'],
       multiple: true,
     });
 
@@ -294,6 +294,7 @@ const ReviewImage = ({ fileData, setFile, postData, onUpdateData }) => {
       setFile(imageList);
       setSelectedImages(newSelectedImages);
     };
+    
     const validateFile = (file) => {
       const imgExt = ["jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp", "raf"];
       const videoExt = ["mp4", "avi", "mkv", "mov", "wmv", "flv", "webm"];

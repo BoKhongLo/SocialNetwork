@@ -3,6 +3,7 @@ import React from "react";
 import profileStyle from "../../styles/profileStyles";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
+import styles from './../../styles/styles';
 
 const Header = ({ user }) => {
   const navigation = useNavigation();

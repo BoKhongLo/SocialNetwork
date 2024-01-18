@@ -1,5 +1,5 @@
 // Trong component LoadStories.js
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -17,7 +17,8 @@ import {
 } from "react-native-responsive-screen";
 import styles from "../../styles/styles";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { getAllIdUserLocal, getDataUserLocal, updateAccessTokenAsync, getSocketIO, getRoomchatByTitleAsync,  } from "../../util";
+import { Video, Audio } from 'expo-av';
+import { getAllIdUserLocal, getDataUserLocal, updateAccessTokenAsync, getSocketIO, getRoomchatByTitleAsync, } from "../../util";
 const LoadStories = () => {
   const route = useRoute();
   const [receivedData, setReceivedData] = useState(route.params?.data || null);
@@ -25,6 +26,26 @@ const LoadStories = () => {
   const [imageWidth, setImageWidth] = useState(0);
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
+
+  const validateFile = (file) => {
+    const imgExt = ["jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp", "raf"];
+    const videoExt = ["mp4", "avi", "mkv", "mov", "wmv", "flv", "webm"];
+    const audioExt = ["mp3", "ogg", "wav", "flac", "aac", "wma", "m4a"];
+    const lastElement = file.split("/").pop();
+    const fileExt = lastElement
+      .split("?")[0]
+      .split(".")
+      .pop()
+      .toLowerCase();
+
+    if (imgExt.includes(fileExt)) {
+      return "IMAGE"
+    } else if (audioExt.includes(fileExt)) {
+      return "AUDIO"
+    } else if (videoExt.includes(fileExt)) {
+      return "VIDEO"
+    }
+  }
 
   return (
     <View
@@ -49,33 +70,60 @@ const LoadStories = () => {
         </TouchableOpacity>
       </View>
       <View
-      style={{
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: 'auto',
-        marginBottom: 50,
-        marginTop: 50,
-        flex:1
-      }}
-    >
-      <Image
         style={{
-          width: '100%',
-          height: '100%',
-          resizeMode: 'contain',
+          justifyContent: 'center',
           alignItems: 'center',
+          width: 'auto',
+          marginBottom: 50,
+          marginTop: 50,
+          flex: 1
         }}
-        source={{uri: receivedData.post.fileUrl[0]}}
-      />
-    </View>
+      >
+
+        {validateFile(image) === "IMAGE" ? (
+          <Image
+            source={{ uri: receivedData.post.fileUrl[0] }}
+            style={{
+              width: '100%',
+              height: '100%',
+              resizeMode: 'contain',
+              alignItems: 'center',
+            }}
+          />
+        ) : validateFile(image) === "VIDEO" ? (
+          <Video
+            style={{
+              width: '100%',
+              height: '100%',
+              resizeMode: 'contain',
+              alignItems: 'center',
+            }}
+            source={{ uri: receivedData.post.fileUrl[0] }}
+            useNativeControls
+            resizeMode="contain"
+          />
+        ) : (
+          <Video
+            style={{
+              width: '100%',
+              height: '100%',
+              resizeMode: 'contain',
+              alignItems: 'center',
+            }}
+            source={{ uri: receivedData.post.fileUrl[0] }}
+            useNativeControls
+            resizeMode="contain"
+          />
+        )}
+      </View>
 
 
-      <Comments data={receivedData.post} users={receivedData.users}/>
+      <Comments data={receivedData.post} users={receivedData.users} />
     </View>
   );
 };
 
-const Comments = ({data, users}) => {
+const Comments = ({ data, users }) => {
   const [text, setText] = useState("");
   const navigation = useNavigation();
   const handleInputChange = (inputText) => {
@@ -88,7 +136,7 @@ const Comments = ({data, users}) => {
     const fetchData = async () => {
       const keys = await getAllIdUserLocal();
       const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
-      const dataUserLocal = {...dataLocal};
+      const dataUserLocal = { ...dataLocal };
 
       let dataRoomchatAsync = await getRoomchatByTitleAsync(
         dataUserLocal.id + data.ownerUserId,
@@ -130,7 +178,7 @@ const Comments = ({data, users}) => {
     };
   }, []);
 
-  const handleSend = async() => {
+  const handleSend = async () => {
     if (socket == undefined) return;
     if (dataRoomchat == null) return;
     const keys = await getAllIdUserLocal();
