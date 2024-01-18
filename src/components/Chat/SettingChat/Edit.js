@@ -46,25 +46,6 @@ const Edit = () => {
       <View>
         <Text style={settingChat.title}>General</Text>
         <View>
-          {/* <TouchableOpacity
-            style={settingChat.editItemContainer}
-            onPress={showEditAvatarModal}
-          >
-            <Text style={settingChat.editItem}>Edit avatar</Text>
-          </TouchableOpacity>
-          <Modal visible={isEditAvatarModalVisible} animationType="slide">
-            <View
-              style={{
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Text>Edit Avatar Modal</Text>
-              <Button title="Close" onPress={hideEditAvatarModal} />
-            </View>
-          </Modal> */}
-
           <TouchableOpacity
             style={settingChat.editItemContainer}
             onPress={() => null}
@@ -96,14 +77,14 @@ const Edit = () => {
                         padding: 10,
                         fontSize: 18,
                       }}
-                      placeholder="Nickname 1"
+                      placeholder="Nickname"
                       onChangeText={(text) => {
                         // Handle text input changes for the first nickname
-                        console.log("Nickname 1:", text);
+                        console.log("Nickname:", text);
                       }}
                       onBlur={() => {
                         // Handle onBlur event for the first nickname
-                        console.log("Nickname 1 blurred");
+                        console.log("Nickname blurred");
                       }}
                     />
                   </View>
@@ -117,14 +98,14 @@ const Edit = () => {
                         padding: 10,
                         fontSize: 18,
                       }}
-                      placeholder="Nickname 2"
+                      placeholder="Nickname"
                       onChangeText={(text) => {
                         // Handle text input changes for the second nickname
-                        console.log("Nickname 2:", text);
+                        console.log("Nickname:", text);
                       }}
                       onBlur={() => {
                         // Handle onBlur event for the second nickname
-                        console.log("Nickname 2 blurred");
+                        console.log("Nickname blurred");
                       }}
                     />
                   </View>
