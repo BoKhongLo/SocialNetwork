@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ScrollView,
   FlatList,
+  TextInput,
 } from "react-native";
 import Modal from "react-native-modal";
 import headerPostStyles from "./../../../styles/postHeaderStyles";
@@ -15,10 +16,7 @@ import {
   widthPercentageToDP,
 } from "react-native-responsive-screen";
 import { Divider } from "react-native-elements";
-
-const commentsData = [
-  { id: 1, name: "John Doe", content: "Great post!", likes: 10 },
-];
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 const PostFooter = ({
   post,
@@ -26,14 +24,23 @@ const PostFooter = ({
   onPressComment,
   onPressShare,
   onPressBookmark,
-  users
+  users,
 }) => {
   const { likes } = post;
 
   const [likePressed, setLikePressed] = useState(false);
   const [bookmarkPressed, setBookmarkPressed] = useState(false);
   const [isCommentModalVisible, setCommentModalVisible] = useState(false);
+  const [comment, setComment] = useState("");
 
+  const handleSendPress = () => {
+    if (comment.trim() !== "") {
+      console.log("Comment sent:", comment);
+      // You can perform additional actions here, such as sending the comment to a server
+      // or updating the state to display the comment in the UI.
+      setComment(""); // Clear the comment input after sending
+    }
+  };
   const handlePress = (action) => {
     console.log(`${action} pressed!`);
     if (action === "Like") {
@@ -87,7 +94,6 @@ const PostFooter = ({
           />
         </TouchableOpacity>
       </View>
-
       {/* Comment Modal */}
       <Modal
         isVisible={isCommentModalVisible}
@@ -96,7 +102,31 @@ const PostFooter = ({
       >
         <View style={styles.modalContent}>
           <Header />
-          <ItemComment post={post} users={users}/>
+          <ItemComment post={post} users={users} />
+          <View
+            style={{
+              justifyContent: "flex-start",
+              borderRadius: 15,
+              backgroundColor: "lightgrey",
+              margin: 10,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <TextInput
+              placeholder="Enter your comments"
+              style={{ padding: 10, marginLeft: 5 }}
+              value={comment}
+              onChangeText={(text) => setComment(text)}
+            />
+            <TouchableOpacity
+              onPress={handleSendPress}
+              style={{ paddingHorizontal: 20, paddingVertical: 10 }}
+            >
+              <MaterialCommunityIcons name="send" size={25} />
+            </TouchableOpacity>
+          </View>
         </View>
       </Modal>
     </View>
@@ -105,12 +135,14 @@ const PostFooter = ({
 const Header = () => {
   return (
     <View>
-      <Text style={{ fontSize: 20, padding: 20 }}>Comments</Text>
+      <Text style={{ fontSize: 20, padding: 20, textAlign: "center" }}>
+        Comments
+      </Text>
       <Divider width={1} orientation="vertical" />
     </View>
   );
 };
-const ItemComment = ({post, users}) => {
+const ItemComment = ({ post, users }) => {
   const [isLiked, setIsLiked] = useState(false);
 
   const handleLikePress = () => {
@@ -142,9 +174,13 @@ const ItemComment = ({post, users}) => {
         </TouchableOpacity>
       </View>
       <View style={{ flex: 0.9 }}>
-        <Text style={{ fontWeight: "700" }}>{users[item.userId].detail.name}</Text>
+        <Text style={{ fontWeight: "700" }}>
+          {users[item.userId].detail.name}
+        </Text>
         <Text style={{ fontSize: 17 }}>{item.content}</Text>
-        <Text style={{ color: "#A9A9A9" }}>{`${item.interaction.length} likes`}</Text>
+        <Text
+          style={{ color: "#A9A9A9" }}
+        >{`${item.interaction.length} likes`}</Text>
       </View>
       <TouchableOpacity onPress={handleLikePress}>
         <View>
@@ -177,9 +213,9 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     backgroundColor: "white",
-    borderRadius: 10,
-    alignItems: "center",
     height: heightPercentageToDP("60%"),
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
   },
 });
 
