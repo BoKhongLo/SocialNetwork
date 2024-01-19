@@ -155,13 +155,12 @@ const ChatScreen = ({}) => {
       }
 
       setDataRoomchat((preRoom) => [...preRoom, newRoom]);
-
-      return () => {
-        if (socket != undefined) {
-          socket.disconnect();
-        }
-      };
     });
+    return () => {
+      if (socket != undefined) {
+        socket.disconnect();
+      }
+    };
   }, [socket]);
   return (
     <View style={chat.container}>

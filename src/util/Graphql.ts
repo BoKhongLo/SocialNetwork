@@ -1233,3 +1233,48 @@ export async function getPostDailyAsync(userId: string, accessToken: string) {
         throw error;
     }
 }
+
+
+export async function removePostAsync(userId: string, postId: string, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const REMOVE_POST_QUERY = `
+        mutation RemovePost ($userId: String!, $postId: String!, $fileUrl: [String!]!) {
+            removePost(
+                removePost: {
+                    userId: $userId
+                    postId: $postId
+                    fileUrl: $fileUrl
+                }
+            ) {
+                data
+            }
+        }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: REMOVE_POST_QUERY,
+                variables: {
+                    userId: userId,
+                    postId: postId,
+                    fileUrl: []
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.removePost
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+

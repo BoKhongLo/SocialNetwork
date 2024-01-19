@@ -22,8 +22,7 @@ import {
   updateAccessTokenAsync,
   getPostDailyAsync,
   getUserDataLiteAsync,
-  getSocketIO,
-  saveDataUserLocal
+  getSocketIO
 } from "../util";
 import { registerIndieID, unregisterIndieDevice } from 'native-notify';
 
@@ -34,6 +33,8 @@ const HomeScreen = () => {
   const [dataPost, setDataPost] = useState([]);
   const [dataStory, setDataStory] = useState([]);
   const [dataUser, setDataUser] = useState({});
+  const [socket, setSocket] = useState(undefined);
+
   useEffect(() => {
     const fetchData = async () => {
       const keys = await getAllIdUserLocal();
@@ -60,10 +61,13 @@ const HomeScreen = () => {
         );
       }
       // registerIndieID(dataUserLocal.id, 18604, '8sbEFbNYoDaZJKMDeIAWoc');
+      const newSocket = await getSocketIO(dataUserLocal.accessToken);
+      setSocket(newSocket);
       let tmpPost = [];
       let tmpUserData = {};
       let tmpStory = [];
       for (let post of dataReturn) {
+        if (post.isDisplay == false) continue;
         if (post.type === "POST") {
           let dataUserOwner = await getUserDataLiteAsync(post.ownerUserId, dataUserLocal.accessToken)
           tmpUserData[dataUserOwner.id] = dataUserOwner;
@@ -100,10 +104,30 @@ const HomeScreen = () => {
       setDataUser(tmpUserData);
       setDataPost(tmpPost);
       setDataStory(tmpStory);
+      console.log(tmpPost)
     };
 
     fetchData();
+    return () => {
+      if (socket != undefined) {
+        socket.disconnect();
+      }
+    };
   }, []);
+
+  useEffect(() => {
+    if (socket == undefined) return;
+    socket.on("removePost", async (post) => {
+      console.log(post);
+      setDataPost( (prePost) => prePost.filter(item => item.id !== post.postId))
+    });
+    return () => {
+      if (socket != undefined) {
+        socket.disconnect();
+      }
+    };
+  }, [socket]);
+  
   const VirtualizedView = (props) => {
     return (
       <FlatList
