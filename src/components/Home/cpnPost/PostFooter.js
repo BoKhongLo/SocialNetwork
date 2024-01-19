@@ -17,7 +17,8 @@ import {
 } from "react-native-responsive-screen";
 import { Divider } from "react-native-elements";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-
+import { getAllIdUserLocal, getDataUserLocal, updateAccessTokenAsync, addCommentPostAsync } from "../../../util";
+import { ValidateMessagesDto } from "../../../util/dto";
 const PostFooter = ({
   post,
   onPressLike,
@@ -26,20 +27,29 @@ const PostFooter = ({
   onPressBookmark,
   users,
 }) => {
-  const { likes } = post;
-
   const [likePressed, setLikePressed] = useState(false);
   const [bookmarkPressed, setBookmarkPressed] = useState(false);
   const [isCommentModalVisible, setCommentModalVisible] = useState(false);
   const [comment, setComment] = useState("");
 
-  const handleSendPress = () => {
-    if (comment.trim() !== "") {
-      console.log("Comment sent:", comment);
-      // You can perform additional actions here, such as sending the comment to a server
-      // or updating the state to display the comment in the UI.
-      setComment(""); // Clear the comment input after sending
+  const handleSendPress = async () => {
+    if (comment.trim() === "") return
+    const keys = await getAllIdUserLocal();
+    const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+    const dto = new ValidateMessagesDto(dataUserLocal.id, post.id, "", comment, []);
+    dataReturn = await addCommentPostAsync(dto, dataUserLocal.accessToken);
+    if ("errors" in dataReturn) {
+      const dataUpdate = await updateAccessTokenAsync(
+        dataUserLocal.id,
+        dataUserLocal.refreshToken
+      );
+      dataReturn = await addCommentPostAsync(dto, dataUpdate.accessToken);
     }
+    if ("errors" in dataReturn) {
+      return;
+    }
+    setComment("");
+
   };
   const handlePress = (action) => {
     console.log(`${action} pressed!`);
@@ -169,7 +179,7 @@ const ItemComment = ({ post, users }) => {
               borderWidth: 0.3,
               backgroundColor: "black",
             }}
-            source={{ uri: users[item.userId].detail.avatarUrl }} // Replace with the actual avatar URL
+            source={{ uri: users[item.userId].detail.avatarUrl }}
           />
         </TouchableOpacity>
       </View>

@@ -104,7 +104,7 @@ const HomeScreen = () => {
       setDataUser(tmpUserData);
       setDataPost(tmpPost);
       setDataStory(tmpStory);
-      console.log(tmpPost)
+
     };
 
     fetchData();
@@ -118,8 +118,17 @@ const HomeScreen = () => {
   useEffect(() => {
     if (socket == undefined) return;
     socket.on("removePost", async (post) => {
-      console.log(post);
       setDataPost( (prePost) => prePost.filter(item => item.id !== post.postId))
+    });
+    socket.on("addComment", async (comment) => {
+      setDataPost( (prePost) => {
+        for (let i = 0; i < prePost.length; i++) {
+          if (prePost[i].id === comment.roomId) {
+            prePost[i].comment.push(comment);
+          }
+        }
+        return prePost;
+      })
     });
     return () => {
       if (socket != undefined) {

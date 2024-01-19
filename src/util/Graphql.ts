@@ -1235,6 +1235,59 @@ export async function getPostDailyAsync(userId: string, accessToken: string) {
 }
 
 
+export async function validatePostAsync(dto : PostDto, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const VALIDATE_POST_QUERY = `
+    mutation ValidatePost ($userId: String!, $postId: String!, $content: String, $fileUrl: [String!]!){
+        validatePost(
+            validatePost: {
+                userId: $userId
+                postId: $postId
+                content: $content
+                fileUrl: $fileUrl
+            }
+        ) {
+            id
+            isDisplay
+            fileUrl
+            created_at
+            updated_at
+            ownerUserId
+            type
+            linkedShare
+            content
+        }
+    }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: VALIDATE_POST_QUERY,
+                variables: {
+                    userId: dto.userId,
+                    postId: dto.postId,
+                    content: dto.content,
+                    fileUrl: dto.fileUrl
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.validatePost
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
 export async function removePostAsync(userId: string, postId: string, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
@@ -1278,3 +1331,53 @@ export async function removePostAsync(userId: string, postId: string, accessToke
     }
 }
 
+export async function addCommentPostAsync(dto : ValidateMessagesDto, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const ADD_COMMENT_QUERY = `
+    mutation AddComment ($userId: String!, $postId: String!, $content: String!, $fileUrl: [String!]!){
+        addComment(
+            addComment: {
+                userId: $userId
+                postId: $postId
+                content: $content
+                fileUrl: $fileUrl
+            }
+        ) {
+            id
+            userId
+            roomId
+            isDisplay
+            content
+            fileUrl
+        }
+    }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: ADD_COMMENT_QUERY,
+                variables: {
+                    userId: dto.userId,
+                    postId: dto.roomchatId,
+                    content: dto.content,
+                    fileUrl: dto.fileUrl
+                },
+            },
+            { headers: headers }
+        );
+        console.log(response.data);
+        if ("errors" in response.data) return response.data;
+        return response.data.data.addComment
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}

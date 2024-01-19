@@ -1,6 +1,7 @@
 import axios from "axios";
 import { FileUploadDto, NotiNativeDto } from "./dto";
 import { Toast } from 'toastify-react-native';
+import { Fragment } from "react";
 
 export async function uploadFile (data: FileUploadDto, authToken: string,) {
     try {
@@ -43,3 +44,22 @@ export async function sendNotification(dto: NotiNativeDto) {
         console.error('Error:', error);
     }
 }
+
+export async function getFileByUrl (url: string, authToken: string,) {
+    try {
+        const formData = new FormData();
+        formData.append('fileUrl', url);
+
+        const response = await axios.post(`http://103.144.87.14:3434/media/url`, formData, {
+        headers: {
+            'Authorization': `Bearer ${authToken}`,
+            'Content-Type': 'multipart/form-data',
+        },
+        });
+
+        if (response.data == null) return null;
+        return response.data
+    } catch (error) {
+        console.error('Error:', error);
+    }
+};

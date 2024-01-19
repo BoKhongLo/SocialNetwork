@@ -17,6 +17,18 @@ const PostHeader = ({ post, onAvatarPress, onEllipsisPress, users }) => {
   const { username, avt } = post;
   const navigation = useNavigation();
   const [isModalVisible, setModalVisible] = useState(false);
+  const [isUser, setIsUser] = useState(false);
+
+  useEffect (() => {
+    const fetData = async() => {
+      const keys = await getAllIdUserLocal();
+      const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+      if (dataUserLocal.id === post.ownerUserId) {
+        setIsUser(true);
+      }
+    };
+    fetData()
+  }, [])
 
   const handleAvatarPress = async () => {
     if (onAvatarPress) {
@@ -60,9 +72,7 @@ const PostHeader = ({ post, onAvatarPress, onEllipsisPress, users }) => {
   };
 
   const handleEditPost = async () => {
-    // Đặt logic xóa bài post ở đây
-    console.log("Bài post đã bị xóa!");
-    // Sau khi xóa xong, đóng modal
+    navigation.navigate("newpost", {data: post})
     toggleModal();
   };
 
@@ -88,13 +98,15 @@ const PostHeader = ({ post, onAvatarPress, onEllipsisPress, users }) => {
             {users[post.ownerUserId].detail.name}
           </Text>
         </View>
-        <TouchableOpacity style={{ paddingHorizontal: 20 }} onPress={toggleModal}>
-          <MaterialCommunityIcons name="dots-horizontal" size={25} />
-        </TouchableOpacity>
+        {isUser && (
+          <TouchableOpacity style={{ paddingHorizontal: 20 }} onPress={toggleModal}>
+            <MaterialCommunityIcons name="dots-horizontal" size={25} />
+          </TouchableOpacity>
+        )}
       </View>
 
-      {/* Modal */}
-      <Modal
+      {isUser && (
+        <Modal
         isVisible={isModalVisible}
         onBackdropPress={toggleModal}
         style={{ justifyContent: 'flex-end', margin: 0 }}
@@ -112,6 +124,7 @@ const PostHeader = ({ post, onAvatarPress, onEllipsisPress, users }) => {
           </TouchableOpacity>
         </View>
       </Modal>
+      )}
     </View>
   );
 };

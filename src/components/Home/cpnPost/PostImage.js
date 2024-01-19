@@ -152,14 +152,16 @@ const styles = StyleSheet.create({
   },
   gridItem: {
     flex: 1,
-    margin: 4,
+    // margin: 4,
     borderWidth: 0.2,
     borderColor: 'lightgrey',
   },
   image: {
     flex: 1,
     aspectRatio: 1,
-    resizeMode: 'cover',
+    width: "100%",
+    height: "100%",
+    resizeMode: "contain",
   },
 });
 export default PostImage;

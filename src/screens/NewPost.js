@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { heightPercentageToDP } from "react-native-responsive-screen";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import postSytles from "./../styles/newpostStyles";
 import { Divider } from "react-native-elements";
 import chat from "../styles/ChatStyles/chatStyles";
@@ -13,14 +13,20 @@ import {
   getDataUserLocal,
   updateAccessTokenAsync,
   uploadFile,
-  createPostAsync
+  createPostAsync,
+  getFileByUrl,
+  validatePostAsync
 } from "../util";
 import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from 'expo-document-picker';
 import { FileUploadDto, PostDto } from "../util/dto";
 import { Video, Audio } from 'expo-av';
 
+
 const NewPost = () => {
+  const route = useRoute();
+  const navigation = useNavigation();
+  const [receivedData, setReceivedData] = useState(route.params?.data || null);
   const insets = useSafeAreaInsets();
   const [dataUser, setDataUser] = React.useState(null)
   const [fileUpload, setFileUpload] = React.useState([])
@@ -28,6 +34,7 @@ const NewPost = () => {
     userId: "",
     content: "",
     fileUrl: [],
+    postId: ""
   })
   const validateDataPost = (newData) => {
     setDataPost(dataPostPre => {
@@ -62,8 +69,24 @@ const NewPost = () => {
           ...dataPostPre, ...{ userId: dataUserLocal.id }
         }
       });
+      if (receivedData) {
+        console.log(receivedData)
+        setDataPost({
+          userId: receivedData.ownerUserId,
+          content: receivedData.content,
+          fileUrl: receivedData.fileUrl,
+          postId: receivedData.id,
+        })
+        let dataFile = []
+        for (let i = 0; i < receivedData.fileUrl.length; i++) {
+          let newFile = { id: receivedData.fileUrl[i], source: { uri: receivedData.fileUrl[i] } }
+          dataFile.push(newFile)
+        }
+        setFileUpload(dataFile)
+      }
     }
     fetchData()
+
   }, [])
   return (
     <View
@@ -79,7 +102,11 @@ const NewPost = () => {
       <Header postData={dataPost} />
       <ScrollView>
         {dataUser != null && (
-          <Caption user={dataUser} onUpdateData={validateDataPost} />
+          <Caption
+            user={dataUser}
+            onUpdateData={validateDataPost}
+            postData={dataPost}
+          />
         )}
 
         {fileUpload.length > 0 && (
@@ -102,29 +129,44 @@ const NewPost = () => {
 const Header = ({ postData }) => {
   const navigation = useNavigation();
   const handleCreatePost = async () => {
-    const dto = new PostDto(postData.userId, "POST", postData.content, postData.fileUrl)
+
+    const dto = new PostDto(postData.userId, "POST", postData.content, postData.fileUrl, postData.postId);
     const keys = await getAllIdUserLocal();
     const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
-    let dataReturn = await createPostAsync(
-      dto,
-      dataUserLocal.accessToken
-    );
-
-    if ("errors" in dataReturn) {
-      const dataUpdate = await updateAccessTokenAsync(
-        dataUserLocal.id,
-        dataUserLocal.refreshToken
-      );
-      dataReturn = await createPostAsync(
+    if (postData.postId === "") {
+      let dataReturn = await createPostAsync(
         dto,
-        dataUpdate.accessToken
+        dataUserLocal.accessToken
       );
+
+      if ("errors" in dataReturn) {
+        const dataUpdate = await updateAccessTokenAsync(
+          dataUserLocal.id,
+          dataUserLocal.refreshToken
+        );
+        dataReturn = await createPostAsync(
+          dto,
+          dataUpdate.accessToken
+        );
+      }
+      if ("errors" in dataReturn) return;
     }
-    console.log(dataReturn);
-    if ("errors" in dataReturn) return;
-
+    else {
+      let dataReturn = await validatePostAsync(
+        dto,
+        dataUserLocal.accessToken)
+      if ("errors" in dataReturn) {
+        const dataUpdate = await updateAccessTokenAsync(
+          dataUserLocal.id,
+          dataUserLocal.refreshToken
+        );
+        dataReturn = await validatePostAsync(
+          dto,
+          dataUpdate.accessToken)
+      }
+      if ("errors" in dataReturn) return;
+    }
     navigation.replace('main')
-
   }
   return (
     <View
@@ -160,13 +202,16 @@ const Header = ({ postData }) => {
   );
 };
 
-const Caption = ({ user, onUpdateData }) => {
-  const [inputText, setInputText] = useState("");
+const Caption = ({ user, onUpdateData, postData }) => {
+  const [inputText, setInputText] = useState(postData.content);
 
   const handleInputTextChange = (text) => {
     setInputText(text);
     onUpdateData({ content: text });
   };
+  useEffect(() => {
+    setInputText(postData.content)
+  }, [postData])
   return (
     <View>
       <View style={{ flexDirection: "row" }}>
@@ -230,7 +275,7 @@ const ChoseImg = ({ upFile, postData, onUpdateData }) => {
   }
   const handleGallery = async () => {
     let result = await DocumentPicker.getDocumentAsync({
-      type: ['image/*','video/*','audio/*'],
+      type: ['image/*', 'video/*', 'audio/*'],
       multiple: true,
     });
 
