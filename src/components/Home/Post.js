@@ -8,6 +8,7 @@ import {
   Image,
 } from "react-native";
 import headerPostStyles from "../../styles/postHeaderStyles";
+import profileStyle from "../../styles/profileStyles"
 import Modal from "react-native-modal";
 
 import PostHeader from "./cpnPost/PostHeader";
