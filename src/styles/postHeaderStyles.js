@@ -54,12 +54,12 @@ const headerPostStyles = StyleSheet.create({
   },
   ItemFooterContainer:{
     flexDirection: 'row',
-    paddingVertical:5,
     justifyContent: "flex-start",
   },
 
   caption:{
-    fontWeight: '400',
+    fontWeight: '500',
+    fontSize:18
   },
 
   modalContainer: {

@@ -85,12 +85,12 @@ const PostFooter = ({
             source={require("../../../../assets/dummyicon/comment_line.png")}
           />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => handlePress("Share")}>
+        {/* <TouchableOpacity onPress={() => handlePress("Share")}>
           <Image
             style={headerPostStyles.commentsIcon}
             source={require("../../../../assets/dummyicon/share.png")}
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
       <View>
         <TouchableOpacity onPress={() => handlePress("Bookmark")}>

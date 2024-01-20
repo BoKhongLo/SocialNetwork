@@ -20,19 +20,15 @@ import {
   widthPercentageToDP,
 } from "react-native-responsive-screen";
 
-
-
 const Post = ({ post, users }) => {
   return (
     <View>
       <Divider width={1} orientation="vertical" />
       <PostHeader post={post} users={users} />
-      <View style={{ marginLeft: 10 }}>
-        <Caption post={post} users={users}/>
-      </View>
+      <Caption post={post} users={users} />
       <PostImage post={post} users={users} />
       <View>
-        <PostFooter post={post} users={users}/>
+        <PostFooter post={post} users={users} />
         <View style={{ marginLeft: 10 }}>
           <Likes post={post} users={users} />
         </View>
@@ -60,7 +56,9 @@ const Likes = ({ post, users }) => {
       style={[headerPostStyles.ItemFooterContainer]}
       onPress={() => handlePress("Comment")}
     >
-      <Text style={headerPostStyles.likes}>{post.interaction.length} likes</Text>
+      <Text style={headerPostStyles.likes}>
+        {post.interaction.length} likes
+      </Text>
 
       <Modal
         isVisible={isCommentModalVisible}
@@ -109,9 +107,13 @@ const ItemLike = ({ post, users }) => {
         </TouchableOpacity>
       </View>
       <View style={{ flex: 0.9 }}>
-        <Text style={{ fontWeight: "700" }}>{users[item.userId].detail.name}</Text>
+        <Text style={{ fontWeight: "700" }}>
+          {users[item.userId].detail.name}
+        </Text>
         {users[item.userId].detail.nickName && (
-          <Text style={{ color: "#A9A9A9" }}>{users[item.userId].detail.nickName}</Text>
+          <Text style={{ color: "#A9A9A9" }}>
+            {users[item.userId].detail.nickName}
+          </Text>
         )}
       </View>
       <TouchableOpacity
@@ -157,12 +159,18 @@ const Header = () => {
     </View>
   );
 };
-
+function capitalizeFirstLetter(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
 const Caption = ({ post, users }) => {
   return (
-    <View style={[headerPostStyles.ItemFooterContainer, { marginBottom: 30 }]}>
+    <View
+      style={[headerPostStyles.ItemFooterContainer, { marginVertical: 10,marginHorizontal:15 }]}
+    >
       {/* <Text style={{ fontWeight: "600" }}>{users[post.ownerUserId].detail.name}</Text> */}
-      <Text style={headerPostStyles.caption}> {post.content}</Text>
+      <Text style={headerPostStyles.caption}>
+        {capitalizeFirstLetter(post.content)}
+      </Text>
     </View>
   );
 };
