@@ -8,6 +8,8 @@ const PostImage = ({ post, users }) => {
 
   const [isModalVisible, setModalVisible] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [ratio, setRatio] = useState(0);
+
 
   const validateFile = (file) => {
     const imgExt = ["jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp", "raf"];
@@ -29,6 +31,7 @@ const PostImage = ({ post, users }) => {
     }
   }
 
+
   const handleImagePress = (index) => {
     setCurrentImageIndex(index);
     setModalVisible(true);
@@ -38,33 +41,41 @@ const PostImage = ({ post, users }) => {
     setModalVisible(false);
   };
 
-  const renderItem = ({ item, index }) => (
-    <TouchableOpacity
-      onPress={() => handleImagePress(index)}
-      style={styles.gridItem}
-    >
-      {validateFile(item) === "IMAGE" ? (
-        <Image
-          source={{ uri: item }}
-          style={styles.image}
-        />
-      ) : validateFile(item) === "VIDEO" ? (
-        <Video
-          style={styles.image}
-          source={{ uri: item }}
-          useNativeControls
-          resizeMode="contain"
-        />
-      ) : (
-        <Video
-          style={styles.image}
-          source={{ uri: item }}
-          useNativeControls
-          resizeMode="contain"
-        />
-      )}
-    </TouchableOpacity>
-  );
+  const renderItem = ({ item, index }) => {
+
+    Image.getSize(item, (width, height) => {setRatio(width / height)});
+
+    return(
+      <TouchableOpacity
+        onPress={() => handleImagePress(index)}
+        style={styles.gridItem}
+      >
+        {validateFile(item) === "IMAGE" ? (
+          <Image
+            source={{ uri: item }}
+            style={[styles.image, { aspectRatio: ratio}]}
+            resizeMode="contain"
+          />
+        ) : validateFile(item) === "VIDEO" ? (
+          <Video
+            style={[styles.image, {
+              aspectRatio: 1
+            }]}
+            source={{ uri: item }}
+            height= {500}
+            useNativeControls
+            resizeMode="contain"
+          />
+        ) : (
+          <Video
+            style={styles.image}
+            source={{ uri: item }}
+            useNativeControls
+            resizeMode="contain"
+          />
+        )}
+      </TouchableOpacity>
+  )};
 
   return (
     <View>
@@ -149,17 +160,21 @@ const PostImage = ({ post, users }) => {
 const styles = StyleSheet.create({
   gridContainer: {
     padding: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   gridItem: {
     flex: 1,
-    margin: 4,
     borderWidth: 0.2,
     borderColor: 'lightgrey',
+    // height: 'auto'
   },
   image: {
-    flex: 1,
-    aspectRatio: 1,
-    resizeMode: 'cover',
+    // flex: 1,
+    // aspectRatio: 1,
+    // height: 100,
+    // width: '100%',
+    resizeMode: 'contain',
   },
 });
 export default PostImage;

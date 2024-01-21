@@ -8,7 +8,7 @@ const Header = ({receivedData}) => {
 
   return (
     <View>
-      <View style={styles.headerContainer}>
+      <View style={[styles.headerContainer]}>
         <TouchableOpacity>
           <Image
             style={styles.logo}
