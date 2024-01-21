@@ -108,6 +108,70 @@ const HomeScreen = () => {
       setDataPost(tmpPost);
       setDataStory(tmpStory);
 
+      newSocket.on("removePost", (post) => {
+        setDataPost((prevPosts) => prevPosts.filter(item => item.id !== post.postId));
+      });
+      
+      newSocket.on("addComment", async (comment) => {
+        setDataPost( prePost => {
+          for (let i = 0; i < prePost.length; i++) {
+            if (prePost[i].id === comment.roomId) {
+              prePost[i].comment.push(comment);
+              break;
+            }
+          }
+          return prePost;
+        })
+      });
+      
+      newSocket.on("addInteractionPost!", (post) => {
+        setDataPost((prePost) => {
+          console.log(post);
+          for (let i = 0; i < prePost.length; i++) {
+            if (prePost[i].id === post.postId) {
+              prePost[i].interaction.push(post);;
+              console.log(prePost[i].interaction);
+              break;
+            }
+          }
+          return prePost;
+        });
+      });
+      
+      newSocket.on("removeInteractionPost", (post) => {
+        setDataPost((prePost) => {
+          const indexPost = prePost.findIndex(item => item.id === post.postId);
+          if (indexPost === -1) return prePost;
+          const indexInter = prePost[indexPost].interaction.findIndex(item => item.id === post.interactionId);
+          if (indexInter === -1) return prePost;
+          prePost[indexPost].interaction.splice(indexInter, 1);
+          return prePost;
+        });
+      });
+  
+      newSocket.on("addInteractionComment", (comment) => {
+        setDataPost((prePost) => {
+          const indexPost = prePost.findIndex(item => item.id === comment.roomId);
+          if (indexPost === -1) return prePost;
+          const indexComment = prePost[indexPost].comment.findIndex(item => item.id == comment.id)
+          if (indexComment === -1) return prePost;
+          prePost[indexPost].comment[indexComment].interaction.push(comment)
+          return prePost;
+        });
+      });
+      
+      newSocket.on("removeInteractionComment", (comment) => {
+        setDataPost((prePost) => {
+          const indexPost = prePost.findIndex(item => item.id === comment.postId);
+          if (indexPost === -1) return prePost;
+          const indexComment = prePost[indexPost].comment.findIndex(item => item.id === comment.commentId)
+          if (indexComment === -1) return prePost;
+          const indexInter =prePost[indexPost].comment[indexComment].interaction.findIndex(item => item.id ==comment.interactionId);
+          if (indexInter === -1) return prePost;
+          prePost[indexPost].comment[indexComment].interaction.splice(indexInter, 1)
+          return prePost;
+        });
+      });
     };
 
     fetchData();
@@ -118,110 +182,6 @@ const HomeScreen = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (socket === undefined) return;
-    socket.on("removePost", (post) => {
-      setDataPost((prevPosts) => prevPosts.filter(item => item.id !== post.postId));
-    });
-    
-    socket.on("addComment", (comment) => {
-      setDataPost((prevPosts) => {
-        return prevPosts.map(item => {
-          if (item.id === comment.roomId) {
-            return {
-              ...item,
-              comment: [...item.comment, comment],
-            };
-          }
-          return item;
-        });
-      });
-    });
-    
-    socket.on("addInteractionPost!", (post) => {
-      setDataPost((prevPosts) => {
-        const updatedPosts = prevPosts.map(item => {
-          if (item.id === post.postId) {
-            return {
-              ...item,
-              interaction: [...item.interaction, post],
-            };
-          }
-          return item;
-        });
-        return updatedPosts;
-      });
-    });
-    
-    socket.on("removeInteractionPost", (post) => {
-      setDataPost((prevPosts) => {
-        const updatedPosts = prevPosts.map(item => {
-          if (item.id === post.postId) {
-            return {
-              ...item,
-              interaction: item.interaction.filter(item => item.id !== post.interactionId),
-            };
-          }
-          return item;
-        });
-        return updatedPosts;
-      });
-    });
-
-    socket.on("addInteractionComment", (comment) => {
-      setDataPost((prevPosts) => {
-        const updatedPosts = prevPosts.map((post) => {
-          if (post.id === comment.roomId) {
-            const updatedComments = post.comment.map((item) => {
-              if (item.id === comment.id) {
-                return { ...item, interaction: comment.interaction };
-              }
-              return item;
-            });
-            return { ...post, comment: updatedComments };
-          }
-          return post;
-        });
-        return updatedPosts;
-      });
-    });
-    
-    socket.on("removeInteractionComment", (comment) => {
-      setDataPost((prevPosts) => {
-        const updatedPosts = prevPosts.map((post) => {
-          if (post.id === comment.postId) {
-            const updatedComments = post.comment.map((item) => {
-              if (item.id === comment.commentId) {
-                const updatedInteractions = item.interaction.filter(
-                  (interaction) => interaction.id !== comment.interactionId
-                );
-                return { ...item, interaction: updatedInteractions };
-              }
-              return item;
-            });
-            return { ...post, comment: updatedComments };
-          }
-          return post;
-        });
-        return updatedPosts;
-      });
-    });
-    
-    return () => {
-      if (socket != undefined) {
-        socket.disconnect();
-      }
-    };
-  }, [socket]);
-
-  const [refreshing, setRefreshing] = useState(false);
-
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 2000);
-  }, []);
 
   const VirtualizedView = useMemo(() => {
     return (props) => (
@@ -230,15 +190,12 @@ const HomeScreen = () => {
         ListEmptyComponent={null}
         keyExtractor={() => "dummy"}
         renderItem={null}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
         ListHeaderComponent={() => (
           <React.Fragment>{props.children}</React.Fragment>
         )}
       />
     );
-  }, [refreshing, onRefresh]);
+  }, []);
 
   return (
     <View

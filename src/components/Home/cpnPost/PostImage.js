@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { View, Image, TouchableOpacity, Modal as RNModal, StyleSheet, FlatList } from "react-native";
 import Swiper from "react-native-swiper";
 import headerPostStyles from "./../../../styles/postHeaderStyles";
@@ -38,7 +38,7 @@ const PostImage = React.memo(({ post, users }) => {
     setModalVisible(false);
   };
 
-  const renderItem = ({ item, index }) => (
+  const renderItem = useCallback(({ item, index }) => (
     <TouchableOpacity
       onPress={() => handleImagePress(index)}
       style={styles.gridItem}
@@ -64,7 +64,7 @@ const PostImage = React.memo(({ post, users }) => {
         />
       )}
     </TouchableOpacity>
-  );
+  ), []);
 
   return (
     <View>

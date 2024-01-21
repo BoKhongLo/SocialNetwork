@@ -102,6 +102,7 @@ const PostFooter = React.memo (({
     }
     setComment("");
   };
+
   const handlePress = async (action) => {
     console.log(`${action} pressed!`);
     const keys = await getAllIdUserLocal();
@@ -218,12 +219,6 @@ const PostFooter = React.memo (({
             source={require("../../../../assets/dummyicon/comment_line.png")}
           />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => handlePress("Share")}>
-          <Image
-            style={headerPostStyles.commentsIcon}
-            source={require("../../../../assets/dummyicon/share.png")}
-          />
-        </TouchableOpacity>
       </View>
       <View>
         <TouchableOpacity onPress={() => handlePress("Bookmark")}>
@@ -314,7 +309,7 @@ const ItemComment = React.memo(({ post, users }) => {
     }
   }, [isLiked]);
 
-  const renderItem = ({ item }) => {
+  const renderItem = useCallback(({ item }) => {
     return (
       <View
         style={{
@@ -378,7 +373,7 @@ const ItemComment = React.memo(({ post, users }) => {
         </TouchableOpacity>
       </View>
     );
-  };
+  }, [isLiked]);
 
   return (
     <FlatList
