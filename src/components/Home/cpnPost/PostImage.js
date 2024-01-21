@@ -4,7 +4,7 @@ import Swiper from "react-native-swiper";
 import headerPostStyles from "./../../../styles/postHeaderStyles";
 import { Video, Audio } from 'expo-av';
 
-const PostImage = ({ post, users }) => {
+const PostImage = React.memo(({ post, users }) => {
 
   const [isModalVisible, setModalVisible] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -144,7 +144,7 @@ const PostImage = ({ post, users }) => {
       </RNModal>
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   gridContainer: {

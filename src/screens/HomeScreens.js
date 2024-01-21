@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
   View,
   ScrollView,
@@ -81,6 +81,9 @@ const HomeScreen = () => {
             let dataUserInteraction = await getUserDataLiteAsync(interaction.userId, dataUserLocal.accessToken)
             tmpUserData[dataUserInteraction.id] = dataUserInteraction;
           }
+          if (post.interaction) {
+            post.interaction = post.interaction.filter(item => item.isDisplay !== false)
+          }
           tmpPost.push(post);
         }
         else if (post.type === "STORY") {
@@ -99,8 +102,8 @@ const HomeScreen = () => {
           tmpStory.push(post);
         }
       }
-      tmpStory.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
-      tmpPost.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+      tmpStory.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      tmpPost.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
       setDataUser(tmpUserData);
       setDataPost(tmpPost);
       setDataStory(tmpStory);
@@ -116,40 +119,127 @@ const HomeScreen = () => {
   }, []);
 
   useEffect(() => {
-    if (socket == undefined) return;
-    socket.on("removePost", async (post) => {
-      setDataPost( (prePost) => prePost.filter(item => item.id !== post.postId))
+    if (socket === undefined) return;
+    socket.on("removePost", (post) => {
+      setDataPost((prevPosts) => prevPosts.filter(item => item.id !== post.postId));
     });
-    socket.on("addComment", async (comment) => {
-      setDataPost( (prePost) => {
-        for (let i = 0; i < prePost.length; i++) {
-          if (prePost[i].id === comment.roomId) {
-            prePost[i].comment.push(comment);
+    
+    socket.on("addComment", (comment) => {
+      setDataPost((prevPosts) => {
+        return prevPosts.map(item => {
+          if (item.id === comment.roomId) {
+            return {
+              ...item,
+              comment: [...item.comment, comment],
+            };
           }
-        }
-        return prePost;
-      })
+          return item;
+        });
+      });
     });
+    
+    socket.on("addInteractionPost!", (post) => {
+      setDataPost((prevPosts) => {
+        const updatedPosts = prevPosts.map(item => {
+          if (item.id === post.postId) {
+            return {
+              ...item,
+              interaction: [...item.interaction, post],
+            };
+          }
+          return item;
+        });
+        return updatedPosts;
+      });
+    });
+    
+    socket.on("removeInteractionPost", (post) => {
+      setDataPost((prevPosts) => {
+        const updatedPosts = prevPosts.map(item => {
+          if (item.id === post.postId) {
+            return {
+              ...item,
+              interaction: item.interaction.filter(item => item.id !== post.interactionId),
+            };
+          }
+          return item;
+        });
+        return updatedPosts;
+      });
+    });
+
+    socket.on("addInteractionComment", (comment) => {
+      setDataPost((prevPosts) => {
+        const updatedPosts = prevPosts.map((post) => {
+          if (post.id === comment.roomId) {
+            const updatedComments = post.comment.map((item) => {
+              if (item.id === comment.id) {
+                return { ...item, interaction: comment.interaction };
+              }
+              return item;
+            });
+            return { ...post, comment: updatedComments };
+          }
+          return post;
+        });
+        return updatedPosts;
+      });
+    });
+    
+    socket.on("removeInteractionComment", (comment) => {
+      setDataPost((prevPosts) => {
+        const updatedPosts = prevPosts.map((post) => {
+          if (post.id === comment.postId) {
+            const updatedComments = post.comment.map((item) => {
+              if (item.id === comment.commentId) {
+                const updatedInteractions = item.interaction.filter(
+                  (interaction) => interaction.id !== comment.interactionId
+                );
+                return { ...item, interaction: updatedInteractions };
+              }
+              return item;
+            });
+            return { ...post, comment: updatedComments };
+          }
+          return post;
+        });
+        return updatedPosts;
+      });
+    });
+    
     return () => {
       if (socket != undefined) {
         socket.disconnect();
       }
     };
   }, [socket]);
-  
-  const VirtualizedView = (props) => {
-    return (
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+
+  const VirtualizedView = useMemo(() => {
+    return (props) => (
       <FlatList
         data={[]}
         ListEmptyComponent={null}
         keyExtractor={() => "dummy"}
         renderItem={null}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
         ListHeaderComponent={() => (
           <React.Fragment>{props.children}</React.Fragment>
         )}
       />
     );
-  }
+  }, [refreshing, onRefresh]);
+
   return (
     <View
       style={{

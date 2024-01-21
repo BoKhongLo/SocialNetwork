@@ -13,7 +13,7 @@ import headerPostStyles from "./../../../styles/postHeaderStyles";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import {removePostAsync, getAllIdUserLocal, getDataUserLocal, updateAccessTokenAsync} from "../../../util"
 import { useNavigation } from "@react-navigation/native";
-const PostHeader = ({ post, onAvatarPress, onEllipsisPress, users }) => {
+const PostHeader = React.memo(({ post, onAvatarPress, onEllipsisPress, users }) => {
   const { username, avt } = post;
   const navigation = useNavigation();
   const [isModalVisible, setModalVisible] = useState(false);
@@ -127,6 +127,6 @@ const PostHeader = ({ post, onAvatarPress, onEllipsisPress, users }) => {
       )}
     </View>
   );
-};
+});
 
 export default PostHeader;

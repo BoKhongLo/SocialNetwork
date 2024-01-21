@@ -1412,7 +1412,6 @@ export async function addInteractPostAsync(dto: InteractDto, accessToken: string
     };
 
     try {
-        5
         const response = await axios.post(
             endpoint,
             {
@@ -1425,7 +1424,6 @@ export async function addInteractPostAsync(dto: InteractDto, accessToken: string
             },
             { headers: headers }
         );
-        console.log(response.data);
         if ("errors" in response.data) return response.data;
         return response.data.data.interactPost
 
@@ -1439,7 +1437,7 @@ export async function removeInteractPostAsync(dto: InteractDto, accessToken: str
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
     const REMOVE_INTERACT_QUERY = `
-    mutation RemoveInteractionPost ($userId: String!, $postId: String!, $interactionId: String){
+    mutation RemoveInteractionPost ($userId: String!, $postId: String!, $interactionId: String) {
         RemoveInteractionPost(
             removeInteractionPost: {
                 userId: $userId
@@ -1449,7 +1447,8 @@ export async function removeInteractPostAsync(dto: InteractDto, accessToken: str
         ) {
             data
         }
-    }}`;
+    }`
+    
 
     const headers = {
         'Content-Type': 'application/json',
@@ -1599,13 +1598,8 @@ export async function addBookmarkAsync(dto: BookmarksDto, accessToken: string) {
                     userId: $userId
                     bookMarkId: $bookMarkId
             }) {
-                id
-                createdUserId
-                receiveUserId
-                value
-                isDisplay
-                created_at
-                updated_at
+                userId
+                bookmarkId
             }
         }`;
 

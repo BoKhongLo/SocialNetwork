@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   View,
   Text,
@@ -23,7 +23,7 @@ import {
 
 
 
-const Post = ({ post, users }) => {
+const Post = React.memo(({ post, users }) => {
   return (
     <View>
       <Divider width={1} orientation="vertical" />
@@ -40,7 +40,7 @@ const Post = ({ post, users }) => {
       </View>
     </View>
   );
-};
+});
 
 const Likes = ({ post, users }) => {
   const [isCommentModalVisible, setCommentModalVisible] = useState(false);
