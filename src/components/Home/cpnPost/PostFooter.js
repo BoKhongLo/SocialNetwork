@@ -35,7 +35,7 @@ import {
   ValidateMessagesDto,
   BookmarksDto
 } from "../../../util/dto";
-const PostFooter = React.memo (({
+const PostFooter = React.memo(({
   post,
   onPressLike,
   onPressComment,
@@ -119,6 +119,8 @@ const PostFooter = React.memo (({
           );
           dataReturn = await removeInteractPostAsync(dto, dataUpdate.accessToken);
         }
+        if ("errors" in dataReturn) return;
+        setLikePressed(false);
       }
       else if (likePostId == false) {
         const dto = new InteractDto(dataUserLocal.id, post.id, "", "HEART", "");
@@ -130,6 +132,8 @@ const PostFooter = React.memo (({
           );
           dataReturn = await addInteractPostAsync(dto, dataUpdate.accessToken);
         }
+        if ("errors" in dataReturn) return;
+        setLikePressed(true);
       }
     } else if (action === "Bookmark") {
       if (bookmarkPressed === true) {
@@ -141,20 +145,23 @@ const PostFooter = React.memo (({
             dataUserLocal.refreshToken
           );
           dataReturn = await removeBookmarkAsync(dto, dataUpdate.accessToken);
-        } 
         }
-        else if (bookmarkPressed === false) {
-          const dto = new BookmarksDto(dataUserLocal.id, post.id);
-          let dataReturn = await addBookmarkAsync(dto, dataUserLocal.accessToken)
-          if ("errors" in dataReturn) {
-            const dataUpdate = await updateAccessTokenAsync(
-              dataUserLocal.id,
-              dataUserLocal.refreshToken
-            );
-            dataReturn = await addBookmarkAsync(dto, dataUpdate.accessToken);
-          }
-          console.log(dataReturn.errors)
+        if ("errors" in dataReturn) return;
+        setBookmarkPressed(false);
+      }
+      else if (bookmarkPressed === false) {
+        const dto = new BookmarksDto(dataUserLocal.id, post.id);
+        let dataReturn = await addBookmarkAsync(dto, dataUserLocal.accessToken)
+        if ("errors" in dataReturn) {
+          const dataUpdate = await updateAccessTokenAsync(
+            dataUserLocal.id,
+            dataUserLocal.refreshToken
+          );
+          dataReturn = await addBookmarkAsync(dto, dataUpdate.accessToken);
         }
+        if ("errors" in dataReturn) return;
+        setBookmarkPressed(true);
+      }
     } else if (action === "Comment") {
       setCommentModalVisible(true);
     }
@@ -166,39 +173,39 @@ const PostFooter = React.memo (({
 
   const renderCommentModal = () => (
     <Modal
-    isVisible={isCommentModalVisible}
-    onBackdropPress={closeCommentModal}
-    style={styles.modalContainer}
-  >
-    <View style={styles.modalContent}>
-      <Header />
-      <ItemComment post={post} users={users} />
-      <View
-        style={{
-          justifyContent: "flex-start",
-          borderRadius: 15,
-          backgroundColor: "lightgrey",
-          margin: 10,
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <TextInput
-          placeholder="Enter your comments"
-          style={{ padding: 10, marginLeft: 5 }}
-          value={comment}
-          onChangeText={(text) => setComment(text)}
-        />
-        <TouchableOpacity
-          onPress={handleSendPress}
-          style={{ paddingHorizontal: 20, paddingVertical: 10 }}
+      isVisible={isCommentModalVisible}
+      onBackdropPress={closeCommentModal}
+      style={styles.modalContainer}
+    >
+      <View style={styles.modalContent}>
+        <Header />
+        <ItemComment post={post} users={users} />
+        <View
+          style={{
+            justifyContent: "flex-start",
+            borderRadius: 15,
+            backgroundColor: "lightgrey",
+            margin: 10,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
         >
-          <MaterialCommunityIcons name="send" size={25} />
-        </TouchableOpacity>
+          <TextInput
+            placeholder="Enter your comments"
+            style={{ padding: 10, marginLeft: 5 }}
+            value={comment}
+            onChangeText={(text) => setComment(text)}
+          />
+          <TouchableOpacity
+            onPress={handleSendPress}
+            style={{ paddingHorizontal: 20, paddingVertical: 10 }}
+          >
+            <MaterialCommunityIcons name="send" size={25} />
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
-  </Modal>
+    </Modal>
   );
   return (
     <View style={headerPostStyles.postFooterContainer}>
@@ -238,7 +245,7 @@ const PostFooter = React.memo (({
   );
 });
 
-const Header =  React.memo(() => {
+const Header = React.memo(() => {
   return (
     <View>
       <Text style={{ fontSize: 20, padding: 20, textAlign: "center" }}>
@@ -295,6 +302,12 @@ const ItemComment = React.memo(({ post, users }) => {
         );
         dataReturn = await addInteractCommentAsync(dto, dataUpdate.accessToken);
       }
+      if ("errors" in dataReturn) return;
+      setIsLiked(preData => {
+        preData[commentId].value = !preData[commentId].value;
+        preData[commentId].id = "";
+        return preData;
+      });
     }
     else {
       const dto = new InteractDto(dataUserLocal.id, post.id, commentId, "HEART", "")
@@ -306,6 +319,12 @@ const ItemComment = React.memo(({ post, users }) => {
         );
         dataReturn = await addInteractCommentAsync(dto, dataUpdate.accessToken);
       }
+      if ("errors" in dataReturn) return;
+      setIsLiked(preData => {
+        preData[commentId].value = !preData[commentId].value;
+        preData[commentId].id = dataReturn.id;
+        return preData;
+      });
     }
   }, [isLiked]);
 

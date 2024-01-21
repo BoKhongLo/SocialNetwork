@@ -3,6 +3,7 @@ import { View, Text, Image, FlatList, TouchableHighlight } from "react-native";
 import styles from "../../styles/styles";
 import highLight from "../../styles/highLightStyles";
 import { useNavigation } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const Stories = ({ post, users }) => {
   const navigation = useNavigation();
@@ -13,17 +14,24 @@ const Stories = ({ post, users }) => {
   
   const renderItem = ({ item }) => (
     <View style={{ alignItems: "center", marginHorizontal: 5 }}>
-      <TouchableHighlight
-        style={highLight.highLightStories}
-        onPress={() => handleStoryPress(item)}
+      <LinearGradient
+        colors={['#CA1D7E', '#E35157', '#F2703F']}
+        start={{x: 0.0, y: 1.0}} end={{x: 1.0, y: 1.0}}
+        style={{ height: 82,width: 82,alignItems: 'center',justifyContent: 'center',borderRadius:82 / 2}}
       >
-        { users[item.ownerUserId].detail.avatarUrl ? (
-        <Image style={styles.stroyImg} source={{uri : users[item.ownerUserId].detail.avatarUrl}} />
-        ) : (
-          <Image style={styles.stroyImg}  />
-        )}
-
-      </TouchableHighlight>
+        <TouchableHighlight
+          style={[highLight.highLightStories, {
+            width: 75,height: 75,borderRadius: 75/2,alignSelf: 'center',borderColor: '#fff',borderWidth: 3
+          }]}
+          onPress={() => handleStoryPress(item)}
+        >
+          { users[item.ownerUserId].detail.avatarUrl ? (
+          <Image style={styles.storyImg} source={{uri : users[item.ownerUserId].detail.avatarUrl}} />
+          ) : (
+            <Image style={styles.storyImg}  />
+          )}
+        </TouchableHighlight>
+      </LinearGradient>
       <Text style={{ color: "black" }}>{users[item.ownerUserId].detail.name}</Text>
     </View>
   );

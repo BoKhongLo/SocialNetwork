@@ -208,7 +208,9 @@ const HomeScreen = () => {
       }}
     >
       <Header receivedData={receivedData} />
-      <View style={{ flex: 1 }}>
+      <View 
+        style={{ flex: 1 }}
+      >
       {dataPost.length == 0 && dataStory.length == 0 && (
         <View style={styles.container}>
           <Text style={styles.text}>Welcome to Black Cat Chat</Text>

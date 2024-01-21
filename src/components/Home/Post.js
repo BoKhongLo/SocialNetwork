@@ -8,12 +8,12 @@ import {
   Image,
 } from "react-native";
 import headerPostStyles from "../../styles/postHeaderStyles";
-import profileStyle from "../../styles/profileStyles"
 import Modal from "react-native-modal";
 
 import PostHeader from "./cpnPost/PostHeader";
 import PostFooter from "./cpnPost/PostFooter";
 import PostImage from "./cpnPost/PostImage";
+import profileStyle from "../../styles/profileStyles";
 
 import { Divider } from "react-native-elements";
 import {
@@ -23,24 +23,69 @@ import {
 
 
 
-const Post = React.memo(({ post, users }) => {
+const Post = ({ post, users }) => {
+  const validateFile = (file) => {
+    const imgExt = ["jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp", "raf"];
+    const videoExt = ["mp4", "avi", "mkv", "mov", "wmv", "flv", "webm"];
+    const audioExt = ["mp3", "ogg", "wav", "flac", "aac", "wma", "m4a"];
+    const lastElement = file.split("/").pop();
+    const fileExt = lastElement
+      .split("?")[0]
+      .split(".")
+      .pop()
+      .toLowerCase();
+
+    if (imgExt.includes(fileExt)) {
+      return "IMAGE"
+    } else if (audioExt.includes(fileExt)) {
+      return "AUDIO"
+    } else if (videoExt.includes(fileExt)) {
+      return "VIDEO"
+    }
+  }
+  const fileType = useState(validateFile(post.fileUrl[0]))[0]
+
   return (
     <View>
-      <Divider width={1} orientation="vertical" />
-      <PostHeader post={post} users={users} />
-      <View style={{ marginLeft: 10 }}>
-        <Caption post={post} users={users}/>
-      </View>
-      <PostImage post={post} users={users} />
+      {fileType == "VIDEO" && 
       <View>
-        <PostFooter post={post} users={users}/>
-        <View style={{ marginLeft: 10 }}>
-          <Likes post={post} users={users} />
+        <View style={{
+          position: "absolute",
+          zIndex: 1,
+          top: 0,
+          left: 0,
+        }}>
+          <PostHeader post={post} users={users} headerColor='white' />
         </View>
-      </View>
+        <PostImage post={post} users={users} />
+        <View>
+          <PostFooter post={post} users={users}/>
+          <View style={{ marginLeft: 14 }}>
+            <Likes post={post} users={users} />
+          </View>
+        </View>
+        <View style={{ marginLeft: 14 }}>
+          <Caption post={post} users={users}/>
+        </View>
+      </View>}
+      {fileType == "IMAGE" && 
+        <View>
+          <PostHeader post={post} users={users} />
+        <PostImage post={post} users={users} />
+        <View>
+          <PostFooter post={post} users={users}/>
+          <View style={{ marginLeft: 14 }}>
+            <Likes post={post} users={users} />
+          </View>
+        </View>
+        <View style={{ marginLeft: 14 }}>
+          <Caption post={post} users={users}/>
+        </View>
+      </View>}
     </View>
   );
-});
+};
+
 
 const Likes = ({ post, users }) => {
   const [isCommentModalVisible, setCommentModalVisible] = useState(false);
@@ -161,8 +206,8 @@ const Header = () => {
 
 const Caption = ({ post, users }) => {
   return (
-    <View style={[headerPostStyles.ItemFooterContainer, { marginBottom: 30 }]}>
-      {/* <Text style={{ fontWeight: "600" }}>{users[post.ownerUserId].detail.name}</Text> */}
+    <View style={[headerPostStyles.ItemFooterContainer]}>
+      <Text style={{ fontWeight: "600" }}>{users[post.ownerUserId].detail.name}</Text>
       <Text style={headerPostStyles.caption}> {post.content}</Text>
     </View>
   );

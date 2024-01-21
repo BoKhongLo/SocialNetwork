@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import Modal from "react-native-modal";
 import styles from "../../styles/styles";
+import Icon from 'react-native-vector-icons/Ionicons';
 const BottomTabs = ({ receivedData }) => {
   const navigation = useNavigation();
   const [isModalVisible, setModalVisible] = useState(false);
+  const route = useRoute();
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
@@ -30,12 +32,13 @@ const BottomTabs = ({ receivedData }) => {
           paddingVertical: 10,
           paddingHorizontal: 20,
         }}
-        onPress={() => navigation.navigate("main")}
+        onPress={() => {navigation.navigate("main")}
+        }
       >
-        <Image
+        <Icon
           style={[styles.BottomTabIcon]}
-          source={require("../../../assets/dummyicon/home_6_line.png")}
-          onPress={() => console.log("da nhan nut home")}
+          size={30}
+          name={route.name == 'main' ? 'home' :'home-outline'}
         />
       </TouchableOpacity>
       <TouchableOpacity
@@ -44,12 +47,13 @@ const BottomTabs = ({ receivedData }) => {
           paddingVertical: 10,
           paddingHorizontal: 20,
         }}
-        onPress={() => navigation.navigate("search")}
+        onPress={() => {navigation.navigate("search")}}
       >
-        <Image
+        <Icon
+          name={route.name == 'search' ? "search" : "search-outline"}
+          size={30}
           style={styles.BottomTabIcon}
-          source={require("../../../assets/dummyicon/search_line.png")}
-          onPress={() => console.log("da nhan nut search")}
+          // source={require("../../../assets/dummyicon/search_line.png")}
         />
       </TouchableOpacity>
       <TouchableOpacity
@@ -60,10 +64,12 @@ const BottomTabs = ({ receivedData }) => {
         }}
         onPress={toggleModal}
       >
-        <Image
+        <Icon
           style={styles.BottomTabIcon}
-          source={require("../../../assets/dummyicon/new.png")}
-          onPress={() => console.log("da nhan nut create post")}
+          size={30}
+          name='add-circle-outline'
+          // source={require("../../../assets/dummyicon/new.png")}
+          onPress={toggleModal}
         />
       </TouchableOpacity>
 
@@ -75,10 +81,12 @@ const BottomTabs = ({ receivedData }) => {
         }}
         onPress={() => navigation.replace("Profile", { data: receivedData })}
       >
-        <Image
+        <Icon
           style={styles.BottomTabIcon}
-          source={require("../../../assets/dummyicon/user.png")}
-          onPress={() => console.log("da nhan nut user site")}
+          size={30}
+          name={route.name != "main" && route.name != "search" ? "person" : "person-outline"}
+          // source={require("../../../assets/dummyicon/user.png")}
+          onPress={() => navigation.navigate("Profile")}
         />
       </TouchableOpacity>
 
