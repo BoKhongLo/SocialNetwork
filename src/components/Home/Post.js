@@ -21,8 +21,6 @@ import {
   widthPercentageToDP,
 } from "react-native-responsive-screen";
 
-
-
 const Post = ({ post, users }) => {
   const validateFile = (file) => {
     const imgExt = ["jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp", "raf"];
@@ -43,11 +41,12 @@ const Post = ({ post, users }) => {
       return "VIDEO"
     }
   }
+
   const fileType = useState(validateFile(post.fileUrl[0]))[0]
 
   return (
     <View>
-      {fileType == "VIDEO" && 
+      {fileType == "VIDEO" && (
       <View>
         <View style={{
           position: "absolute",
@@ -67,8 +66,8 @@ const Post = ({ post, users }) => {
         <View style={{ marginLeft: 14 }}>
           <Caption post={post} users={users}/>
         </View>
-      </View>}
-      {fileType == "IMAGE" && 
+      </View>)}
+      {fileType == "IMAGE" && (
         <View>
           <PostHeader post={post} users={users} />
         <PostImage post={post} users={users} />
@@ -81,7 +80,7 @@ const Post = ({ post, users }) => {
         <View style={{ marginLeft: 14 }}>
           <Caption post={post} users={users}/>
         </View>
-      </View>}
+      </View>)}
     </View>
   );
 };

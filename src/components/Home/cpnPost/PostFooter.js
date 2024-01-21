@@ -35,7 +35,7 @@ import {
   ValidateMessagesDto,
   BookmarksDto
 } from "../../../util/dto";
-const PostFooter = React.memo(({
+const PostFooter = ({
   post,
   onPressLike,
   onPressComment,
@@ -120,7 +120,7 @@ const PostFooter = React.memo(({
           dataReturn = await removeInteractPostAsync(dto, dataUpdate.accessToken);
         }
         if ("errors" in dataReturn) return;
-        setLikePressed(false);
+        // setLikePressed(false);
       }
       else if (likePostId == false) {
         const dto = new InteractDto(dataUserLocal.id, post.id, "", "HEART", "");
@@ -133,7 +133,8 @@ const PostFooter = React.memo(({
           dataReturn = await addInteractPostAsync(dto, dataUpdate.accessToken);
         }
         if ("errors" in dataReturn) return;
-        setLikePressed(true);
+        // setLikePressed(true);
+        // setLikePostId(dataReturn.id)
       }
     } else if (action === "Bookmark") {
       if (bookmarkPressed === true) {
@@ -210,7 +211,7 @@ const PostFooter = React.memo(({
   return (
     <View style={headerPostStyles.postFooterContainer}>
       <View style={{ flexDirection: "row" }}>
-        <TouchableOpacity onPress={() => handlePress("Like")}>
+        <TouchableOpacity onPress={async () => await handlePress("Like")}>
           <Image
             style={headerPostStyles.commentsIcon}
             source={
@@ -228,7 +229,7 @@ const PostFooter = React.memo(({
         </TouchableOpacity>
       </View>
       <View>
-        <TouchableOpacity onPress={() => handlePress("Bookmark")}>
+        <TouchableOpacity onPress={async () => await handlePress("Bookmark")}>
           <Image
             style={headerPostStyles.commentsIcon}
             source={
@@ -243,7 +244,7 @@ const PostFooter = React.memo(({
       {isCommentModalVisible && renderCommentModal()}
     </View>
   );
-});
+};
 
 const Header = React.memo(() => {
   return (
@@ -268,6 +269,7 @@ const ItemComment = React.memo(({ post, users }) => {
       for (let i = 0; i < post.comment.length; i++) {
         let isCheck = false;
         let isId = "";
+        if (!post.comment[i].interaction) continue;
         post.comment[i].interaction = post.comment[i].interaction.filter(item => item.isDisplay !== false)
         for (let j = 0; j < post.comment[i].interaction.length; j++) {
           if (post.comment[i].interaction[j].userId === dataUserLocal.id) {
@@ -294,7 +296,6 @@ const ItemComment = React.memo(({ post, users }) => {
       if (isLiked[commentId].id === "") return;
       const dto = new InteractDto(dataUserLocal.id, post.id, commentId, "", isLiked[commentId].id)
       let dataReturn = await removeInteractCommentAsync(dto, dataUserLocal.accessToken)
-      console.log(dataReturn)
       if ("errors" in dataReturn) {
         const dataUpdate = await updateAccessTokenAsync(
           dataUserLocal.id,
@@ -372,9 +373,13 @@ const ItemComment = React.memo(({ post, users }) => {
             {users[item.userId].detail.name}
           </Text>
           <Text style={{ fontSize: 17 }}>{item.content}</Text>
-          <Text
-            style={{ color: "#A9A9A9" }}
-          >{`${item.interaction.length} likes`}</Text>
+          {item.interaction && (
+                <Text
+                style={{ color: "#A9A9A9" }}
+              >
+              {`${item.interaction.length} likes`}</Text>
+          )}
+   
         </View>
         <TouchableOpacity onPress={() => handleLikePress(item.id)}>
           <View>

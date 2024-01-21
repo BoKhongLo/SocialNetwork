@@ -5,7 +5,7 @@ import highLight from "../../styles/highLightStyles";
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 
-const Stories = ({ post, users }) => {
+const Stories = React.memo(({ post, users }) => {
   const navigation = useNavigation();
 
   const handleStoryPress = (item) => {
@@ -52,6 +52,6 @@ const Stories = ({ post, users }) => {
       />
     </View>
   );
-};
+});
 
 export default Stories;

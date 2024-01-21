@@ -85,8 +85,6 @@ const BottomTabs = ({ receivedData }) => {
           style={styles.BottomTabIcon}
           size={30}
           name={route.name != "main" && route.name != "search" ? "person" : "person-outline"}
-          // source={require("../../../assets/dummyicon/user.png")}
-          onPress={() => navigation.navigate("Profile")}
         />
       </TouchableOpacity>
 

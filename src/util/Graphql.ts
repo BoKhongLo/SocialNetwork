@@ -282,9 +282,6 @@ export async function updateAccessTokenAsync(userId: string, refreshToken: strin
             "lastUpdated": new Date().toISOString()
         }
 
-        await deleteDataUserLocal(decoded.id)
-        await saveDataUserLocal(decoded.id, saveData)
-
         return saveData;
 
     } catch (error) {
@@ -1236,6 +1233,143 @@ export async function getPostDailyAsync(userId: string, accessToken: string) {
     }
 }
 
+export async function getPostAsync(postId: string, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const FIND_POST_QUERY = `
+    query GetPostById ($id: String!){
+        getPostById(id: $id) {
+            id
+            ownerUserId
+            type
+            linkedShare
+            content
+            fileUrl
+            isDisplay
+            created_at
+            updated_at
+            interaction {
+                id
+                content
+                userId
+                isDisplay
+                created_at
+                updated_at
+            }
+            comment {
+                id
+                userId
+                roomId
+                isDisplay
+                content
+                fileUrl
+                created_at
+                updated_at
+                interaction {
+                    id
+                    content
+                    userId
+                    isDisplay
+                    created_at
+                    updated_at
+                }
+            }
+        }
+    }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: FIND_POST_QUERY,
+                variables: {
+                    id: postId
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.getPostById
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+export async function getAllPostUserAsync(userId: string, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const FIND_POST_QUERY = `
+    query GetAllPostByUserId($userId: String!) {
+        getAllPostByUserId(userId: $userId) {
+            id
+            ownerUserId
+            type
+            linkedShare
+            content
+            fileUrl
+            isDisplay
+            created_at
+            updated_at
+            interaction {
+                id
+                content
+                userId
+                isDisplay
+                created_at
+                updated_at
+            }
+            comment {
+                id
+                userId
+                roomId
+                isDisplay
+                content
+                fileUrl
+                interaction {
+                    id
+                    content
+                    userId
+                    isDisplay
+                    created_at
+                    updated_at
+                }
+                created_at
+                updated_at
+            }
+        }
+    }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: FIND_POST_QUERY,
+                variables: {
+                    userId: userId
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.getAllPostByUserId
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
 
 export async function validatePostAsync(dto: PostDto, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
@@ -1656,7 +1790,7 @@ export async function removeBookmarkAsync(dto: BookmarksDto, accessToken: string
                 query: REMOVE_INTERACT_QUERY,
                 variables: {
                     userId: dto.userId,
-                    postId: dto.postId,
+                    bookMarkId: dto.postId,
                 },
             },
             { headers: headers }

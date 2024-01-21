@@ -189,7 +189,7 @@ const Comments = ({ data, users }) => {
       fileUrl: [data.fileUrl[0]],
       roomchatId: dataRoomchat.id,
     });
-    navigation.navigate('chatwindow', { data: dataRoomchat });
+    navigation.replace('chatwindow', { data: dataRoomchat });
     setText("");
   };
 

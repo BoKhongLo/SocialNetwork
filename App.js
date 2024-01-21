@@ -24,7 +24,10 @@ import SettingChat from "./src/components/Chat/SettingChat";
 import ForgotPassScreen from "./src/screens/ForgotPassScreen";
 import VerifyScreen from "./src/screens/VerifyScreen";
 import NewPassScreen from "./src/screens/NewPassScreen";
+import ListFriend from "./src/screens/ListFriend";
+import ListPost from "./src/screens/ListPost";
 import SettingGroupChat from "./src/components/Chat/SettingGroup";
+
 import registerNNPushToken from 'native-notify';
 
 const Stack = createStackNavigator();
@@ -98,6 +101,8 @@ export default function App() {
             <Stack.Screen key="verify" options={{headerShown: false}}  name="verify" component={VerifyScreen} />
             <Stack.Screen key="newPass" options={{headerShown: false}}  name="newPass" component={NewPassScreen} />
             <Stack.Screen key="settingGroupChat" options={{headerShown: false}}  name="settingGroupChat" component={SettingGroupChat} />
+            <Stack.Screen key="listFriend" options={{headerShown: false}}  name="listFriend" component={ListFriend} />
+            <Stack.Screen key="listPost" options={{headerShown: false}}  name="listPost" component={ListPost} />
       </Stack.Navigator>
     </NavigationContainer>
 );

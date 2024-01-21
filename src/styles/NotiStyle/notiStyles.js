@@ -19,6 +19,7 @@ const cpnNotiStyles = StyleSheet.create({
   itemContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
+    marginBottom: 5
   },
   button: {
     flex: 1,

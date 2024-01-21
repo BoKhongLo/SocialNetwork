@@ -25,6 +25,7 @@ import {
   getSocketIO
 } from "../util";
 import { registerIndieID, unregisterIndieDevice } from 'native-notify';
+import NewStory from './NewStory';
 
 const HomeScreen = () => {
   const route = useRoute();
@@ -33,7 +34,6 @@ const HomeScreen = () => {
   const [dataPost, setDataPost] = useState([]);
   const [dataStory, setDataStory] = useState([]);
   const [dataUser, setDataUser] = useState({});
-  const [socket, setSocket] = useState(undefined);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,8 +61,6 @@ const HomeScreen = () => {
         );
       }
       // registerIndieID(dataUserLocal.id, 18604, '8sbEFbNYoDaZJKMDeIAWoc');
-      const newSocket = await getSocketIO(dataUserLocal.accessToken);
-      setSocket(newSocket);
       let tmpPost = [];
       let tmpUserData = {};
       let tmpStory = [];
@@ -107,37 +105,52 @@ const HomeScreen = () => {
       setDataUser(tmpUserData);
       setDataPost(tmpPost);
       setDataStory(tmpStory);
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const socketConnect = async() => {
+      const keys = await getAllIdUserLocal();
+      const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+      const dataUpdate = await updateAccessTokenAsync(
+        dataUserLocal.id,
+        dataUserLocal.refreshToken
+      );
+
+      const newSocket = await getSocketIO(dataUpdate.accessToken);
 
       newSocket.on("removePost", (post) => {
         setDataPost((prevPosts) => prevPosts.filter(item => item.id !== post.postId));
       });
-      
-      newSocket.on("addComment", async (comment) => {
-        setDataPost( prePost => {
+  
+      newSocket.on("addComment", async (comments) => {
+        setDataPost(prePost => {
           for (let i = 0; i < prePost.length; i++) {
-            if (prePost[i].id === comment.roomId) {
-              prePost[i].comment.push(comment);
+            if (prePost[i].id === comments.roomId) {
+              if (prePost[i].comment.findIndex(item => item.id === comments.id) !== -1) break;
+              prePost[i].comment.push(comments);
               break;
             }
           }
           return prePost;
         })
       });
-      
+  
       newSocket.on("addInteractionPost!", (post) => {
         setDataPost((prePost) => {
-          console.log(post);
           for (let i = 0; i < prePost.length; i++) {
             if (prePost[i].id === post.postId) {
+              if (prePost[i].interaction.findIndex(item => item.id === post.id) !== -1) break;
               prePost[i].interaction.push(post);;
-              console.log(prePost[i].interaction);
               break;
             }
           }
           return prePost;
         });
       });
-      
+  
       newSocket.on("removeInteractionPost", (post) => {
         setDataPost((prePost) => {
           const indexPost = prePost.findIndex(item => item.id === post.postId);
@@ -159,32 +172,25 @@ const HomeScreen = () => {
           return prePost;
         });
       });
-      
+  
       newSocket.on("removeInteractionComment", (comment) => {
         setDataPost((prePost) => {
           const indexPost = prePost.findIndex(item => item.id === comment.postId);
           if (indexPost === -1) return prePost;
           const indexComment = prePost[indexPost].comment.findIndex(item => item.id === comment.commentId)
           if (indexComment === -1) return prePost;
-          const indexInter =prePost[indexPost].comment[indexComment].interaction.findIndex(item => item.id ==comment.interactionId);
+          const indexInter = prePost[indexPost].comment[indexComment].interaction.findIndex(item => item.id == comment.interactionId);
           if (indexInter === -1) return prePost;
           prePost[indexPost].comment[indexComment].interaction.splice(indexInter, 1)
           return prePost;
         });
       });
-    };
+    }
+    socketConnect()
+  }, [dataPost, dataStory])
 
-    fetchData();
-    return () => {
-      if (socket != undefined) {
-        socket.disconnect();
-      }
-    };
-  }, []);
-
-
-  const VirtualizedView = useMemo(() => {
-    return (props) => (
+  const VirtualizedView = (props) => {
+    return (
       <FlatList
         data={[]}
         ListEmptyComponent={null}
@@ -195,7 +201,11 @@ const HomeScreen = () => {
         )}
       />
     );
-  }, []);
+  }
+
+  useEffect(() => {
+    console.log("HasChange!")
+  })
 
   return (
     <View
@@ -208,19 +218,17 @@ const HomeScreen = () => {
       }}
     >
       <Header receivedData={receivedData} />
-      <View 
-        style={{ flex: 1 }}
-      >
-      {dataPost.length == 0 && dataStory.length == 0 && (
-        <View style={styles.container}>
-          <Text style={styles.text}>Welcome to Black Cat Chat</Text>
-        </View>
-      )}
+      <View style={{ flex: 1 }}>
+        {dataPost.length == 0 && dataStory.length == 0 && (
+          <View style={styles.container}>
+            <Text style={styles.text}>Welcome to Black Cat Chat</Text>
+          </View>
+        )}
         <VirtualizedView style={{ flex: 1 }}>
           <Stories post={dataStory} users={dataUser} />
           {dataPost.map((item, index) => (
             <Post
-              key={`${item.id}${index}`}
+              key={`${item.id}`}
               post={item}
               users={dataUser}
               style={{ flex: 1 }} />

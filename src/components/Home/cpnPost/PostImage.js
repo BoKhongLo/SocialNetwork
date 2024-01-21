@@ -5,7 +5,7 @@ import headerPostStyles from "./../../../styles/postHeaderStyles";
 import { Video, Audio } from 'expo-av';
 
 
-const PostImage = React.memo(({ post, users }) => {
+const PostImage = ({ post, users }) => {
 
   const [isModalVisible, setModalVisible] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -64,14 +64,14 @@ const PostImage = React.memo(({ post, users }) => {
             }]}
             source={{ uri: item }}
             height= {500}
-            useNativeControls
+            useNativeControls = {true}
             resizeMode="contain"
           />
         ) : (
           <Video
             style={styles.image}
             source={{ uri: item }}
-            useNativeControls
+            useNativeControls = {true}
             resizeMode="contain"
           />
         )}
@@ -156,7 +156,7 @@ const PostImage = React.memo(({ post, users }) => {
       </RNModal>
     </View>
   );
-});
+};
 
 const styles = StyleSheet.create({
   gridContainer: {
