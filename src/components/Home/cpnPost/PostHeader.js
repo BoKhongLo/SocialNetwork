@@ -84,7 +84,7 @@ const PostHeader = ({ post, onAvatarPress, onEllipsisPress, users, headerColor }
 
   return (
     <View style={[headerPostStyles.containerHeaderPost]}>
-      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", }}>
         <LinearGradient
           colors={['#CA1D7E', '#E35157', '#F2703F']}
           start={{x: 0.0, y: 1.0}} end={{x: 1.0, y: 1.0}}

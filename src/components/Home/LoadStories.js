@@ -21,13 +21,17 @@ import { Video, Audio } from 'expo-av';
 import { getAllIdUserLocal, getDataUserLocal, updateAccessTokenAsync, getSocketIO, getRoomchatByTitleAsync, } from "../../util";
 const LoadStories = () => {
   const route = useRoute();
-  const [receivedData, setReceivedData] = useState(route.params?.data || null);
+  const receivedData=route.params?.data 
   const [imageHeight, setImageHeight] = useState(0);
   const [imageWidth, setImageWidth] = useState(0);
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
-
+  useEffect(()=>{
+    if (!receivedData) navigation.navigate("main");
+    console.log(receivedData);
+  },[])
   const validateFile = (file) => {
+    if(!file) return null;
     const imgExt = ["jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp", "raf"];
     const videoExt = ["mp4", "avi", "mkv", "mov", "wmv", "flv", "webm"];
     const audioExt = ["mp3", "ogg", "wav", "flac", "aac", "wma", "m4a"];
@@ -80,7 +84,7 @@ const LoadStories = () => {
         }}
       >
 
-        {validateFile(image) === "IMAGE" ? (
+        { receivedData && validateFile( receivedData.post.fileUrl[0] ) === "IMAGE" ? (
           <Image
             source={{ uri: receivedData.post.fileUrl[0] }}
             style={{
@@ -90,7 +94,7 @@ const LoadStories = () => {
               alignItems: 'center',
             }}
           />
-        ) : validateFile(image) === "VIDEO" ? (
+        )  : receivedData &&  validateFile( receivedData.post.fileUrl[0] ) === "VIDEO" ? (
           <Video
             style={{
               width: '100%',
