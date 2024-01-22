@@ -50,7 +50,7 @@ export default function App() {
         const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
         const dataAsync = await updateAccessTokenAsync(dataLocal.id, dataLocal.refreshToken)
         
-        if (dataAsync == null) {
+        if ("errors" in dataAsync) {
           await deleteDataUserLocal(keys[keys.length - 1]);
           setIsLoggedIn(false);
           return

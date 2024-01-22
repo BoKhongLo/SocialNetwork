@@ -22,7 +22,8 @@ import {
   updateAccessTokenAsync,
   getPostDailyAsync,
   getUserDataLiteAsync,
-  getSocketIO
+  getSocketIO,
+  getUserDataAsync
 } from "../util";
 import { registerIndieID, unregisterIndieDevice } from 'native-notify';
 import NewStory from './NewStory';
@@ -34,6 +35,7 @@ const HomeScreen = () => {
   const [dataPost, setDataPost] = useState([]);
   const [dataStory, setDataStory] = useState([]);
   const [dataUser, setDataUser] = useState({});
+  const [dataUserCurrent, setDataUserCurrent] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -100,18 +102,21 @@ const HomeScreen = () => {
           tmpStory.push(post);
         }
       }
+
       tmpStory.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
       tmpPost.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
       setDataUser(tmpUserData);
       setDataPost(tmpPost);
       setDataStory(tmpStory);
+      let dataUserCurrent = await getUserDataAsync(dataUserLocal.id, dataUserLocal.accessToken);
+      setDataUserCurrent(dataUserCurrent)
     };
 
     fetchData();
   }, []);
 
   useEffect(() => {
-    const socketConnect = async() => {
+    const socketConnect = async () => {
       const keys = await getAllIdUserLocal();
       const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
       const dataUpdate = await updateAccessTokenAsync(
@@ -124,8 +129,18 @@ const HomeScreen = () => {
       newSocket.on("removePost", (post) => {
         setDataPost((prevPosts) => prevPosts.filter(item => item.id !== post.postId));
       });
-  
+
       newSocket.on("addComment", async (comments) => {
+        setDataUser( async(preUser) => {
+          if (comments.userId in preUser) return preUser;
+          const dataUpdate = await updateAccessTokenAsync(
+            dataUserLocal.id,
+            dataUserLocal.refreshToken
+          );
+          let dataReturn = await getUserDataLiteAsync(comments.userId, dataUpdate.accessToken)
+          preUser[dataReturn.id] = dataReturn
+          return preUser;
+        })
         setDataPost(prePost => {
           for (let i = 0; i < prePost.length; i++) {
             if (prePost[i].id === comments.roomId) {
@@ -137,7 +152,7 @@ const HomeScreen = () => {
           return prePost;
         })
       });
-  
+
       newSocket.on("addInteractionPost!", (post) => {
         setDataPost((prePost) => {
           for (let i = 0; i < prePost.length; i++) {
@@ -150,7 +165,7 @@ const HomeScreen = () => {
           return prePost;
         });
       });
-  
+
       newSocket.on("removeInteractionPost", (post) => {
         setDataPost((prePost) => {
           const indexPost = prePost.findIndex(item => item.id === post.postId);
@@ -161,8 +176,18 @@ const HomeScreen = () => {
           return prePost;
         });
       });
-  
+
       newSocket.on("addInteractionComment", (comment) => {
+        setDataUser( async(preUser) => {
+          if (comment.userId in preUser) return preUser;
+          const dataUpdate = await updateAccessTokenAsync(
+            dataUserLocal.id,
+            dataUserLocal.refreshToken
+          );
+          let dataReturn = await getUserDataLiteAsync(comment.userId, dataUpdate.accessToken)
+          preUser[dataReturn.id] = dataReturn
+          return preUser;
+        })
         setDataPost((prePost) => {
           const indexPost = prePost.findIndex(item => item.id === comment.roomId);
           if (indexPost === -1) return prePost;
@@ -172,7 +197,7 @@ const HomeScreen = () => {
           return prePost;
         });
       });
-  
+
       newSocket.on("removeInteractionComment", (comment) => {
         setDataPost((prePost) => {
           const indexPost = prePost.findIndex(item => item.id === comment.postId);
@@ -187,7 +212,8 @@ const HomeScreen = () => {
       });
     }
     socketConnect()
-  }, [dataPost, dataStory])
+  }, [])
+
 
   const VirtualizedView = (props) => {
     return (
@@ -231,6 +257,7 @@ const HomeScreen = () => {
               key={`${item.id}`}
               post={item}
               users={dataUser}
+              userCurrent={dataUserCurrent}
               style={{ flex: 1 }} />
           ))}
         </VirtualizedView>

@@ -1,8 +1,23 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import { Divider } from "react-native-elements";
 import searchStyles from "../../styles/searchScreen";
+import {
+  getUserDataAsync,
+  getAllIdUserLocal,
+  getDataUserLocal,
+  updateAccessTokenAsync,
+  addFriendAsync,
+  removeFriendAsync,
+  acceptFriendAsync,
+  getFriendRequestAsync,
+  createRoomchatAsync,
+} from "../../util";
 const UserItem = ({ user, onPress }) => {
+  const [isFriendAdded, setFriendAdded] = useState(false);
+  const [isFriend, setIsFriend] = useState("Added");
+  const [isPending, setPending] = useState(false);
+
   const handleAddFriendPress = () => {
     // Thực hiện các hành động khi nút được nhấn để thêm bạn bè
     console.log("Add Friend button pressed");
@@ -38,14 +53,10 @@ const UserItem = ({ user, onPress }) => {
           </View>
         </View>
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
         style={searchStyles.addButton} onPress={handleAddFriendPress}>
           <Text>Add</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-        style={searchStyles.addButton} onPress={handleAddFriendPress}>
-          <Text>Deny</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
       <Divider orientation="horizontal" />
     </TouchableOpacity>

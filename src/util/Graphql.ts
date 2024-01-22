@@ -274,14 +274,18 @@ export async function updateAccessTokenAsync(userId: string, refreshToken: strin
         if ("errors" in response.data) return response.data;
         const decoded = jwtDecode<JwtPayload>(response.data.data.Refresh.access_token);
 
-        const saveData = {
+        let saveData = {
             "id": decoded.id,
             "email": decoded.email,
             "accessToken": response.data.data.Refresh.access_token,
             "refreshToken": response.data.data.Refresh.refresh_token,
             "lastUpdated": new Date().toISOString()
         }
-
+        // const keys = await getAllIdUserLocal();
+        // let dataLocal = await getDataUserLocal(keys[keys.length - 1]);
+        // saveData["id"] = dataLocal.id
+        // await deleteDataUserLocal(dataLocal.id)
+        // await saveDataUserLocal(dataLocal.id, saveData)
         return saveData;
 
     } catch (error) {
