@@ -20,7 +20,7 @@ import styles from './../../styles/styles';
 const Options = ({data}) => {
   const navigation = useNavigation();
   const [isFriendAdded, setFriendAdded] = useState(false);
-  const [isFriend, setIsFriend] = useState("Added");
+  const [isFriend, setIsFriend] = useState("    Added    ");
   const [isPending, setPending] = useState(false);
 
   useEffect(() => {

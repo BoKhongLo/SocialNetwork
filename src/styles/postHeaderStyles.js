@@ -22,14 +22,13 @@ const headerPostStyles = StyleSheet.create({
     fontWeight:'600',
     marginTop: 8,
     marginLeft: 5,
+
   },
   frame: {
     borderWidth: 1, // Độ rộng của đường viền
     borderColor: "black", // Màu của đường viền
-    // backgroundColor: "black",
     justifyContent: "center",
     alignItems: "center",
-    // width: "auto",
   },
   image: {
     // resizeMode: "contain",

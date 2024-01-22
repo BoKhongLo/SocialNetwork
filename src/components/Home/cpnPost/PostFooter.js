@@ -8,6 +8,7 @@ import {
   ScrollView,
   FlatList,
   TextInput,
+  Touch,
 } from "react-native";
 import Modal from "react-native-modal";
 import headerPostStyles from "./../../../styles/postHeaderStyles";
@@ -28,13 +29,15 @@ import {
   addInteractCommentAsync,
   removeInteractCommentAsync,
   addInteractPostAsync,
-  removeInteractPostAsync
+  removeInteractPostAsync,
 } from "../../../util";
 import {
   InteractDto,
   ValidateMessagesDto,
-  BookmarksDto
+  BookmarksDto,
 } from "../../../util/dto";
+import { TouchableHighlight } from "react-native-gesture-handler";
+
 const PostFooter = ({
   post,
   onPressLike,
@@ -42,7 +45,7 @@ const PostFooter = ({
   onPressShare,
   onPressBookmark,
   users,
-  userCurrent
+  userCurrent,
 }) => {
   const [likePressed, setLikePressed] = useState(false);
   const [likePostId, setLikePostId] = useState("");
@@ -70,16 +73,21 @@ const PostFooter = ({
           }
         }
       }
-
-    }
+    };
     fetchData();
-  }, [post, users, userCurrent])
+  }, [post, users, userCurrent]);
 
   const handleSendPress = async () => {
-    if (comment.trim() === "") return
+    if (comment.trim() === "") return;
     const keys = await getAllIdUserLocal();
     const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
-    const dto = new ValidateMessagesDto(dataUserLocal.id, post.id, "", comment, []);
+    const dto = new ValidateMessagesDto(
+      dataUserLocal.id,
+      post.id,
+      "",
+      comment,
+      []
+    );
     let dataReturn = await addCommentPostAsync(dto, dataUserLocal.accessToken);
     if ("errors" in dataReturn) {
       const dataUpdate = await updateAccessTokenAsync(
@@ -101,21 +109,35 @@ const PostFooter = ({
     if (action === "Like") {
       if (likePressed == true) {
         if (likePostId === "") return;
-        const dto = new InteractDto(dataUserLocal.id, post.id, "", "", likePostId);
-        let dataReturn = await removeInteractPostAsync(dto, dataUserLocal.accessToken)
+        const dto = new InteractDto(
+          dataUserLocal.id,
+          post.id,
+          "",
+          "",
+          likePostId
+        );
+        let dataReturn = await removeInteractPostAsync(
+          dto,
+          dataUserLocal.accessToken
+        );
         if ("errors" in dataReturn) {
           const dataUpdate = await updateAccessTokenAsync(
             dataUserLocal.id,
             dataUserLocal.refreshToken
           );
-          dataReturn = await removeInteractPostAsync(dto, dataUpdate.accessToken);
+          dataReturn = await removeInteractPostAsync(
+            dto,
+            dataUpdate.accessToken
+          );
         }
         if ("errors" in dataReturn) return;
         // setLikePressed(false);
-      }
-      else if (likePostId == false) {
+      } else if (likePostId == false) {
         const dto = new InteractDto(dataUserLocal.id, post.id, "", "HEART", "");
-        let dataReturn = await addInteractPostAsync(dto, dataUserLocal.accessToken)
+        let dataReturn = await addInteractPostAsync(
+          dto,
+          dataUserLocal.accessToken
+        );
         if ("errors" in dataReturn) {
           const dataUpdate = await updateAccessTokenAsync(
             dataUserLocal.id,
@@ -128,7 +150,10 @@ const PostFooter = ({
     } else if (action === "Bookmark") {
       if (bookmarkPressed === true) {
         const dto = new BookmarksDto(dataUserLocal.id, post.id);
-        let dataReturn = await removeBookmarkAsync(dto, dataUserLocal.accessToken)
+        let dataReturn = await removeBookmarkAsync(
+          dto,
+          dataUserLocal.accessToken
+        );
         if ("errors" in dataReturn) {
           const dataUpdate = await updateAccessTokenAsync(
             dataUserLocal.id,
@@ -138,10 +163,9 @@ const PostFooter = ({
         }
         if ("errors" in dataReturn) return;
         setBookmarkPressed(false);
-      }
-      else if (bookmarkPressed === false) {
+      } else if (bookmarkPressed === false) {
         const dto = new BookmarksDto(dataUserLocal.id, post.id);
-        let dataReturn = await addBookmarkAsync(dto, dataUserLocal.accessToken)
+        let dataReturn = await addBookmarkAsync(dto, dataUserLocal.accessToken);
         if ("errors" in dataReturn) {
           const dataUpdate = await updateAccessTokenAsync(
             dataUserLocal.id,
@@ -247,12 +271,22 @@ const Header = React.memo(() => {
 });
 
 const ItemComment = React.memo(({ post, users, userCurrent }) => {
-
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedComment, setSelectedComment] = useState(null);
+  const handleLongPress = (comment) => {
+    setSelectedComment(comment);
+    setIsModalVisible(true);
+  };
+  const closeModal = () => {
+    setIsModalVisible(false);
+  };
   useEffect(() => {
     const validateData = async () => {
       for (let i = 0; i < post.comment.length; i++) {
         if (!post.comment[i].interaction) continue;
-        post.comment[i].interaction = post.comment[i].interaction.filter(item => item.isDisplay !== false)
+        post.comment[i].interaction = post.comment[i].interaction.filter(
+          (item) => item.isDisplay !== false
+        );
       }
     };
 
@@ -263,23 +297,45 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
     if (!comment) return;
     const keys = await getAllIdUserLocal();
     const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
-    const indexInter = comment.interaction.findIndex(it => it.userId === userCurrent.id);
+    const indexInter = comment.interaction.findIndex(
+      (it) => it.userId === userCurrent.id
+    );
 
-    if ( indexInter != -1) {
-      const dto = new InteractDto(dataUserLocal.id, post.id, comment.id, "", comment.interaction[indexInter].id)
-      let dataReturn = await removeInteractCommentAsync(dto, dataUserLocal.accessToken)
+    if (indexInter != -1) {
+      const dto = new InteractDto(
+        dataUserLocal.id,
+        post.id,
+        comment.id,
+        "",
+        comment.interaction[indexInter].id
+      );
+      let dataReturn = await removeInteractCommentAsync(
+        dto,
+        dataUserLocal.accessToken
+      );
       if ("errors" in dataReturn) {
         const dataUpdate = await updateAccessTokenAsync(
           dataUserLocal.id,
           dataUserLocal.refreshToken
         );
-        dataReturn = await removeInteractCommentAsync(dto, dataUpdate.accessToken);
+        dataReturn = await removeInteractCommentAsync(
+          dto,
+          dataUpdate.accessToken
+        );
       }
       if ("errors" in dataReturn) return;
-    }
-    else {
-      const dto = new InteractDto(dataUserLocal.id, post.id, comment.id, "HEART", "")
-      let dataReturn = await addInteractCommentAsync(dto, dataUserLocal.accessToken)
+    } else {
+      const dto = new InteractDto(
+        dataUserLocal.id,
+        post.id,
+        comment.id,
+        "HEART",
+        ""
+      );
+      let dataReturn = await addInteractCommentAsync(
+        dto,
+        dataUserLocal.accessToken
+      );
       if ("errors" in dataReturn) {
         const dataUpdate = await updateAccessTokenAsync(
           dataUserLocal.id,
@@ -291,85 +347,116 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
     }
   };
 
-  const renderItem = useCallback(({ item }) => {
-    return (
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          width: widthPercentageToDP('95%'),
-          marginVertical: 5,
-        }}
-      >
-        <View>
-          <TouchableOpacity>
-            {users[item.userId].detail.avatarUrl ? (
-              <Image
-                style={{
-                  height: 45,
-                  width: 45,
-                  borderRadius: 40,
-                  borderWidth: 0.3,
-                  backgroundColor: "black",
-                }}
-                source={{ uri: users[item.userId].detail.avatarUrl }}
-              />
-            ) : (
-              <Image
-                style={{
-                  height: 45,
-                  width: 45,
-                  borderRadius: 40,
-                  borderWidth: 0.3,
-                  backgroundColor: "black",
-                }}
-
-              />
-            )}
-
-          </TouchableOpacity>
-        </View>
-        <View style={{ flex: 0.9 }}>
-          <Text style={{ fontWeight: "700" }}>
-            {users[item.userId].detail.name}
-          </Text>
-          <Text style={{ fontSize: 17 }}>{item.content}</Text>
-          {item.interaction && (
-                <Text
-                style={{ color: "#A9A9A9" }}
-              >
-              {`${item.interaction.length} likes`}</Text>
-          )}
-   
-        </View>
-        <TouchableOpacity onPress={() => handleLikePress(item)}>
+  const renderItem = useCallback(
+    ({ item }) => {
+      return (
+        <TouchableOpacity
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: widthPercentageToDP("95%"),
+            marginVertical: 5,
+          }}
+          onLongPress={() => handleLongPress(item)}
+        >
           <View>
+            <TouchableOpacity>
+              {users[item.userId].detail.avatarUrl ? (
+                <Image
+                  style={{
+                    height: 45,
+                    width: 45,
+                    borderRadius: 40,
+                    borderWidth: 0.3,
+                    backgroundColor: "black",
+                  }}
+                  source={{ uri: users[item.userId].detail.avatarUrl }}
+                />
+              ) : (
+                <Image
+                  style={{
+                    height: 45,
+                    width: 45,
+                    borderRadius: 40,
+                    borderWidth: 0.3,
+                    backgroundColor: "black",
+                  }}
+                />
+              )}
+            </TouchableOpacity>
+          </View>
+          <View style={{ flex: 0.9 }}>
+            <Text style={{ fontWeight: "700" }}>
+              {users[item.userId].detail.name}
+            </Text>
+            <Text style={{ fontSize: 17 }}>{item.content}</Text>
             {item.interaction && (
-              <Image
-                style={{ height: 25, width: 25 }}
-                source={
-                  item.interaction.findIndex(it => it.userId === userCurrent.id) !== -1
-                    ? require('../../../../assets/dummyicon/heart_fill.png')
-                    : require('../../../../assets/dummyicon/heart.png')
-                }
-              />
+              <Text style={{ color: "#A9A9A9" }}>
+                {`${item.interaction.length} likes`}
+              </Text>
             )}
           </View>
+          <TouchableOpacity onPress={() => handleLikePress(item)}>
+            <View>
+              {item.interaction && (
+                <Image
+                  style={{ height: 25, width: 25 }}
+                  source={
+                    item.interaction.findIndex(
+                      (it) => it.userId === userCurrent.id
+                    ) !== -1
+                      ? require("../../../../assets/dummyicon/heart_fill.png")
+                      : require("../../../../assets/dummyicon/heart.png")
+                  }
+                />
+              )}
+            </View>
+          </TouchableOpacity>
         </TouchableOpacity>
-      </View>
-    );
-  }, [post, users, userCurrent]);
+      );
+    },
+    [post, users, userCurrent]
+  );
 
   return (
-    <FlatList
-      data={post.comment}
-      renderItem={renderItem}
-      keyExtractor={(item) => item.id}
-    />
+    <>
+      <FlatList
+        data={post.comment}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+      />
+      <Modal
+        visible={isModalVisible}
+        transparent={true}
+        onBackdropPress={closeModal}
+        style={{ justifyContent: "flex-end", margin: 0 }}
+      >
+        <View
+          style={{backgroundColor: "lightgrey", borderTopLeftRadius:20,borderTopRightRadius:20,paddingVertical:7}}
+        >
+          <TouchableOpacity>
+            <Text
+              style={{
+                color: "black",
+                textAlign: "center",
+                fontSize: 20,
+                marginBottom: 10,
+              }}
+            >
+              Edit
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Text style={{ color: "red", textAlign: "center", fontSize: 20 }}>
+              Delete
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+    </>
   );
 });
-
 
 const styles = StyleSheet.create({
   modalContainer: {
