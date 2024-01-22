@@ -21,7 +21,7 @@ import {
   widthPercentageToDP,
 } from "react-native-responsive-screen";
 
-const Post = ({ post, users }) => {
+const Post = ({ post, users, userCurrent }) => {
   const validateFile = (file) => {
     const imgExt = ["jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp", "raf"];
     const videoExt = ["mp4", "avi", "mkv", "mov", "wmv", "flv", "webm"];
@@ -47,40 +47,40 @@ const Post = ({ post, users }) => {
   return (
     <View>
       {fileType == "VIDEO" && (
-      <View>
-        <View style={{
-          position: "absolute",
-          zIndex: 1,
-          top: 0,
-          left: 0,
-        }}>
-          <PostHeader post={post} users={users} headerColor='white' />
-        </View>
-        <PostImage post={post} users={users} />
         <View>
-          <PostFooter post={post} users={users}/>
-          <View style={{ marginLeft: 14 }}>
-            <Likes post={post} users={users} />
+          <View style={{
+            position: "absolute",
+            zIndex: 1,
+            top: 0,
+            left: 0,
+          }}>
+            <PostHeader post={post} users={users} userCurrent={userCurrent} headerColor='white' />
           </View>
-        </View>
-        <View style={{ marginLeft: 14 }}>
-          <Caption post={post} users={users}/>
-        </View>
-      </View>)}
+          <PostImage post={post} users={users} />
+          <View>
+            <PostFooter post={post} users={users} userCurrent={userCurrent} />
+            <View style={{ marginLeft: 14 }}>
+              <Likes post={post} users={users} />
+            </View>
+          </View>
+          <View style={{ marginLeft: 14 }}>
+            <Caption post={post} users={users} />
+          </View>
+        </View>)}
       {fileType == "IMAGE" && (
         <View>
-          <PostHeader post={post} users={users} />
-        <PostImage post={post} users={users} />
-        <View>
-          <PostFooter post={post} users={users}/>
-          <View style={{ marginLeft: 14 }}>
-            <Likes post={post} users={users} />
+          <PostHeader post={post} users={users} userCurrent={userCurrent} />
+          <PostImage post={post} users={users} />
+          <View>
+            <PostFooter post={post} users={users} userCurrent={userCurrent} />
+            <View style={{ marginLeft: 14 }}>
+              <Likes post={post} users={users} />
+            </View>
           </View>
-        </View>
-        <View style={{ marginLeft: 14 }}>
-          <Caption post={post} users={users}/>
-        </View>
-      </View>)}
+          <View style={{ marginLeft: 14 }}>
+            <Caption post={post} users={users} />
+          </View>
+        </View>)}
     </View>
   );
 };
@@ -142,27 +142,29 @@ const ItemLike = ({ post, users }) => {
       }}
     >
       <View>
-        <TouchableOpacity>
-          <Image
-            style={{
-              height: 45,
-              width: 45,
-              borderRadius: 40,
-              borderWidth: 0.3,
-              backgroundColor: "black",
-            }}
-            source={{ uri: users[item.userId].detail.avatarUrl }}
-          />
-        </TouchableOpacity>
+        {users[item.userId] && (
+          <TouchableOpacity>
+            <Image
+              style={{
+                height: 45,
+                width: 45,
+                borderRadius: 40,
+                borderWidth: 0.3,
+                backgroundColor: "black",
+              }}
+              source={{ uri: users[item.userId].detail.avatarUrl }}
+            />
+          </TouchableOpacity>
+        )}
+
       </View>
       <View style={{ flex: 0.9 }}>
-        <Text style={{ fontWeight: "700" }}>
-          {users[item.userId].detail.name}
-        </Text>
-        {users[item.userId].detail.nickName && (
-          <Text style={{ color: "#A9A9A9" }}>
-            {users[item.userId].detail.nickName}
-          </Text>
+        {users[item.userId] && (
+          <Text style={{ fontWeight: "700" }}>{users[item.userId].detail.name}</Text>
+        )}
+
+        {users[item.userId] && users[item.userId].detail.nickName && (
+          <Text style={{ color: "#A9A9A9" }}>{users[item.userId].detail.nickName}</Text>
         )}
       </View>
       <TouchableOpacity
@@ -214,7 +216,9 @@ function capitalizeFirstLetter(str) {
 const Caption = ({ post, users }) => {
   return (
     <View style={[headerPostStyles.ItemFooterContainer]}>
-      <Text style={{ fontWeight: "600" }}>{users[post.ownerUserId].detail.name}</Text>
+      {users[post.ownerUserId] && (
+        <Text style={{ fontWeight: "600" }}>{users[post.ownerUserId].detail.name}</Text>
+      )}
       <Text style={headerPostStyles.caption}> {post.content}</Text>
     </View>
   );

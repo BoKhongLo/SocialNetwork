@@ -36,6 +36,7 @@ const ProfileUser = () => {
   });
   const [dataPost, setDataPost] = useState([]);
   const [dataUser, setDataUser] = useState({});
+  const [dataUserCurrent, setDataUserCurrent] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -144,7 +145,8 @@ const ProfileUser = () => {
       tmpPost.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
       setDataUser(tmpUserData);
       setDataPost(tmpPost);
-
+      let dataUserCurrent = await getUserDataAsync(dataUserLocal.id, dataUserLocal.accessToken);
+      setDataUserCurrent(dataUserCurrent)
     };
 
     fetchData();
@@ -166,6 +168,16 @@ const ProfileUser = () => {
       });
 
       newSocket.on("addComment", async (comments) => {
+        setDataUser( async(preUser) => {
+          if (comments.userId in preUser) return preUser;
+          const dataUpdate = await updateAccessTokenAsync(
+            dataUserLocal.id,
+            dataUserLocal.refreshToken
+          );
+          let dataReturn = await getUserDataLiteAsync(comments.userId, dataUpdate.accessToken)
+          preUser[dataReturn.id] = dataReturn
+          return preUser;
+        })
         setDataPost(prePost => {
           for (let i = 0; i < prePost.length; i++) {
             if (prePost[i].id === comments.roomId) {
@@ -203,6 +215,16 @@ const ProfileUser = () => {
       });
 
       newSocket.on("addInteractionComment", (comment) => {
+        setDataUser( async(preUser) => {
+          if (comment.userId in preUser) return preUser;
+          const dataUpdate = await updateAccessTokenAsync(
+            dataUserLocal.id,
+            dataUserLocal.refreshToken
+          );
+          let dataReturn = await getUserDataLiteAsync(comment.userId, dataUpdate.accessToken)
+          preUser[dataReturn.id] = dataReturn
+          return preUser;
+        })
         setDataPost((prePost) => {
           const indexPost = prePost.findIndex(item => item.id === comment.roomId);
           if (indexPost === -1) return prePost;
@@ -227,7 +249,7 @@ const ProfileUser = () => {
       });
     }
     socketConnect()
-  }, [dataPost])
+  }, [])
 
   const VirtualizedView = (props) => {
     return (
@@ -269,9 +291,10 @@ const ProfileUser = () => {
           </View>
           {dataPost.map((item, index) => (
             <Post
-              key={`${item.id}${index}`}
+              key={`${item.id}`}
               post={item}
               users={dataUser}
+              userCurrent={dataUserCurrent}
               style={{ flex: 1 }} />
           ))}
         </VirtualizedView>

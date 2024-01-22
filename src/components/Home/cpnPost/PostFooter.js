@@ -42,6 +42,7 @@ const PostFooter = ({
   onPressShare,
   onPressBookmark,
   users,
+  userCurrent
 }) => {
   const [likePressed, setLikePressed] = useState(false);
   const [likePostId, setLikePostId] = useState("");
@@ -51,19 +52,9 @@ const PostFooter = ({
 
   useEffect(() => {
     const fetchData = async () => {
-      const keys = await getAllIdUserLocal();
-      const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
-      let dataReturn = await getUserDataAsync(dataUserLocal.id, dataUserLocal.accessToken);
-      if ("errors" in dataReturn) {
-        const dataUpdate = await updateAccessTokenAsync(
-          dataUserLocal.id,
-          dataUserLocal.refreshToken
-        );
-        dataReturn = await getUserDataAsync(dataUserLocal.id, dataUpdate.accessToken);
-      }
       if (post.interaction) {
         for (let i = 0; i < post.interaction.length; i++) {
-          if (post.interaction[i].userId === dataUserLocal.id) {
+          if (post.interaction[i].userId === userCurrent.id) {
             setLikePressed(true);
             setLikePostId(post.interaction[i].id);
             break;
@@ -71,9 +62,9 @@ const PostFooter = ({
         }
       }
 
-      if (dataReturn.bookMarks) {
-        for (let i = 0; i < dataReturn.bookMarks.length; i++) {
-          if (dataReturn.bookMarks[i] === post.id) {
+      if (userCurrent.bookMarks) {
+        for (let i = 0; i < userCurrent.bookMarks.length; i++) {
+          if (userCurrent.bookMarks[i] === post.id) {
             setBookmarkPressed(true);
             break;
           }
@@ -82,7 +73,7 @@ const PostFooter = ({
 
     }
     fetchData();
-  }, [post, users])
+  }, [post, users, userCurrent])
 
   const handleSendPress = async () => {
     if (comment.trim() === "") return
@@ -133,8 +124,6 @@ const PostFooter = ({
           dataReturn = await addInteractPostAsync(dto, dataUpdate.accessToken);
         }
         if ("errors" in dataReturn) return;
-        // setLikePressed(true);
-        // setLikePostId(dataReturn.id)
       }
     } else if (action === "Bookmark") {
       if (bookmarkPressed === true) {
@@ -180,7 +169,7 @@ const PostFooter = ({
     >
       <View style={styles.modalContent}>
         <Header />
-        <ItemComment post={post} users={users} />
+        <ItemComment post={post} users={users} userCurrent={userCurrent} />
         <View
           style={{
             justifyContent: "flex-start",
@@ -256,62 +245,40 @@ const Header = React.memo(() => {
     </View>
   );
 });
-const ItemComment = React.memo(({ post, users }) => {
-  const [isLiked, setIsLiked] = useState({});
+
+const ItemComment = React.memo(({ post, users, userCurrent }) => {
 
   useEffect(() => {
     const validateData = async () => {
-      const keys = await getAllIdUserLocal();
-      const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
-
-      let newIsLike = {};
-
       for (let i = 0; i < post.comment.length; i++) {
-        let isCheck = false;
-        let isId = "";
         if (!post.comment[i].interaction) continue;
         post.comment[i].interaction = post.comment[i].interaction.filter(item => item.isDisplay !== false)
-        for (let j = 0; j < post.comment[i].interaction.length; j++) {
-          if (post.comment[i].interaction[j].userId === dataUserLocal.id) {
-            isCheck = true;
-            isId = post.comment[i].interaction[j].id;
-            break;
-          }
-        }
-        newIsLike[post.comment[i].id] = {
-          value: isCheck,
-          id: isId
-        }
       }
-      setIsLiked(newIsLike);
     };
 
     validateData();
-  }, [post, users]);
+  }, [post, users, userCurrent]);
 
-  const handleLikePress = useCallback(async (commentId) => {
+  const handleLikePress = async (comment) => {
+    if (!comment) return;
     const keys = await getAllIdUserLocal();
     const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
-    if (isLiked[commentId].value) {
-      if (isLiked[commentId].id === "") return;
-      const dto = new InteractDto(dataUserLocal.id, post.id, commentId, "", isLiked[commentId].id)
+    const indexInter = comment.interaction.findIndex(it => it.userId === userCurrent.id);
+
+    if ( indexInter != -1) {
+      const dto = new InteractDto(dataUserLocal.id, post.id, comment.id, "", comment.interaction[indexInter].id)
       let dataReturn = await removeInteractCommentAsync(dto, dataUserLocal.accessToken)
       if ("errors" in dataReturn) {
         const dataUpdate = await updateAccessTokenAsync(
           dataUserLocal.id,
           dataUserLocal.refreshToken
         );
-        dataReturn = await addInteractCommentAsync(dto, dataUpdate.accessToken);
+        dataReturn = await removeInteractCommentAsync(dto, dataUpdate.accessToken);
       }
       if ("errors" in dataReturn) return;
-      setIsLiked(preData => {
-        preData[commentId].value = !preData[commentId].value;
-        preData[commentId].id = "";
-        return preData;
-      });
     }
     else {
-      const dto = new InteractDto(dataUserLocal.id, post.id, commentId, "HEART", "")
+      const dto = new InteractDto(dataUserLocal.id, post.id, comment.id, "HEART", "")
       let dataReturn = await addInteractCommentAsync(dto, dataUserLocal.accessToken)
       if ("errors" in dataReturn) {
         const dataUpdate = await updateAccessTokenAsync(
@@ -321,13 +288,8 @@ const ItemComment = React.memo(({ post, users }) => {
         dataReturn = await addInteractCommentAsync(dto, dataUpdate.accessToken);
       }
       if ("errors" in dataReturn) return;
-      setIsLiked(preData => {
-        preData[commentId].value = !preData[commentId].value;
-        preData[commentId].id = dataReturn.id;
-        return preData;
-      });
     }
-  }, [isLiked]);
+  };
 
   const renderItem = useCallback(({ item }) => {
     return (
@@ -381,13 +343,13 @@ const ItemComment = React.memo(({ post, users }) => {
           )}
    
         </View>
-        <TouchableOpacity onPress={() => handleLikePress(item.id)}>
+        <TouchableOpacity onPress={() => handleLikePress(item)}>
           <View>
-            {isLiked[item.id] !== undefined && (
+            {item.interaction && (
               <Image
                 style={{ height: 25, width: 25 }}
                 source={
-                  isLiked[item.id].value
+                  item.interaction.findIndex(it => it.userId === userCurrent.id) !== -1
                     ? require('../../../../assets/dummyicon/heart_fill.png')
                     : require('../../../../assets/dummyicon/heart.png')
                 }
@@ -397,13 +359,13 @@ const ItemComment = React.memo(({ post, users }) => {
         </TouchableOpacity>
       </View>
     );
-  }, [isLiked]);
+  }, [post, users, userCurrent]);
 
   return (
     <FlatList
       data={post.comment}
       renderItem={renderItem}
-      keyExtractor={(item) => item.id.toString()}
+      keyExtractor={(item) => item.id}
     />
   );
 });

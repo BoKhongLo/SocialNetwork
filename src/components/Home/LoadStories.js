@@ -84,7 +84,7 @@ const LoadStories = () => {
         }}
       >
 
-        { receivedData && validateFile( receivedData.post.fileUrl[0] ) === "IMAGE" ? (
+        {receivedData && validateFile(receivedData.post.fileUrl[0]) === "IMAGE" ? (
           <Image
             source={{ uri: receivedData.post.fileUrl[0] }}
             style={{
@@ -94,7 +94,7 @@ const LoadStories = () => {
               alignItems: 'center',
             }}
           />
-        )  : receivedData &&  validateFile( receivedData.post.fileUrl[0] ) === "VIDEO" ? (
+        ) : receivedData && validateFile(receivedData.post.fileUrl[0]) === "VIDEO" ? (
           <Video
             style={{
               width: '100%',

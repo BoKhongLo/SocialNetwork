@@ -95,7 +95,10 @@ const BottomTabs = ({ receivedData }) => {
       >
         <View style={styles.modelContainer}>
           <TouchableOpacity
-            onPress={() => navigation.navigate("newpost")}
+            onPress={() => {
+              closeModal();
+              navigation.navigate("newpost")
+            }}
             style={[styles.modalItem, { marginLeft: 20 }]}
           >
             <Text style={styles.modalText}>Post</Text>
@@ -105,7 +108,10 @@ const BottomTabs = ({ receivedData }) => {
             />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate("newstory")}
+            onPress={() => {
+              closeModal();
+              navigation.navigate("newstory");
+            }}
             style={[styles.modalItem, {}]}
           >
             <Text style={styles.modalText}>Story</Text>
