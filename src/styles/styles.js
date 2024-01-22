@@ -10,11 +10,16 @@ const styles = StyleSheet.create({
     // backgroundColor: 'white',
     backgroundColor: "black",
     flex: 1,
+    
   },
   headerContainer: {
     justifyContent: "space-between",
     alignItems: "center",
     flexDirection: "row",
+    // marginHorizontal: 20,
+    paddingHorizontal: 20,
+    // borderBottomColor: "black",
+    // borderBottomWidth: 0.5,
   },
 
   LoginContainer: {
@@ -108,7 +113,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
+    height: 50,
+    borderTopColor: "black",
+    borderTopWidth: 0.5,
   },
+
   BottomTabIcon: {
     width: 30,
     height: 30,
@@ -129,12 +138,12 @@ const styles = StyleSheet.create({
   modalText: { fontSize: 20, margin: 10 },
   modalIcon: { width: 30, height: 30 },
   // Stories styles.
-  stroyImg: {
-    width: 90,
-    height: 90,
+  storyImg: {
+    width: 70,
+    height: 70,
     borderRadius: 50,
     borderWidth: 3,
-    borderColor: "#ff8501",
+    // borderColor: "#ff8501",
   },
 
   iconforAll: {

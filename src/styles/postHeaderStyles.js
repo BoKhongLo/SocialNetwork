@@ -7,34 +7,35 @@ const headerPostStyles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     margin: 5,
+    marginLeft: 12,
     alignItems: "center",
   },
 
   avatar: {
-    width: 35,
-    height: 35,
+    width: 32,
+    height: 32,
     borderRadius: 50,
     borderWidth: 1,
   },
 
   userName: {
     fontWeight:'600',
-    marginTop: 5,
+    marginTop: 8,
     marginLeft: 5,
   },
   frame: {
     borderWidth: 1, // Độ rộng của đường viền
     borderColor: "black", // Màu của đường viền
-    backgroundColor: "black",
+    // backgroundColor: "black",
     justifyContent: "center",
     alignItems: "center",
-    width: "auto",
-    height: "auto"
+    // width: "auto",
   },
   image: {
-    resizeMode: "contain",
-    alignItems: "center",
-    height:400,
+    // resizeMode: "contain",
+    // alignItems: "center",
+    // height:400,
+    // height: "auto",
   },
 
   postFooterContainer: {
@@ -59,7 +60,6 @@ const headerPostStyles = StyleSheet.create({
 
   caption:{
     fontWeight: '500',
-    fontSize:18
   },
 
   modalContainer: {

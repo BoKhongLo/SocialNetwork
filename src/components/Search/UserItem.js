@@ -42,6 +42,10 @@ const UserItem = ({ user, onPress }) => {
         style={searchStyles.addButton} onPress={handleAddFriendPress}>
           <Text>Add</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+        style={searchStyles.addButton} onPress={handleAddFriendPress}>
+          <Text>Deny</Text>
+        </TouchableOpacity>
       </View>
       <Divider orientation="horizontal" />
     </TouchableOpacity>

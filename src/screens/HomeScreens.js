@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
   View,
   ScrollView,
@@ -25,6 +25,7 @@ import {
   getSocketIO
 } from "../util";
 import { registerIndieID, unregisterIndieDevice } from 'native-notify';
+import NewStory from './NewStory';
 
 const HomeScreen = () => {
   const route = useRoute();
@@ -33,7 +34,6 @@ const HomeScreen = () => {
   const [dataPost, setDataPost] = useState([]);
   const [dataStory, setDataStory] = useState([]);
   const [dataUser, setDataUser] = useState({});
-  const [socket, setSocket] = useState(undefined);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,8 +61,6 @@ const HomeScreen = () => {
         );
       }
       // registerIndieID(dataUserLocal.id, 18604, '8sbEFbNYoDaZJKMDeIAWoc');
-      const newSocket = await getSocketIO(dataUserLocal.accessToken);
-      setSocket(newSocket);
       let tmpPost = [];
       let tmpUserData = {};
       let tmpStory = [];
@@ -80,6 +78,9 @@ const HomeScreen = () => {
             if (interaction.userId in tmpUserData) continue;
             let dataUserInteraction = await getUserDataLiteAsync(interaction.userId, dataUserLocal.accessToken)
             tmpUserData[dataUserInteraction.id] = dataUserInteraction;
+          }
+          if (post.interaction) {
+            post.interaction = post.interaction.filter(item => item.isDisplay !== false)
           }
           tmpPost.push(post);
         }
@@ -99,44 +100,95 @@ const HomeScreen = () => {
           tmpStory.push(post);
         }
       }
-      tmpStory.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
-      tmpPost.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+      tmpStory.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      tmpPost.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
       setDataUser(tmpUserData);
       setDataPost(tmpPost);
       setDataStory(tmpStory);
-
     };
 
     fetchData();
-    return () => {
-      if (socket != undefined) {
-        socket.disconnect();
-      }
-    };
   }, []);
 
   useEffect(() => {
-    if (socket == undefined) return;
-    socket.on("removePost", async (post) => {
-      setDataPost( (prePost) => prePost.filter(item => item.id !== post.postId))
-    });
-    socket.on("addComment", async (comment) => {
-      setDataPost( (prePost) => {
-        for (let i = 0; i < prePost.length; i++) {
-          if (prePost[i].id === comment.roomId) {
-            prePost[i].comment.push(comment);
-          }
-        }
-        return prePost;
-      })
-    });
-    return () => {
-      if (socket != undefined) {
-        socket.disconnect();
-      }
-    };
-  }, [socket]);
+    const socketConnect = async() => {
+      const keys = await getAllIdUserLocal();
+      const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+      const dataUpdate = await updateAccessTokenAsync(
+        dataUserLocal.id,
+        dataUserLocal.refreshToken
+      );
+
+      const newSocket = await getSocketIO(dataUpdate.accessToken);
+
+      newSocket.on("removePost", (post) => {
+        setDataPost((prevPosts) => prevPosts.filter(item => item.id !== post.postId));
+      });
   
+      newSocket.on("addComment", async (comments) => {
+        setDataPost(prePost => {
+          for (let i = 0; i < prePost.length; i++) {
+            if (prePost[i].id === comments.roomId) {
+              if (prePost[i].comment.findIndex(item => item.id === comments.id) !== -1) break;
+              prePost[i].comment.push(comments);
+              break;
+            }
+          }
+          return prePost;
+        })
+      });
+  
+      newSocket.on("addInteractionPost!", (post) => {
+        setDataPost((prePost) => {
+          for (let i = 0; i < prePost.length; i++) {
+            if (prePost[i].id === post.postId) {
+              if (prePost[i].interaction.findIndex(item => item.id === post.id) !== -1) break;
+              prePost[i].interaction.push(post);;
+              break;
+            }
+          }
+          return prePost;
+        });
+      });
+  
+      newSocket.on("removeInteractionPost", (post) => {
+        setDataPost((prePost) => {
+          const indexPost = prePost.findIndex(item => item.id === post.postId);
+          if (indexPost === -1) return prePost;
+          const indexInter = prePost[indexPost].interaction.findIndex(item => item.id === post.interactionId);
+          if (indexInter === -1) return prePost;
+          prePost[indexPost].interaction.splice(indexInter, 1);
+          return prePost;
+        });
+      });
+  
+      newSocket.on("addInteractionComment", (comment) => {
+        setDataPost((prePost) => {
+          const indexPost = prePost.findIndex(item => item.id === comment.roomId);
+          if (indexPost === -1) return prePost;
+          const indexComment = prePost[indexPost].comment.findIndex(item => item.id == comment.id)
+          if (indexComment === -1) return prePost;
+          prePost[indexPost].comment[indexComment].interaction.push(comment)
+          return prePost;
+        });
+      });
+  
+      newSocket.on("removeInteractionComment", (comment) => {
+        setDataPost((prePost) => {
+          const indexPost = prePost.findIndex(item => item.id === comment.postId);
+          if (indexPost === -1) return prePost;
+          const indexComment = prePost[indexPost].comment.findIndex(item => item.id === comment.commentId)
+          if (indexComment === -1) return prePost;
+          const indexInter = prePost[indexPost].comment[indexComment].interaction.findIndex(item => item.id == comment.interactionId);
+          if (indexInter === -1) return prePost;
+          prePost[indexPost].comment[indexComment].interaction.splice(indexInter, 1)
+          return prePost;
+        });
+      });
+    }
+    socketConnect()
+  }, [dataPost, dataStory])
+
   const VirtualizedView = (props) => {
     return (
       <FlatList
@@ -150,6 +202,11 @@ const HomeScreen = () => {
       />
     );
   }
+
+  useEffect(() => {
+    console.log("HasChange!")
+  })
+
   return (
     <View
       style={{
@@ -162,16 +219,16 @@ const HomeScreen = () => {
     >
       <Header receivedData={receivedData} />
       <View style={{ flex: 1 }}>
-      {dataPost.length == 0 && dataStory.length == 0 && (
-        <View style={styles.container}>
-          <Text style={styles.text}>Welcome to Black Cat Chat</Text>
-        </View>
-      )}
+        {dataPost.length == 0 && dataStory.length == 0 && (
+          <View style={styles.container}>
+            <Text style={styles.text}>Welcome to Black Cat Chat</Text>
+          </View>
+        )}
         <VirtualizedView style={{ flex: 1 }}>
           <Stories post={dataStory} users={dataUser} />
           {dataPost.map((item, index) => (
             <Post
-              key={`${item.id}${index}`}
+              key={`${item.id}`}
               post={item}
               users={dataUser}
               style={{ flex: 1 }} />

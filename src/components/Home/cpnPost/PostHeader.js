@@ -10,10 +10,16 @@ import {
 import highLight from "./../../../styles/highLightStyles";
 import Modal from "react-native-modal";
 import headerPostStyles from "./../../../styles/postHeaderStyles";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import {removePostAsync, getAllIdUserLocal, getDataUserLocal, updateAccessTokenAsync} from "../../../util"
+import {
+  heightPercentageToDP,
+  widthPercentageToDP,
+} from "react-native-responsive-screen";
+import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from "@react-navigation/native";
-const PostHeader = ({ post, onAvatarPress, onEllipsisPress, users }) => {
+import {removePostAsync, getAllIdUserLocal, getDataUserLocal, updateAccessTokenAsync} from "../../../util"
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+
+const PostHeader = ({ post, onAvatarPress, onEllipsisPress, users, headerColor }) => {
   const { username, avt } = post;
   const navigation = useNavigation();
   const [isModalVisible, setModalVisible] = useState(false);
@@ -77,26 +83,30 @@ const PostHeader = ({ post, onAvatarPress, onEllipsisPress, users }) => {
   };
 
   return (
-    <View style={headerPostStyles.containerHeaderPost}>
-      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-        <TouchableHighlight
-          style={highLight.highLightAVTpost}
-          underlayColor="lightgray"
-          onPress={handleAvatarPress}
+    <View style={[headerPostStyles.containerHeaderPost]}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+        <LinearGradient
+          colors={['#CA1D7E', '#E35157', '#F2703F']}
+          start={{x: 0.0, y: 1.0}} end={{x: 1.0, y: 1.0}}
+          style={{ height: 38,width: 38,alignItems: 'center',justifyContent: 'center',borderRadius:38 / 2}}
         >
+          <TouchableHighlight
+            style={[highLight.highLightAVTpost, {
+              width: 36,height: 36,borderRadius: 36/2,alignSelf: 'center',borderColor: '#fff',borderWidth: 2
+            }]}
+            underlayColor="lightgray"
+            onPress={handleAvatarPress}
+          >
           {users[post.ownerUserId].detail.avatarUrl ? (
-            <Image
-              style={headerPostStyles.avatar}
-              source={{ uri: users[post.ownerUserId].detail.avatarUrl }}
-            />
-          ) : (
-            <Image style={headerPostStyles.avatar} />
+            <Image style={headerPostStyles.avatar} source={{uri: users[post.ownerUserId].detail.avatarUrl}} />
+          ): (
+            <Image style={headerPostStyles.avatar}/>
           )}
-        </TouchableHighlight>
-        <View style={{ flex: 3 }}>
-          <Text style={headerPostStyles.userName}>
-            {users[post.ownerUserId].detail.name}
-          </Text>
+
+          </TouchableHighlight>
+        </LinearGradient>
+        <View>
+          <Text style={[headerPostStyles.userName, { color: headerColor}]}>{users[post.ownerUserId].detail.name}</Text>
         </View>
         {isUser && (
           <TouchableOpacity style={{ paddingHorizontal: 20 }} onPress={toggleModal}>

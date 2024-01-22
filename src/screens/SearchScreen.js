@@ -28,13 +28,13 @@ const SearchScreen = () => {
     const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
     const receivedData = { ...dataUserLocal };
     receivedData.id = user.id;
-    navigation.navigate("Profile", { data: receivedData });
+    navigation.replace("Profile", { data: receivedData });
   };
 
   const handleSearch = async (content) => {
     const keys = await getAllIdUserLocal();
     const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
-    const dataRequest = await findFriendAsync(
+    let dataRequest = await findFriendAsync(
       searchText,
       dataUserLocal.accessToken
     );

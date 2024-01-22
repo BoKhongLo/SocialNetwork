@@ -6,7 +6,9 @@ import {
     ChangePasswordDto,
     ValidateMessagesDto,
     RoomchatDto,
-    PostDto
+    PostDto,
+    InteractDto,
+    BookmarksDto
 } from './dto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from "jwt-decode";
@@ -279,9 +281,6 @@ export async function updateAccessTokenAsync(userId: string, refreshToken: strin
             "refreshToken": response.data.data.Refresh.refresh_token,
             "lastUpdated": new Date().toISOString()
         }
-
-        await deleteDataUserLocal(decoded.id)
-        await saveDataUserLocal(decoded.id, saveData)
 
         return saveData;
 
@@ -1234,8 +1233,145 @@ export async function getPostDailyAsync(userId: string, accessToken: string) {
     }
 }
 
+export async function getPostAsync(postId: string, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
 
-export async function validatePostAsync(dto : PostDto, accessToken: string) {
+    const FIND_POST_QUERY = `
+    query GetPostById ($id: String!){
+        getPostById(id: $id) {
+            id
+            ownerUserId
+            type
+            linkedShare
+            content
+            fileUrl
+            isDisplay
+            created_at
+            updated_at
+            interaction {
+                id
+                content
+                userId
+                isDisplay
+                created_at
+                updated_at
+            }
+            comment {
+                id
+                userId
+                roomId
+                isDisplay
+                content
+                fileUrl
+                created_at
+                updated_at
+                interaction {
+                    id
+                    content
+                    userId
+                    isDisplay
+                    created_at
+                    updated_at
+                }
+            }
+        }
+    }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: FIND_POST_QUERY,
+                variables: {
+                    id: postId
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.getPostById
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+export async function getAllPostUserAsync(userId: string, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const FIND_POST_QUERY = `
+    query GetAllPostByUserId($userId: String!) {
+        getAllPostByUserId(userId: $userId) {
+            id
+            ownerUserId
+            type
+            linkedShare
+            content
+            fileUrl
+            isDisplay
+            created_at
+            updated_at
+            interaction {
+                id
+                content
+                userId
+                isDisplay
+                created_at
+                updated_at
+            }
+            comment {
+                id
+                userId
+                roomId
+                isDisplay
+                content
+                fileUrl
+                interaction {
+                    id
+                    content
+                    userId
+                    isDisplay
+                    created_at
+                    updated_at
+                }
+                created_at
+                updated_at
+            }
+        }
+    }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: FIND_POST_QUERY,
+                variables: {
+                    userId: userId
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.getAllPostByUserId
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+export async function validatePostAsync(dto: PostDto, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
     const VALIDATE_POST_QUERY = `
@@ -1331,7 +1467,7 @@ export async function removePostAsync(userId: string, postId: string, accessToke
     }
 }
 
-export async function addCommentPostAsync(dto : ValidateMessagesDto, accessToken: string) {
+export async function addCommentPostAsync(dto: ValidateMessagesDto, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
     const ADD_COMMENT_QUERY = `
@@ -1375,6 +1511,293 @@ export async function addCommentPostAsync(dto : ValidateMessagesDto, accessToken
         console.log(response.data);
         if ("errors" in response.data) return response.data;
         return response.data.data.addComment
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+
+export async function addInteractPostAsync(dto: InteractDto, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const INTERACT_POST_QUERY = `
+    mutation InteractPost ($userId: String!, $postId: String!, $content: String){
+        interactPost(
+            addInteractPost: {
+                userId: $userId
+                postId: $postId
+                content: $content
+            }
+        ) {
+            id
+            content
+            userId
+            isDisplay
+            created_at
+            updated_at
+        }
+    }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: INTERACT_POST_QUERY,
+                variables: {
+                    userId: dto.userId,
+                    postId: dto.postId,
+                    content: dto.content,
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.interactPost
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+export async function removeInteractPostAsync(dto: InteractDto, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const REMOVE_INTERACT_QUERY = `
+    mutation RemoveInteractionPost ($userId: String!, $postId: String!, $interactionId: String) {
+        RemoveInteractionPost(
+            removeInteractionPost: {
+                userId: $userId
+                postId: $postId
+                interactionId: $interactionId
+            }
+        ) {
+            data
+        }
+    }`
+    
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: REMOVE_INTERACT_QUERY,
+                variables: {
+                    userId: dto.userId,
+                    postId: dto.postId,
+                    interactionId: dto.interactId
+                },
+            },
+            { headers: headers }
+        );
+        console.log(response.data);
+        if ("errors" in response.data) return response.data;
+        return response.data.data.RemoveInteractionPost
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+
+export async function addInteractCommentAsync(dto: InteractDto, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const INTERACT_COMMENT_QUERY = `
+    mutation InteractComment ($userId: String!, $postId: String!, $commentId: String, $content: String){
+        InteractComment(
+            addInteractComment: {
+                userId: $userId
+                postId: $postId
+                commentId: $commentId
+                content: $content
+            }
+        ) {
+            id
+            userId
+            roomId
+            isDisplay
+            content
+            fileUrl
+            created_at
+            updated_at
+            interaction {
+                id
+                content
+                userId
+                isDisplay
+                created_at
+                updated_at
+            }
+        }
+    }
+    `;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: INTERACT_COMMENT_QUERY,
+                variables: {
+                    userId: dto.userId,
+                    postId: dto.postId,
+                    commentId: dto.commentId,
+                    content: dto.content,
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.InteractComment
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+
+export async function removeInteractCommentAsync(dto: InteractDto, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const REMOVE_INTERACT_QUERY = `
+    mutation RemoveInteractionComment ($userId: String!, $postId: String!, $commentId: String, $interactionId: String) {
+        RemoveInteractionComment(
+            removeInteractionComment: {
+                userId: $userId
+                postId: $postId
+                commentId: $commentId
+                interactionId: $interactionId
+            }
+        ) {
+            data
+        }
+    }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: REMOVE_INTERACT_QUERY,
+                variables: {
+                    userId: dto.userId,
+                    postId: dto.postId,
+                    commentId: dto.commentId,
+                    interactionId: dto.interactId
+                },
+            },
+            { headers: headers }
+        );
+        console.log(response.data);
+        if ("errors" in response.data) return response.data;
+        return response.data.data.RemoveInteractionComment
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+
+export async function addBookmarkAsync(dto: BookmarksDto, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const ADD_BOOKMARK_QUERY = `
+        mutation AddBookMarkUser ($userId: String!, $bookMarkId: String!) {
+            addBookMarkUser(
+                addBookMark: { 
+                    userId: $userId
+                    bookMarkId: $bookMarkId
+            }) {
+                userId
+                bookmarkId
+            }
+        }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: ADD_BOOKMARK_QUERY,
+                variables: {
+                    userId: dto.userId,
+                    bookMarkId: dto.postId
+                },
+            },
+            { headers: headers }
+        );
+        console.log(response.data);
+        if ("errors" in response.data) return response.data;
+        return response.data.data.addBookMarkUser
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+export async function removeBookmarkAsync(dto: BookmarksDto, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const REMOVE_INTERACT_QUERY = `
+        mutation RemoveBookMarkUser ($userId: String!, $bookMarkId: String!) {
+            removeBookMarkUser(
+                removeBookMark: { 
+                    bookMarkId: $bookMarkId
+                    userId: $userId
+                }) {
+                data
+            }
+        }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: REMOVE_INTERACT_QUERY,
+                variables: {
+                    userId: dto.userId,
+                    bookMarkId: dto.postId,
+                },
+            },
+            { headers: headers }
+        );
+        console.log(response.data);
+        if ("errors" in response.data) return response.data;
+        return response.data.data.removeBookMarkUser
 
     } catch (error) {
         console.error('Error:', error);

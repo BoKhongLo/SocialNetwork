@@ -62,7 +62,6 @@ const NewPost = () => {
           dataUpdate.accessToken
         );
       }
-      console.log(dataUserAsync)
       setDataUser({ ...dataUserAsync })
       setDataPost(dataPostPre => {
         return {

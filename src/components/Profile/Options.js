@@ -25,15 +25,14 @@ const Options = ({data}) => {
 
   useEffect(() => {
     const fetchData = async () => {
-
       const keys = await getAllIdUserLocal();
       const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
 
-      const dataUserAsync = await getUserDataAsync(
+      let dataUserAsync = await getUserDataAsync(
         dataUserLocal.id,
         dataUserLocal.accessToken
       );
-      const dataRequest = await getFriendRequestAsync(dataUserLocal.id, dataUserLocal.accessToken)
+      let dataRequest = await getFriendRequestAsync(dataUserLocal.id, dataUserLocal.accessToken)
       if ("errors" in dataUserAsync) {
         const dataUpdate = await updateAccessTokenAsync(
           dataUserLocal.id,
@@ -110,6 +109,24 @@ const Options = ({data}) => {
     setFriendAdded(!isFriendAdded);
     setPending(false);
   }
+
+  const handleChat = async () => {
+    const keys = await getAllIdUserLocal();
+    const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+    const dataUpdate = await updateAccessTokenAsync(
+      dataUserLocal.id,
+      dataUserLocal.refreshToken
+    );
+    const dto = new RoomchatDto(
+      dataUserLocal.id, 
+      [data.id], 
+      dataUserLocal.id + data.id,
+      true)
+    let dataRoomchatAsync = await createRoomchatAsync(dto, dataUpdate.accessToken);
+    dataRoomchatAsync.imgDisplay = data.avatarUrl;
+    dataRoomchatAsync.title = data.name;
+    navigation.replace('chatwindow', { data: dataRoomchatAsync });
+  };
   return (
     <View
       style={{
@@ -143,6 +160,7 @@ const Options = ({data}) => {
       )}
 
       <TouchableOpacity
+        onPress={handleChat}
         style={[profileStyle.editContainer, { paddingHorizontal: 18,marginHorizontal: 1 }]}
       >
         <Text style={profileStyle.textEdit}>Chat</Text>

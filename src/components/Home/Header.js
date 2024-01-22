@@ -7,35 +7,36 @@ const Header = ({ receivedData }) => {
   const navigation = useNavigation();
 
   return (
-    <View style={styles.headerContainer}>
-      <TouchableOpacity>
-        <Image
-          style={styles.logo}
-          source={require("../../../assets/img/Instagram_logo.png")}
-        />
-      </TouchableOpacity>
-      <View style={styles.iconContainer}>
-        <TouchableOpacity
-        style={{padding:10}}
-          onPress={() => navigation.navigate("noti", { data: receivedData })}
-        >
+    <View>
+      <View style={[styles.headerContainer]}>
+        <TouchableOpacity>
           <Image
-            style={styles.icon}
-            source={require("../../../assets/dummyicon/heart.png")}
+            style={styles.logo}
+            source={require('../../../assets/img/Instagram_logo.png')}
           />
         </TouchableOpacity>
-        <TouchableOpacity
-          style={{ flexDirection: "row",padding:10 }}
-          onPress={() => navigation.navigate("chat", { data: receivedData })}
-        >
-          <Image
-            style={styles.icon}
-            source={require("../../../assets/dummyicon/chat.png")}
-          />
-          <View style={styles.unreadBadge}>
-            <Text style={styles.unreadBadgeText}></Text>
-          </View>
-        </TouchableOpacity>
+        <View style={styles.iconContainer}>
+          <TouchableOpacity
+          onPress={() => navigation.navigate('noti', {data: receivedData})}
+          style={{ marginRight: 20 }}>
+            <Image
+              style={styles.icon}
+              source={require('../../../assets/dummyicon/heart.png')}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{ flexDirection: 'row'}}
+            onPress={() => navigation.navigate('chat', {data: receivedData})}
+          >
+            <Image
+              style={styles.icon}
+              source={require('../../../assets/dummyicon/chat.png')}
+            />
+            <View style={styles.unreadBadge}>
+              <Text style={styles.unreadBadgeText}></Text>
+            </View>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
