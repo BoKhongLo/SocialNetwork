@@ -21,7 +21,7 @@ import {
   widthPercentageToDP,
 } from "react-native-responsive-screen";
 
-const Post = ({ post, users, userCurrent }) => {
+const Post = React.memo(({ post, users, userCurrent }) => {
   const validateFile = (file) => {
     const imgExt = ["jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp", "raf"];
     const videoExt = ["mp4", "avi", "mkv", "mov", "wmv", "flv", "webm"];
@@ -83,7 +83,7 @@ const Post = ({ post, users, userCurrent }) => {
         </View>)}
     </View>
   );
-};
+});
 
 
 const Likes = ({ post, users }) => {

@@ -5,7 +5,7 @@ import { widthPercentageToDP } from 'react-native-responsive-screen';
 import styles from './../../styles/styles';
 import { useNavigation } from '@react-navigation/native';
 
-const Information = ({ data }) => {
+const Information = ({ data, isUser }) => {
   const navigation = useNavigation();
   return (
     <View style={{ alignItems: 'center' }}>
@@ -20,7 +20,10 @@ const Information = ({ data }) => {
           marginTop:10
         }}
       >
-        <Pressable onPress={() => navigation.replace("listFriend", {data: {userId: data.id}})}>
+        <Pressable onPress={() => {
+          if (!isUser) return;
+          navigation.replace("listFriend", {data: {userId: data.id}})
+          }}>
           <View style={profileStyle.numInfor}>
             {data.friends ? (
               <Text style={{ fontWeight: '400', fontSize: 20, marginRight: 5 }}>
@@ -41,7 +44,10 @@ const Information = ({ data }) => {
             source={require('../../../assets/dummyicon/dot.png')}
           />
         </View>
-        <Pressable onPress={() => navigation.replace("listPost", {data: {userId: data.id}})}>
+        <Pressable onPress={() => {
+          if (!isUser) return;
+          navigation.replace("listPost", {data: {userId: data.id}})
+          }}>
           <View style={profileStyle.numInfor}>
             <Text style={{ fontWeight: '400', marginRight: 5 }}>Bookmark</Text>
             {data.bookMarks ? (
