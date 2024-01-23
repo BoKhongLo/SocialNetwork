@@ -347,77 +347,77 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
     }
   };
 
-  const renderItem = useCallback(
-    ({ item }) => {
-      return (
-        <TouchableOpacity
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: widthPercentageToDP("95%"),
-            marginVertical: 5,
-          }}
-          onLongPress={() => handleLongPress(item)}
-        >
-          <View>
-            <TouchableOpacity>
-              {users[item.userId].detail.avatarUrl ? (
-                <Image
-                  style={{
-                    height: 45,
-                    width: 45,
-                    borderRadius: 40,
-                    borderWidth: 0.3,
-                    backgroundColor: "black",
-                  }}
-                  source={{ uri: users[item.userId].detail.avatarUrl }}
-                />
-              ) : (
-                <Image
-                  style={{
-                    height: 45,
-                    width: 45,
-                    borderRadius: 40,
-                    borderWidth: 0.3,
-                    backgroundColor: "black",
-                  }}
-                />
-              )}
-            </TouchableOpacity>
-          </View>
-          <View style={{ flex: 0.9 }}>
+  const renderItem = useCallback(({ item }) => {
+    return (
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          width: widthPercentageToDP('95%'),
+          marginVertical: 5,
+        }}
+      >
+        <View>
+          <TouchableOpacity>
+            {users[item.userId] && users[item.userId].detail.avatarUrl ? (
+              <Image
+                style={{
+                  height: 45,
+                  width: 45,
+                  borderRadius: 40,
+                  borderWidth: 0.3,
+                  backgroundColor: "black",
+                }}
+                source={{ uri: users[item.userId].detail.avatarUrl }}
+              />
+            ) : (
+              <Image
+                style={{
+                  height: 45,
+                  width: 45,
+                  borderRadius: 40,
+                  borderWidth: 0.3,
+                  backgroundColor: "black",
+                }}
+
+              />
+            )}
+
+          </TouchableOpacity>
+        </View>
+        <View style={{ flex: 0.9 }}>
+          {users[item.userId] && (
             <Text style={{ fontWeight: "700" }}>
-              {users[item.userId].detail.name}
-            </Text>
-            <Text style={{ fontSize: 17 }}>{item.content}</Text>
+            {users[item.userId].detail.name}
+          </Text>
+          )}
+          <Text style={{ fontSize: 17 }}>{item.content}</Text>
+          {item.interaction && (
+                <Text
+                style={{ color: "#A9A9A9" }}
+              >
+              {`${item.interaction.length} likes`}</Text>
+          )}
+   
+        </View>
+        <TouchableOpacity onPress={() => handleLikePress(item)}>
+          <View>
             {item.interaction && (
-              <Text style={{ color: "#A9A9A9" }}>
-                {`${item.interaction.length} likes`}
-              </Text>
+              <Image
+                style={{ height: 25, width: 25 }}
+                source={
+                  item.interaction.findIndex(it => it.userId === userCurrent.id) !== -1
+                    ? require('../../../../assets/dummyicon/heart_fill.png')
+                    : require('../../../../assets/dummyicon/heart.png')
+                }
+              />
             )}
           </View>
-          <TouchableOpacity onPress={() => handleLikePress(item)}>
-            <View>
-              {item.interaction && (
-                <Image
-                  style={{ height: 25, width: 25 }}
-                  source={
-                    item.interaction.findIndex(
-                      (it) => it.userId === userCurrent.id
-                    ) !== -1
-                      ? require("../../../../assets/dummyicon/heart_fill.png")
-                      : require("../../../../assets/dummyicon/heart.png")
-                  }
-                />
-              )}
-            </View>
-          </TouchableOpacity>
         </TouchableOpacity>
-      );
-    },
-    [post, users, userCurrent]
-  );
+      </View>
+    );
+  }, [post, users, userCurrent]);
 
   return (
     <>

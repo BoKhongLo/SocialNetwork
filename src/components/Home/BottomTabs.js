@@ -4,6 +4,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import Modal from "react-native-modal";
 import styles from "../../styles/styles";
 import Icon from 'react-native-vector-icons/Ionicons';
+import { getAllIdUserLocal, getDataUserLocal } from "../../util";
 const BottomTabs = ({ receivedData }) => {
   const navigation = useNavigation();
   const [isModalVisible, setModalVisible] = useState(false);
@@ -22,8 +23,9 @@ const BottomTabs = ({ receivedData }) => {
       receivedData = {...dataUserLocal};
     }
 
-    fetData
-  })
+    fetData()
+  }, [])
+
   return (
     <View style={styles.BottomTabContainer}>
       <TouchableOpacity
