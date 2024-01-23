@@ -155,7 +155,7 @@ const Header = ({ userProfile, userData }) => {
         {userProfile.title}
       </Text>
       <TouchableOpacity
-        onPress={() => navigation.navigate("settingChat")}
+        onPress={() => navigation.navigate("settingGroupChat")}
         style={{ padding: 10 }}
       >
         <Image

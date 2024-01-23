@@ -13,6 +13,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 
 const Edit = () => {
   const navigation = useNavigation();
+  
   const [isEditAvatarModalVisible, setEditAvatarModalVisible] = useState(false);
   const [isProfileModalVisible, setProfileModalVisible] = useState(false);
   const [isNicknameModalVisible, setNicknameModalVisible] = useState(false);
