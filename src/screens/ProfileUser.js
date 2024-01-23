@@ -284,7 +284,7 @@ const ProfileUser = () => {
             style={{
               borderBottomWidth: 0.7,
             }}>
-            <Information data={userProfile} />
+            <Information data={userProfile} isUser={isUser}/>
             {!isUser && (
               <Options data={userProfile} />
             )}
