@@ -26,7 +26,7 @@ const Setting = () => {
       const keys = await getAllIdUserLocal();
       const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
 
-      const dataUserAsync = await getUserDataAsync(
+      let dataUserAsync = await getUserDataAsync(
         dataUserLocal.id,
         dataUserLocal.accessToken
       );

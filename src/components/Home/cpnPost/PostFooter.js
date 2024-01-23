@@ -304,7 +304,7 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
       >
         <View>
           <TouchableOpacity>
-            {users[item.userId].detail.avatarUrl ? (
+            {users[item.userId] && users[item.userId].detail.avatarUrl ? (
               <Image
                 style={{
                   height: 45,
@@ -331,9 +331,11 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
           </TouchableOpacity>
         </View>
         <View style={{ flex: 0.9 }}>
-          <Text style={{ fontWeight: "700" }}>
+          {users[item.userId] && (
+            <Text style={{ fontWeight: "700" }}>
             {users[item.userId].detail.name}
           </Text>
+          )}
           <Text style={{ fontSize: 17 }}>{item.content}</Text>
           {item.interaction && (
                 <Text
