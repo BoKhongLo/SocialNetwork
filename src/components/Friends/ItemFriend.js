@@ -41,6 +41,7 @@ const ItemFriends = ({ userId }) => {
 
             if ("errors" in dataRequest) return;
             const tmpDataUser = {};
+            dataRequest.friends = [...new Set(dataRequest.friends)]
             for (let i = 0; i < dataRequest.friends.length; i++) {
                 if (dataRequest.friends[i] in tmpDataUser) continue;
                 let tmpData = await getUserDataAsync(dataRequest.friends[i], dataUserLocal.accessToken);

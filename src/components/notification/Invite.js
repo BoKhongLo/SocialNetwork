@@ -23,6 +23,13 @@ const Invite = () => {
     setDataInvite(item => item.filter(req => req.id !== id))
   }
 
+  function removeDuplicates(array, key) {
+    return array.filter((item, index, self) =>
+        index === self.findIndex((t) => (
+            t[key] === item[key]
+        ))
+    );
+  }
   useEffect(() => {
     const fetchData = async () => {
       const keys = await getAllIdUserLocal();
@@ -41,6 +48,7 @@ const Invite = () => {
         dataRequest = await getFriendRequestAsync(dataUserLocal.id, dataUpdate.accessToken);
       }
       if ("errors" in dataRequest) return;
+      dataRequest = removeDuplicates(dataRequest, 'id');
       const tmpDataUser = {};
       for (let item of dataRequest) {
         if (item.createdUserId in tmpDataUser) continue;
