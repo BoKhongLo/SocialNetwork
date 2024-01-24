@@ -57,6 +57,7 @@ const ListPost = () => {
 
       let tmpPost = [];
       let tmpUserData = {}
+      dataReturn.bookMarks = [...new Set(dataReturn.bookMarks)]
       for (let i = 0; i < dataReturn.bookMarks.length; i++) {
         let post = await getPostAsync(dataReturn.bookMarks[i], dataUserLocal.accessToken)
         if (post.isDisplay == false) continue;

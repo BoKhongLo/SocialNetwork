@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import { View, Text, Image, TouchableOpacity, Alert } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import styles from "../../styles/styles";
@@ -19,7 +19,7 @@ const Setting = () => {
 
   const [userProfile, setUserProfile] = useState({
     username: "",
-    avatarUrl: require("../../../assets/img/avt.png"),
+    avatarUrl: null,
     nickName: "",
     phoneNumber: -1,
     description: "",
@@ -78,6 +78,27 @@ const Setting = () => {
     fetchData();
   }, []);
 
+  const logoutFunction = async () => {
+    
+    const keys = await getAllIdUserLocal();
+    const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+    // unregisterIndieDevice(dataUserLocal.id, 18604, '8sbEFbNYoDaZJKMDeIAWoc');
+    await deleteDataUserLocal(dataUserLocal.id);
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 1,
+        routes: [{ name: "Login" }],
+      })
+    );
+  };
+
+  const LogoutAlert = () => {
+    Alert.alert('', 'Log out of your account ?',[
+      {text: 'Cancel', onPress: () => navigation.goBack()},
+      {text: 'Ok', onPress: () => logoutFunction()},
+    ])
+  }
+
   return (
     <View
       style={{
@@ -109,7 +130,7 @@ const Setting = () => {
           marginVertical: 20,
         }}
       >
-        <Security />
+        <Security logoutFunction={LogoutAlert} />
       </View>
     </View>
   );
@@ -117,20 +138,6 @@ const Setting = () => {
 
 const Header = () => {
   const navigation = useNavigation();
-
-  const logoutFunction = async () => {
-    const keys = await getAllIdUserLocal();
-    const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
-    // unregisterIndieDevice(dataUserLocal.id, 18604, '8sbEFbNYoDaZJKMDeIAWoc');
-    await deleteDataUserLocal(dataUserLocal.id);
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 1,
-        routes: [{ name: "Login" }],
-      })
-    );
-  };
-
   return (
     <View
       style={{
@@ -152,11 +159,8 @@ const Header = () => {
 
       <Text style={{ fontSize: 20, fontWeight: "500" }}>Settings</Text>
 
-      <TouchableOpacity style={{ padding: 10 }} onPress={logoutFunction}>
-        <Image
-          style={{ height: 35, width: 35 }}
-          source={require("../../../assets/dummyicon/exit.png")}
-        />
+      <TouchableOpacity style={{ padding: 10 }} onPress={null}>
+        <Image style={{ height: 35, width: 35 }} source={null} />
       </TouchableOpacity>
     </View>
   );
@@ -208,7 +212,7 @@ const General = ({ userProfile }) => {
   );
 };
 
-const Security = () => {
+const Security = ({ logoutFunction }) => {
   const navigation = useNavigation();
 
   return (
@@ -218,12 +222,13 @@ const Security = () => {
       </Text>
       <View style={{ marginLeft: 15, marginTop: 20 }}>
         <TouchableOpacity
+          onPress={() => navigation.navigate("changepassword")}
           style={{ padding: 10 }}
         >
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
-            <Text style={{ fontSize: 18 }}>Block</Text>
+            <Text style={{ fontSize: 18 }}>Change Password</Text>
             <Image
               style={{ height: 30, width: 30 }}
               source={require("../../../assets/dummyicon/right_line.png")}
@@ -235,14 +240,11 @@ const Security = () => {
         </TouchableOpacity>
       </View>
       <View style={{ marginLeft: 15, marginTop: 20 }}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("changepassword")}
-          style={{ padding: 10 }}
-        >
+        <TouchableOpacity style={{ padding: 10 }} onPress={logoutFunction}>
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
-            <Text style={{ fontSize: 18 }}>Change Password</Text>
+            <Text style={{ fontSize: 18 }}>Log out</Text>
             <Image
               style={{ height: 30, width: 30 }}
               source={require("../../../assets/dummyicon/right_line.png")}

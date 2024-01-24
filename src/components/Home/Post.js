@@ -23,6 +23,7 @@ import {
 
 const Post = React.memo(({ post, users, userCurrent }) => {
   const validateFile = (file) => {
+    if (!file || file == "") return "Null";
     const imgExt = ["jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp", "raf"];
     const videoExt = ["mp4", "avi", "mkv", "mov", "wmv", "flv", "webm"];
     const audioExt = ["mp3", "ogg", "wav", "flac", "aac", "wma", "m4a"];

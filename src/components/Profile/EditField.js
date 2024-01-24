@@ -106,7 +106,7 @@ const Header = (data) => {
         padding: 13,
       }}
     >
-      <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
+      <TouchableOpacity onPress={() => navigation.goBack()}>
         <Text style={{ fontSize: 18 }}>Hủy</Text>
       </TouchableOpacity>
       <Text style={{ fontSize: 18, fontWeight: "500" }}>
