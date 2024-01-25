@@ -22,6 +22,15 @@ import {
 } from "react-native-responsive-screen";
 
 const Post = React.memo(({ post, users, userCurrent }) => {
+  const [countLike, setCountLike] = useState(post.interaction.length);
+  
+  const addLike = () => {
+    setCountLike(pre => ++pre)
+  }
+  const subLike = () => {
+    setCountLike(pre => --pre)
+  }
+
   const validateFile = (file) => {
     if (!file || file == "") return "Null";
     const imgExt = ["jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp", "raf"];
@@ -59,9 +68,9 @@ const Post = React.memo(({ post, users, userCurrent }) => {
           </View>
           <PostImage post={post} users={users} />
           <View>
-            <PostFooter post={post} users={users} userCurrent={userCurrent} />
+            <PostFooter post={post} users={users} userCurrent={userCurrent} onAddLike={addLike} onSubLike={subLike}/>
             <View style={{ marginLeft: 14 }}>
-              <Likes post={post} users={users} />
+              <Likes post={post} users={users} likes={countLike} />
             </View>
           </View>
           <View style={{ marginLeft: 14 }}>
@@ -73,21 +82,34 @@ const Post = React.memo(({ post, users, userCurrent }) => {
           <PostHeader post={post} users={users} userCurrent={userCurrent} />
           <PostImage post={post} users={users} />
           <View>
-            <PostFooter post={post} users={users} userCurrent={userCurrent} />
+            <PostFooter post={post} users={users} userCurrent={userCurrent} onAddLike={addLike} onSubLike={subLike} />
             <View style={{ marginLeft: 14 }}>
-              <Likes post={post} users={users} />
+              <Likes post={post} users={users}  likes={countLike} />
             </View>
           </View>
           <View style={{ marginLeft: 14 }}>
             <Caption post={post} users={users} />
           </View>
         </View>)}
+      {fileType == 'Null' && (
+      <View>
+        <PostHeader post={post} users={users} userCurrent={userCurrent} />
+        <View style={{ marginLeft: 14 }}>
+          <Caption post={post} users={users} />
+        </View>
+        <View>
+          <PostFooter post={post} users={users} userCurrent={userCurrent} onAddLike={addLike} onSubLike={subLike}/>
+          <View style={{ marginLeft: 14 }}>
+            <Likes post={post} users={users} likes={countLike} />
+          </View>
+        </View>
+      </View>)}
     </View>
   );
 });
 
 
-const Likes = ({ post, users }) => {
+const Likes = ({ post, users, likes }) => {
   const [isCommentModalVisible, setCommentModalVisible] = useState(false);
 
   const handlePress = (action) => {
@@ -106,7 +128,7 @@ const Likes = ({ post, users }) => {
       style={[headerPostStyles.ItemFooterContainer]}
       onPress={() => handlePress("Comment")}
     >
-      <Text style={headerPostStyles.likes}>{post.interaction.length} likes</Text>
+      <Text style={headerPostStyles.likes}>{likes} likes</Text>
 
       <Modal
         isVisible={isCommentModalVisible}
@@ -213,7 +235,7 @@ const Header = () => {
 const Caption = ({ post, users }) => {
   return (
     <View style={[headerPostStyles.ItemFooterContainer]}>
-      {users[post.ownerUserId] && (
+      {users[post.ownerUserId] && post.fileUrl.length != 0 && (
         <Text style={{ fontWeight: "600" }}>{users[post.ownerUserId].detail.name}</Text>
       )}
       <Text style={headerPostStyles.caption}> {post.content}</Text>

@@ -9,6 +9,7 @@ const headerPostStyles = StyleSheet.create({
     margin: 5,
     marginLeft: 12,
     alignItems: "center",
+    width: widthPercentageToDP('95%'),
   },
 
   avatar: {

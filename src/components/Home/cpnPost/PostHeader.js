@@ -99,9 +99,11 @@ const PostHeader = ({ post, onAvatarPress, onEllipsisPress, users, userCurrent, 
           </View>
         )}
         {post.ownerUserId === userCurrent.id && (
-          <TouchableOpacity style={{ paddingHorizontal: 20 }} onPress={toggleModal}>
-            <MaterialCommunityIcons name="dots-horizontal" size={25} />
-          </TouchableOpacity>
+          <View>
+            <TouchableOpacity style={{ paddingHorizontal: 20, color: headerColor }} onPress={toggleModal}>
+              <MaterialCommunityIcons name="dots-horizontal" size={25} />
+            </TouchableOpacity>
+          </View>
         )}
       </View>
 

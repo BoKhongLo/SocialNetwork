@@ -37,7 +37,8 @@ import {
 } from "../../../util/dto";
 const PostFooter = ({
   post,
-  onPressLike,
+  onAddLike,
+  onSubLike,
   onPressComment,
   onPressShare,
   onPressBookmark,
@@ -111,7 +112,9 @@ const PostFooter = ({
           dataReturn = await removeInteractPostAsync(dto, dataUpdate.accessToken);
         }
         if ("errors" in dataReturn) return;
-        // setLikePressed(false);
+        setLikePressed(false);
+        setLikePostId("");
+        onSubLike()
       }
       else if (likePostId == false) {
         const dto = new InteractDto(dataUserLocal.id, post.id, "", "HEART", "");
@@ -124,6 +127,9 @@ const PostFooter = ({
           dataReturn = await addInteractPostAsync(dto, dataUpdate.accessToken);
         }
         if ("errors" in dataReturn) return;
+        setLikePressed(true);
+        setLikePostId(dataReturn.id);
+        onAddLike()
       }
     } else if (action === "Bookmark") {
       if (bookmarkPressed === true) {

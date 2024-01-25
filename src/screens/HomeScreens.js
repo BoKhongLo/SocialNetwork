@@ -158,12 +158,13 @@ const HomeScreen = () => {
       
       newSocket.on("addInteractionPost!", (post) => {
         setDataPost((prePost) => {
+          console.log("prePost: ", prePost);
           const existingPost = prePost.find(item => item.id === post.postId);
           if (existingPost) {
             const existingInteraction = existingPost.interaction.find(item => item.id === post.id);
             if (!existingInteraction) {
               existingPost.interaction.push(post);
-              return [...prePost];
+              return prePost;
             }
           }
           return prePost;
@@ -177,7 +178,7 @@ const HomeScreen = () => {
             const indexInter = existingPost.interaction.findIndex(item => item.id === post.interactionId);
             if (indexInter !== -1) {
               existingPost.interaction.splice(indexInter, 1);
-              return [...prePost];
+              return prePost;
             }
           }
           return prePost;

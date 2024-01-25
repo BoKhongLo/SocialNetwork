@@ -60,11 +60,13 @@ const PostImage = ({ post, users }) => {
           />
         ) : validateFile(item) === "VIDEO" ? (
           <Video
+            onReadyForDisplay={res => {
+              setRatio(res.naturalSize.width / res.naturalSize.height)
+            }}
             style={[styles.image, {
-              aspectRatio: 1
+              aspectRatio: ratio ? ratio : 1
             }]}
             source={{ uri: item }}
-            height= {500}
             useNativeControls = {true}
             resizeMode="contain"
           />
