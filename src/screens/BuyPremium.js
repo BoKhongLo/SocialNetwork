@@ -241,7 +241,7 @@ const paymentStyle = StyleSheet.create({
   text: { fontSize: 20 },
   number: { fontSize: 30 },
   textPack: {
-    fontSize: 28,
+    fontSize: 27,
     marginVertical: 5,
     marginHorizontal: 10,
   },

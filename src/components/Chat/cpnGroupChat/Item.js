@@ -27,6 +27,7 @@ const Item = ({ user, onAdd, onRemove }) => {
       )}
       <View style={{ flex: 1, marginHorizontal: 10 }}>
         <Text style={newGroup.text}>{user.detail.name}</Text>
+
       </View>
       <TouchableOpacity
         style={newGroup.addButton}
