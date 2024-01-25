@@ -1,10 +1,6 @@
 import {
   View,
-  Text,
-  SafeAreaView,
   ScrollView,
-  TouchableHighlight,
-  TouchableOpacity,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import React, { useState, useEffect } from "react";

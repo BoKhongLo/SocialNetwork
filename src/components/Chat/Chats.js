@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import { View, Text, Image, TouchableOpacity, Alert } from "react-native";
 import React, { useState, useEffect } from "react";
 import chat from "../../styles/ChatStyles/chatStyles";
 import { useNavigation } from "@react-navigation/native";
@@ -8,8 +8,11 @@ import {
 } from "react-native-responsive-screen";
 
 const Chats = ({ dataRoomchat }) => {
+  
   return (
-    <View style={{ flex: 1, height: hp("100%") }}>
+    <View
+     
+     style={{ flex: 1, height: hp("100%") }}>
       <View>
         <HeaderChats />
         {dataRoomchat.map((roomchat, index) => (
@@ -37,10 +40,18 @@ const ListOfChat = ({ roomchat }) => {
     hour: "numeric",
     minute: "numeric",
   };
+  const alertDeleteChat = () => {
+    Alert.alert('','Delete this chats ?' ,([
+      {text: 'Cancel', onPress: () => null },
+      {text: 'OK', onPress: () => null},
+
+    ]))
+  }
   return (
     <View>
       <View style={chat.KhungChat}>
         <TouchableOpacity
+        onLongPress={()=> alertDeleteChat()}
           onPress={() => navigation.navigate("chatwindow", { data: roomchat })}
         >
           <View style={{ flexDirection: "row" }}>

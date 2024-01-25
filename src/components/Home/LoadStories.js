@@ -5,10 +5,10 @@ import {
   Text,
   Image,
   TextInput,
-  ScrollView,
   KeyboardAvoidingView,
   Platform,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
@@ -24,14 +24,15 @@ import {
   updateAccessTokenAsync,
   getSocketIO,
   getRoomchatByTitleAsync,
+  removePostAsync,
 } from "../../util";
 const LoadStories = () => {
   const route = useRoute();
   const receivedData = route.params?.data;
-  const [imageHeight, setImageHeight] = useState(0);
-  const [imageWidth, setImageWidth] = useState(0);
+
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
+
   useEffect(() => {
     if (!receivedData) navigation.navigate("main");
     console.log(receivedData);
@@ -52,7 +53,37 @@ const LoadStories = () => {
       return "VIDEO";
     }
   };
+  const handleDeletePost = async () => {
+    const keys = await getAllIdUserLocal();
+    const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+    let dataReturn = await removePostAsync(
+      dataUserLocal.id,
+      receivedData.post.id,
+      dataUserLocal.accessToken
+    );
 
+    if ("errors" in dataReturn) {
+      const dataUpdate = await updateAccessTokenAsync(
+        dataUserLocal.id,
+        dataUserLocal.refreshToken
+      );
+      dataReturn = await removePostAsync(
+        dataUserLocal.id,
+        receivedData.post.id,
+        dataUpdate.accessToken
+      );
+    }
+
+    if ("errors" in dataReturn) return;
+    navigation.navigate('main')
+  };
+
+  const alertDeleteStory = () => {
+    Alert.alert("", "Delete this story ?", [
+      { text: "Cancel", onPress: () => null },
+      { text: "OK", onPress: () => handleDeletePost() },
+    ]);
+  };
   return (
     <View
       style={{
@@ -75,7 +106,7 @@ const LoadStories = () => {
           />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => null}
+          onPress={() => alertDeleteStory()}
           style={{ marginLeft: 10 }}
         >
           <Image

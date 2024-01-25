@@ -7,14 +7,11 @@ import {
   TouchableHighlight,
   TouchableWithoutFeedback,
   TextInput,
+  Alert,
 } from "react-native";
 import highLight from "./../../../styles/highLightStyles";
 import Modal from "react-native-modal";
 import headerPostStyles from "./../../../styles/postHeaderStyles";
-import {
-  heightPercentageToDP,
-  widthPercentageToDP,
-} from "react-native-responsive-screen";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import {
@@ -28,7 +25,6 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 const PostHeader = ({
   post,
   onAvatarPress,
-  onEllipsisPress,
   users,
   userCurrent,
   headerColor,
@@ -36,14 +32,6 @@ const PostHeader = ({
   const { username, avt } = post;
   const navigation = useNavigation();
   const [isModalVisible, setModalVisible] = useState(false);
-  const [isPrivacyModalVisible, setPrivacyModalVisible] = useState(false);
-  const openPrivacyModal = () => {
-    setPrivacyModalVisible(true);
-  };
-
-  const closePrivacyModal = () => {
-    setPrivacyModalVisible(false);
-  };
 
   const handleAvatarPress = async () => {
     if (onAvatarPress) {
@@ -84,6 +72,12 @@ const PostHeader = ({
     if ("errors" in dataReturn) return;
 
     toggleModal();
+  };
+  const alertDeletePost = () => {
+    Alert.alert("", "Delete this post ?", [
+      { text: "Cancel", onPress: () => null },
+      { text: "OK", onPress: () => handleDeletePost() },
+    ]);
   };
 
   const handleEditPost = async () => {
@@ -174,57 +168,12 @@ const PostHeader = ({
                 Edit post
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={openPrivacyModal}>
-              <Text style={{ color: "black", fontSize: 20, marginBottom: 10 }}>
-                Who can't see your post
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={handleDeletePost}>
+            <TouchableOpacity onPress={alertDeletePost}>
               <Text style={{ color: "red", fontSize: 20 }}>Delete post</Text>
             </TouchableOpacity>
           </View>
         </Modal>
       )}
-      <Modal
-        animationType="slide"
-        transparent={false}
-        visible={isPrivacyModalVisible}
-        onRequestClose={closePrivacyModal}
-      >
-        <View style={{ flex: 1 }}>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <TouchableOpacity
-              style={{ paddingVertical: 10 }}
-              onPress={closePrivacyModal}
-            >
-              <Text style={{ fontSize: 20 }}>Cancel</Text>
-            </TouchableOpacity>
-            <Text style={{ fontSize: 20 }}>Who can't see your post</Text>
-          </View>
-          <View
-            style={{
-              padding: 13,
-              backgroundColor: "lightgrey",
-              borderRadius: 20,
-            }}
-          >
-            <TextInput
-              placeholder="Search"
-              style={{ fontSize: 18, marginLeft: 10 }}
-            />
-          </View>
-          <View>
-            <Item />
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 };

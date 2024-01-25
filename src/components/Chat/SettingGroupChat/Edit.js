@@ -51,6 +51,12 @@ const Edit = () => {
           >
             <Text style={settingChat.editItem}>View Members</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            style={settingChat.editItemContainer}
+            onPress={showEditModal}
+          >
+            <Text style={settingChat.editItem}>Add members</Text>
+          </TouchableOpacity>
 
           <Modal visible={isEditModalVisible} animationType="slide">
             {/* Edit Modal Content */}

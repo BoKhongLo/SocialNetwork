@@ -1,10 +1,8 @@
 import { View, Text, Image, TouchableOpacity, Alert } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import styles from "../../styles/styles";
 import { heightPercentageToDP } from "react-native-responsive-screen";
 import { useNavigation, CommonActions } from "@react-navigation/native";
-import { registerIndieID, unregisterIndieDevice } from "native-notify";
 import {
   getUserDataAsync,
   getAllIdUserLocal,
@@ -19,7 +17,7 @@ const Setting = () => {
 
   const [userProfile, setUserProfile] = useState({
     username: "",
-    avatarUrl: null,
+    avatarUrl: require('../../../assets/img/avt.png'),
     nickName: "",
     phoneNumber: -1,
     description: "",
@@ -94,7 +92,7 @@ const Setting = () => {
 
   const LogoutAlert = () => {
     Alert.alert('', 'Log out of your account ?',[
-      {text: 'Cancel', onPress: () => navigation.goBack()},
+      {text: 'Cancel', onPress: () => null},
       {text: 'Ok', onPress: () => logoutFunction()},
     ])
   }
@@ -112,7 +110,7 @@ const Setting = () => {
       <Header />
       <View
         style={{
-          height: 200,
+          height: 300,
           backgroundColor: "#E0E0E0",
           borderRadius: 10,
           elevation: 8,
@@ -175,7 +173,7 @@ const General = ({ userProfile }) => {
       </Text>
       <View style={{ marginLeft: 15, marginTop: 20 }}>
         <TouchableOpacity
-          style={{ padding: 10 }}
+          style={{ padding: 10, borderBottomWidth: 0.5, marginVertical:10 }}
           onPress={() =>
             navigation.navigate("editField", { data: userProfile })
           }
@@ -189,11 +187,21 @@ const General = ({ userProfile }) => {
               source={require("../../../assets/dummyicon/right_line.png")}
             />
           </View>
-          <View
-            style={{ height: 0.5, backgroundColor: "black", marginTop: 10 }}
-          ></View>
         </TouchableOpacity>
-        <TouchableOpacity style={{ padding: 10 }}>
+        <TouchableOpacity
+        onPress={()=>navigation.navigate('buyPremium')}
+         style={{ padding: 10 ,borderBottomWidth:0.5 ,marginVertical:10}}>
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <Text style={{ fontSize: 18 }}>Buy Premium</Text>
+            <Image
+              style={{ height: 30, width: 30 }}
+              source={require("../../../assets/dummyicon/right_line.png")}
+            />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity style={{ padding: 10 ,borderBottomWidth:0.5 ,marginVertical:10}}>
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
@@ -203,9 +211,6 @@ const General = ({ userProfile }) => {
               source={require("../../../assets/dummyicon/right_line.png")}
             />
           </View>
-          <View
-            style={{ height: 0.5, backgroundColor: "black", marginTop: 10 }}
-          ></View>
         </TouchableOpacity>
       </View>
     </View>
