@@ -21,14 +21,15 @@ import NewPost from "./src/screens/NewPost";
 import NewStory from "./src/screens/NewStory";
 import SearchScreen from "./src/screens/SearchScreen";
 import SettingChat from "./src/components/Chat/SettingChat";
-import ForgotPassScreen from "./src/screens/ForgotPassScreen";
+import ForgotPassScreen from "./src/screens/FillEmailScreen";
 import VerifyScreen from "./src/screens/VerifyScreen";
-import NewPassScreen from "./src/screens/NewPassScreen";
+import NewPassScreen from "./src/screens/FillPasswordScreen";
 import ListFriend from "./src/screens/ListFriend";
 import ListPost from "./src/screens/ListPost";
 import SettingGroupChat from "./src/components/Chat/SettingGroup";
 
 import registerNNPushToken from 'native-notify';
+import BuyPremium from "./src/screens/BuyPremium";
 
 const Stack = createStackNavigator();
 
@@ -89,20 +90,22 @@ export default function App() {
             <Stack.Screen key="editField" options={{ headerShown: false }} name="editField" component={EditField} />
             <Stack.Screen key="loadStory" options={{headerShown: false}}  name="loadStory" component={LoadStories} />
             <Stack.Screen key="chatwindow" options={{headerShown: false}}  name="chatwindow" component={ChatWindows} />
-            <Stack.Screen key="fillEmail" options={{headerShown: false}}  name="fillEmail" component={FillEmail} />
-            <Stack.Screen key="fillPass" options={{headerShown: false}}  name="fillPass" component={FillPassword} />
+            {/* <Stack.Screen key="fillEmail" options={{headerShown: false}}  name="fillEmail" component={FillEmail} />
+            <Stack.Screen key="fillPass" options={{headerShown: false}}  name="fillPass" component={FillPassword} /> */}
             <Stack.Screen key="setting" options={{headerShown: false}}  name="setting" component={Setting} />
             <Stack.Screen key="changepassword" options={{headerShown: false}}  name="changepassword" component={ChangePassword} />
             <Stack.Screen key="newpost" options={{headerShown: false}}  name="newpost" component={NewPost} />
             <Stack.Screen key="newstory" options={{headerShown: false}}  name="newstory" component={NewStory} />
             <Stack.Screen key="search" options={{headerShown: false}}  name="search" component={SearchScreen} />
             <Stack.Screen key="settingChat" options={{headerShown: false}}  name="settingChat" component={SettingChat} />
-            <Stack.Screen key="forgotPass" options={{headerShown: false}}  name="forgotPass" component={ForgotPassScreen} />
+            <Stack.Screen key="fillEmail" options={{headerShown: false}}  name="fillEmail" component={ForgotPassScreen} />
             <Stack.Screen key="verify" options={{headerShown: false}}  name="verify" component={VerifyScreen} />
-            <Stack.Screen key="newPass" options={{headerShown: false}}  name="newPass" component={NewPassScreen} />
+            <Stack.Screen key="fillPass" options={{headerShown: false}}  name="fillPass" component={NewPassScreen} />
             <Stack.Screen key="settingGroupChat" options={{headerShown: false}}  name="settingGroupChat" component={SettingGroupChat} />
             <Stack.Screen key="listFriend" options={{headerShown: false}}  name="listFriend" component={ListFriend} />
             <Stack.Screen key="listPost" options={{headerShown: false}}  name="listPost" component={ListPost} />
+            <Stack.Screen key="buyPremium" options={{headerShown: false}}  name="buyPremium" component={BuyPremium} />
+
       </Stack.Navigator>
     </NavigationContainer>
 );

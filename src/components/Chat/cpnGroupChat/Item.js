@@ -16,20 +16,24 @@ const Item = ({ user, onAdd, onRemove }) => {
     }
   }
   return (
-    <View style={newGroup.itemContainer}>
-        <View>
-          {user.detail.avatarUrl ? (
-            <Image style={newGroup.itemAvt}  source={{uri: user.detail.avatarUrl}}/>
-          ) : (
-            <Image style={newGroup.itemAvt} />
-          )}
-          <View style={{ flex: 1, marginHorizontal:10}}>
-            <Text style={newGroup.text}>{user.detail.name}</Text>
-          </View>
-          <TouchableOpacity style={newGroup.addButton} onPress={() => handleUpdate(user.id)}>
-            <Text style={newGroup.text}>{isAdd}</Text>
-          </TouchableOpacity>
-        </View>
+    <View style={{ marginVertical: 10, flexDirection: "row", alignItems:'center' }}>
+      {user.detail.avatarUrl ? (
+        <Image
+          style={newGroup.itemAvt}
+          source={{ uri: user.detail.avatarUrl }}
+        />
+      ) : (
+        <Image style={newGroup.itemAvt} source={require("../../../../assets/img/avt.png")}/>
+      )}
+      <View style={{ flex: 1, marginHorizontal: 10 }}>
+        <Text style={newGroup.text}>{user.detail.name}</Text>
+      </View>
+      <TouchableOpacity
+        style={newGroup.addButton}
+        onPress={() => handleUpdate(user.id)}
+      >
+        <Text style={newGroup.text}>{isAdd}</Text>
+      </TouchableOpacity>
     </View>
   );
 };

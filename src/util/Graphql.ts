@@ -8,11 +8,13 @@ import {
     RoomchatDto,
     PostDto,
     InteractDto,
-    BookmarksDto
+    BookmarksDto,
+    ForgetPasswordDto
 } from './dto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from "jwt-decode";
 import "core-js/stable/atob";
+
 
 class JwtPayload {
     id: string;
@@ -120,17 +122,148 @@ export async function LoginAsync(dto: LoginDto) {
 }
 
 
+export async function CreateOtpCodeAsync(email: string, type: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const SIGNUP_MUTATION = `
+            mutation CreateOtpCode($email: String!, $type: String!) {
+                createOtpCode(createOtp: { 
+                        email: $email
+                        type: $type
+                    }) {
+                    isRequest
+                }
+            }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: SIGNUP_MUTATION,
+                variables: {
+                    email: email,
+                    type: type,
+                },
+            },
+            { headers: headers }
+        );
+
+        if ("errors" in response.data) return response.data;
+        return response.data.data.createOtpCode
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+export async function ValidateOtpCodeAsync(email: string, otpCode: string, type: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const SIGNUP_MUTATION = `
+            mutation ValidateOtpCode ($email: String!, $otpCode: String, $type: String!){
+                validateOtpCode(validateOtp: { 
+                    email: $email
+                    otpCode: $otpCode
+                    type: $type
+                }) {
+                    isRequest
+                    otpId
+                }
+            }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: SIGNUP_MUTATION,
+                variables: {
+                    email: email,
+                    otpCode:otpCode,
+                    type: type
+                },
+            },
+            { headers: headers }
+        );
+
+        if ("errors" in response.data) return response.data;
+        return response.data.data.validateOtpCode
+
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+export async function forgetPasswordValidate(dto: ForgetPasswordDto) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const SIGNUP_MUTATION = `
+            query ForgetPasswordValidate ($email: String!, $otpCode: String!, $newPassword: String!, $validatePassword: String!) {
+                forgetPasswordValidate(
+                    forgetPassword: {
+                        email: $email
+                        otpId: $otpCode
+                        newPassword: $newPassword
+                        validatePassword: $validatePassword
+                    }
+                ) {
+                    id
+                    email
+                    role
+                    isOnline
+                    friends
+                    bookMarks
+                    created_at
+                    updated_at
+                }
+            }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: SIGNUP_MUTATION,
+                variables: {
+                    email: dto.email,
+                    otpId: dto.otpId,
+                    newPassword: dto.newPassword,
+                    validatePassword: dto.validatePassword,
+                },
+            },
+            { headers: headers }
+        );
+
+        if ("errors" in response.data) return response.data;
+        return response.data.data.forgetPasswordValidate
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
 export async function SignupAsync(dto: SignUpDto) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
     const SIGNUP_MUTATION = `
-            mutation SignUp($email: String!, $password: String!, $name: String!, $birthday: DateTime, $phoneNumber: Float) {
+            mutation SignUp($email: String!, $password: String!, $name: String!, $birthday: DateTime, $phoneNumber: Float, $otpId: String!) {
                 SignUp(userDto: {
                     email: $email
                     password: $password
                     name: $name
                     birthday: $birthday
                     phoneNumber: $phoneNumber
+                    otpId: $otpId
                 }) {
                     access_token
                     refresh_token
@@ -152,7 +285,8 @@ export async function SignupAsync(dto: SignUpDto) {
                     password: dto.password,
                     name: dto.name,
                     birthday: dto.birthday,
-                    phoneNumber: dto.phoneNumber
+                    phoneNumber: dto.phoneNumber,
+                    otpId: dto.otpId
                 },
             },
             { headers: headers }
@@ -179,7 +313,6 @@ export async function SignupAsync(dto: SignUpDto) {
         throw error;
     }
 }
-
 export async function validateUserDataAsync(dto: ValidateUserDto, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 

@@ -25,7 +25,7 @@ const ProfileUser = () => {
   const [isUser, setIsUser] = useState(false);
   const [userProfile, setUserProfile] = useState({
     username: "",
-    avatarUrl: require("../../assets/img/avt.png"),
+    avatarUrl: require('../../assets/img/avt.png'),
     bookMarks: [],
     friends: [],
     nickName: "",

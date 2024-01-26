@@ -1,19 +1,23 @@
-import { View, Text, Image, TouchableOpacity } from "react-native";
-import React, {useState, useEffect} from "react";
+import { View, Text, Image, TouchableOpacity, Alert } from "react-native";
+import React, { useState, useEffect } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import styles from "../../styles/styles";
 import { heightPercentageToDP } from "react-native-responsive-screen";
 import { useNavigation, CommonActions } from "@react-navigation/native";
-import { registerIndieID, unregisterIndieDevice } from 'native-notify';
-import { getUserDataAsync, getAllIdUserLocal, getDataUserLocal, updateAccessTokenAsync, deleteDataUserLocal } from "../../util";
+import {
+  getUserDataAsync,
+  getAllIdUserLocal,
+  getDataUserLocal,
+  updateAccessTokenAsync,
+  deleteDataUserLocal,
+} from "../../util";
 
 const Setting = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
-  
+
   const [userProfile, setUserProfile] = useState({
     username: "",
-    avatarUrl: require("../../../assets/img/avt.png"),
+    avatarUrl: require('../../../assets/img/avt.png'),
     nickName: "",
     phoneNumber: -1,
     description: "",
@@ -34,29 +38,34 @@ const Setting = () => {
       const newProfile = { ...userProfile };
 
       if ("errors" in dataUserAsync) {
-        const dataUpdate = await updateAccessTokenAsync(dataUserLocal.id, dataUserLocal.refreshToken);
+        const dataUpdate = await updateAccessTokenAsync(
+          dataUserLocal.id,
+          dataUserLocal.refreshToken
+        );
         dataUserLocal.accessToken = dataUpdate.accessToken;
-        dataUserAsync = await getUserDataAsync(dataUpdate.id, dataUpdate.accessToken);
+        dataUserAsync = await getUserDataAsync(
+          dataUpdate.id,
+          dataUpdate.accessToken
+        );
       }
 
-      console.log(dataUserAsync)
+      console.log(dataUserAsync);
 
       if ("errors" in dataUserAsync) {
-        navigation.navigate('main');
+        navigation.navigate("main");
       }
 
       const { detail, id } = dataUserAsync;
-
 
       newProfile.id = id;
 
       if (detail) {
         if (detail.name) newProfile.username = detail.name;
-        if (detail.avatarUrl ) newProfile.avatarUrl = {uri : detail.avatarUrl};
+        if (detail.avatarUrl) newProfile.avatarUrl = { uri: detail.avatarUrl };
         if (detail.nickName) newProfile.nickName = detail.nickName;
         if (detail.age) newProfile.age = detail.age;
         if (detail.description) newProfile.description = detail.description;
-        else newProfile.description = "..."
+        else newProfile.description = "...";
         if (detail.phoneNumber) newProfile.phoneNumber = detail.phoneNumber;
         if (detail.birthday) newProfile.birthday = detail.birthday;
       }
@@ -66,6 +75,27 @@ const Setting = () => {
 
     fetchData();
   }, []);
+
+  const logoutFunction = async () => {
+    
+    const keys = await getAllIdUserLocal();
+    const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+    // unregisterIndieDevice(dataUserLocal.id, 18604, '8sbEFbNYoDaZJKMDeIAWoc');
+    await deleteDataUserLocal(dataUserLocal.id);
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 1,
+        routes: [{ name: "Login" }],
+      })
+    );
+  };
+
+  const LogoutAlert = () => {
+    Alert.alert('', 'Log out of your account ?',[
+      {text: 'Cancel', onPress: () => null},
+      {text: 'Ok', onPress: () => logoutFunction()},
+    ])
+  }
 
   return (
     <View
@@ -78,30 +108,34 @@ const Setting = () => {
       }}
     >
       <Header />
-      <General userProfile={userProfile}/>
-      <Security/>
+      <View
+        style={{
+          height: 300,
+          backgroundColor: "#E0E0E0",
+          borderRadius: 10,
+          elevation: 8,
+          marginVertical: 20,
+        }}
+      >
+        <General userProfile={userProfile} />
+      </View>
+      <View
+        style={{
+          height: 250,
+          backgroundColor: "#E0E0E0",
+          borderRadius: 10,
+          elevation: 8,
+          marginVertical: 20,
+        }}
+      >
+        <Security logoutFunction={LogoutAlert} />
+      </View>
     </View>
   );
 };
 
 const Header = () => {
   const navigation = useNavigation();
-  
-  const logoutFunction = async () => {
-    const keys = await getAllIdUserLocal();
-    const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
-    // unregisterIndieDevice(dataUserLocal.id, 18604, '8sbEFbNYoDaZJKMDeIAWoc');
-    await deleteDataUserLocal(dataUserLocal.id);
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 1,
-        routes: [
-          { name: 'Login' },
-        ],
-      })
-    );
-  }
-
   return (
     <View
       style={{
@@ -123,19 +157,13 @@ const Header = () => {
 
       <Text style={{ fontSize: 20, fontWeight: "500" }}>Settings</Text>
 
-      <TouchableOpacity
-        style={{ padding: 10 }}
-        onPress={logoutFunction}
-      >
-        <Image
-          style={{ height: 35, width: 35 }}
-          source={require("../../../assets/dummyicon/exit.png")}
-        />
+      <TouchableOpacity style={{ padding: 10 }} onPress={null}>
+        <Image style={{ height: 35, width: 35 }} source={null} />
       </TouchableOpacity>
     </View>
   );
 };
-const General = ({userProfile}) => {
+const General = ({ userProfile }) => {
   const navigation = useNavigation();
 
   return (
@@ -144,9 +172,11 @@ const General = ({userProfile}) => {
         General
       </Text>
       <View style={{ marginLeft: 15, marginTop: 20 }}>
-        <TouchableOpacity 
-          style={{ padding: 10 }}
-          onPress={()=> navigation.navigate('editField', {data: userProfile})}
+        <TouchableOpacity
+          style={{ padding: 10, borderBottomWidth: 0.5, marginVertical:10 }}
+          onPress={() =>
+            navigation.navigate("editField", { data: userProfile })
+          }
         >
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
@@ -157,15 +187,69 @@ const General = ({userProfile}) => {
               source={require("../../../assets/dummyicon/right_line.png")}
             />
           </View>
-          <View
-            style={{ height: 0.5, backgroundColor: "black", marginTop: 10 }}
-          ></View>
         </TouchableOpacity>
-        <TouchableOpacity style={{ padding: 10 }}>
+        <TouchableOpacity
+        onPress={()=>navigation.navigate('buyPremium')}
+         style={{ padding: 10 ,borderBottomWidth:0.5 ,marginVertical:10}}>
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <Text style={{ fontSize: 18 }}>Buy Premium</Text>
+            <Image
+              style={{ height: 30, width: 30 }}
+              source={require("../../../assets/dummyicon/right_line.png")}
+            />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity style={{ padding: 10 ,borderBottomWidth:0.5 ,marginVertical:10}}>
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
             <Text style={{ fontSize: 18 }}>Contact Us</Text>
+            <Image
+              style={{ height: 30, width: 30 }}
+              source={require("../../../assets/dummyicon/right_line.png")}
+            />
+          </View>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+
+const Security = ({ logoutFunction }) => {
+  const navigation = useNavigation();
+
+  return (
+    <View style={{ marginLeft: 10, marginRight: 15, marginTop: 20 }}>
+      <Text style={{ fontWeight: "400", fontSize: 18, color: "grey" }}>
+        Security
+      </Text>
+      <View style={{ marginLeft: 15, marginTop: 20 }}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("changepassword")}
+          style={{ padding: 10 }}
+        >
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <Text style={{ fontSize: 18 }}>Change Password</Text>
+            <Image
+              style={{ height: 30, width: 30 }}
+              source={require("../../../assets/dummyicon/right_line.png")}
+            />
+          </View>
+          <View
+            style={{ height: 0.5, backgroundColor: "black", marginTop: 10 }}
+          ></View>
+        </TouchableOpacity>
+      </View>
+      <View style={{ marginLeft: 15, marginTop: 20 }}>
+        <TouchableOpacity style={{ padding: 10 }} onPress={logoutFunction}>
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <Text style={{ fontSize: 18 }}>Log out</Text>
             <Image
               style={{ height: 30, width: 30 }}
               source={require("../../../assets/dummyicon/right_line.png")}
@@ -180,31 +264,4 @@ const General = ({userProfile}) => {
   );
 };
 
-const Security = () => {
-  const navigation = useNavigation();
-
-  return <View style={{ marginLeft: 10, marginRight: 15,marginTop:20 }}>
-  <Text style={{ fontWeight: "400", fontSize: 18, color: "grey" }}>
-    Security
-  </Text>
-  <View style={{ marginLeft: 15, marginTop: 20 }}>
-    <TouchableOpacity
-    onPress={()=> navigation.navigate('changepassword')}
-    style={{ padding: 10 }}>
-      <View
-        style={{ flexDirection: "row", justifyContent: "space-between" }}
-      >
-        <Text style={{ fontSize: 18 }}>Change Password</Text>
-        <Image
-          style={{ height: 30, width: 30 }}
-          source={require("../../../assets/dummyicon/right_line.png")}
-        />
-      </View>
-      <View
-        style={{ height: 0.5, backgroundColor: "black", marginTop: 10 }}
-      ></View>
-    </TouchableOpacity>
-  </View>
-</View>
-};
 export default Setting;

@@ -1,9 +1,9 @@
-import React from 'react';
-import { View,Text, Image, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import styles from '../../styles/styles';
+import React from "react";
+import { View, Text, Image, TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import styles from "../../styles/styles";
 
-const Header = ({receivedData}) => {
+const Header = ({ receivedData }) => {
   const navigation = useNavigation();
 
   return (
@@ -17,7 +17,7 @@ const Header = ({receivedData}) => {
         </TouchableOpacity>
         <View style={styles.iconContainer}>
           <TouchableOpacity
-          onPress={() => navigation.navigate('noti', {data: receivedData})}
+          onPress={() => navigation.replace('noti', {data: receivedData})}
           style={{ marginRight: 20 }}>
             <Image
               style={styles.icon}
@@ -26,7 +26,7 @@ const Header = ({receivedData}) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={{ flexDirection: 'row'}}
-            onPress={() => navigation.navigate('chat', {data: receivedData})}
+            onPress={() => navigation.replace('chat', {data: receivedData})}
           >
             <Image
               style={styles.icon}

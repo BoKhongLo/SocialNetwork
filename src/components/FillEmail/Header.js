@@ -3,18 +3,20 @@ import React from "react";
 import forgotPass from "../../styles/forgotPassStyles";
 import { useNavigation } from "@react-navigation/native";
 
-const Header = () => {
+const Header = ({receivedData}) => {
   const navigation = useNavigation();
 
   return (
     <View style={forgotPass.headerContainer}>
-      <TouchableOpacity onPress={() => navigation.navigate("verify")}>
+      <TouchableOpacity onPress={() => navigation.navigate("Login")}>
         <Image
           style={forgotPass.headerButton}
           source={require("../../../assets/dummyicon/left_line_64.png")}
         />
       </TouchableOpacity>
-      <Text style={forgotPass.title}>New Password</Text>
+      <Text style={forgotPass.title}>
+      {receivedData.type === "SignUp" ? "Sign Up" : receivedData.type === "ForgotPassword" && "Forgot Password"}
+      </Text>
     </View>
   );
 };

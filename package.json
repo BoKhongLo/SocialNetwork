@@ -27,6 +27,7 @@
     "expo-notifications": "~0.18.1",
     "expo-status-bar": "~1.4.4",
     "jwt-decode": "^4.0.0",
+    "lottie-react-native": "^5.1.4",
     "mysql2": "^3.6.5",
     "native-base": "^3.4.28",
     "native-notify": "^3.2.5",
@@ -50,7 +51,8 @@
     "react-native-vector-icons": "^10.0.3",
     "socket.io-client": "^4.7.3",
     "styled-components": "^6.1.1",
-    "toastify-react-native": "^5.0.0"
+    "toastify-react-native": "^5.0.0",
+    "expo-web-browser": "~12.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

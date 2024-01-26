@@ -1,18 +1,16 @@
 import { View, Text } from "react-native";
-import React from "react";
+import React, {useEffect} from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Header from "./../components/Verify/Header";
-import Form from "./../components/Verify/Form";
-import ToastManager from 'toastify-react-native'
+import Form from '../components/FillPassword/Form';
+import Header from '../components/FillPassword/Header';
 import { useNavigation, useRoute } from "@react-navigation/native";
 
-const VerifyScreen = () => {
+const NewPassScreen = () => {
   const insets = useSafeAreaInsets();
   const route = useRoute();
   const navigation = useNavigation();
   const receivedData = route.params?.data;
-
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       if (receivedData == null) {
         navigation.navigate('Login');
@@ -30,11 +28,9 @@ const VerifyScreen = () => {
         paddingRight: insets.right + 10,
       }}
     >
-      <ToastManager  />
       <Header />
       <Form receivedData={receivedData} />
     </View>
   );
 };
-
-export default VerifyScreen;
+export default NewPassScreen

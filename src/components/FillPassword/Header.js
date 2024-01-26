@@ -8,13 +8,13 @@ const Header = () => {
 
   return (
     <View style={forgotPass.headerContainer}>
-      <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+      <TouchableOpacity onPress={() => navigation.navigate("verify")}>
         <Image
           style={forgotPass.headerButton}
           source={require("../../../assets/dummyicon/left_line_64.png")}
         />
       </TouchableOpacity>
-      <Text style={forgotPass.title}>Forgot PassWord</Text>
+      <Text style={forgotPass.title}>Password</Text>
     </View>
   );
 };

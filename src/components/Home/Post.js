@@ -231,7 +231,9 @@ const Header = () => {
     </View>
   );
 };
-
+function capitalizeFirstLetter(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
 const Caption = ({ post, users }) => {
   return (
     <View style={[headerPostStyles.ItemFooterContainer]}>

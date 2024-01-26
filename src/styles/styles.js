@@ -45,7 +45,6 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   iconContainer: {
-    marginTop: 10,
     flexDirection: "row",
     justifyContent: "space-between",
   },
@@ -53,8 +52,6 @@ const styles = StyleSheet.create({
   icon: {
     width: 30,
     height: 30,
-    marginLeft: 10,
-    resizeMode: "contain",
   },
   unreadBadge: {
     backgroundColor: "#FF3250",
@@ -124,7 +121,6 @@ const styles = StyleSheet.create({
   BottomTabIcon: {
     width: 30,
     height: 30,
-
   },
   modelContainer: {
     backgroundColor: "white",

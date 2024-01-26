@@ -5,10 +5,10 @@ import {
   Text,
   Image,
   TextInput,
-  ScrollView,
   KeyboardAvoidingView,
   Platform,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
@@ -17,37 +17,73 @@ import {
 } from "react-native-responsive-screen";
 import styles from "../../styles/styles";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { Video, Audio } from 'expo-av';
-import { getAllIdUserLocal, getDataUserLocal, updateAccessTokenAsync, getSocketIO, getRoomchatByTitleAsync, } from "../../util";
+import { Video, Audio } from "expo-av";
+import {
+  getAllIdUserLocal,
+  getDataUserLocal,
+  updateAccessTokenAsync,
+  getSocketIO,
+  getRoomchatByTitleAsync,
+  removePostAsync,
+} from "../../util";
 const LoadStories = () => {
   const route = useRoute();
-  const [receivedData, setReceivedData] = useState(route.params?.data || null);
-  const [imageHeight, setImageHeight] = useState(0);
-  const [imageWidth, setImageWidth] = useState(0);
+  const receivedData = route.params?.data;
+
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
 
+  useEffect(() => {
+    if (!receivedData) navigation.navigate("main");
+    console.log(receivedData);
+  }, []);
   const validateFile = (file) => {
     if (!file || file == "") return "Null";
     const imgExt = ["jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp", "raf"];
     const videoExt = ["mp4", "avi", "mkv", "mov", "wmv", "flv", "webm"];
     const audioExt = ["mp3", "ogg", "wav", "flac", "aac", "wma", "m4a"];
     const lastElement = file.split("/").pop();
-    const fileExt = lastElement
-      .split("?")[0]
-      .split(".")
-      .pop()
-      .toLowerCase();
+    const fileExt = lastElement.split("?")[0].split(".").pop().toLowerCase();
 
     if (imgExt.includes(fileExt)) {
-      return "IMAGE"
+      return "IMAGE";
     } else if (audioExt.includes(fileExt)) {
-      return "AUDIO"
+      return "AUDIO";
     } else if (videoExt.includes(fileExt)) {
-      return "VIDEO"
+      return "VIDEO";
     }
-  }
+  };
+  const handleDeletePost = async () => {
+    const keys = await getAllIdUserLocal();
+    const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+    let dataReturn = await removePostAsync(
+      dataUserLocal.id,
+      receivedData.post.id,
+      dataUserLocal.accessToken
+    );
 
+    if ("errors" in dataReturn) {
+      const dataUpdate = await updateAccessTokenAsync(
+        dataUserLocal.id,
+        dataUserLocal.refreshToken
+      );
+      dataReturn = await removePostAsync(
+        dataUserLocal.id,
+        receivedData.post.id,
+        dataUpdate.accessToken
+      );
+    }
+
+    if ("errors" in dataReturn) return;
+    navigation.navigate('main')
+  };
+
+  const alertDeleteStory = () => {
+    Alert.alert("", "Delete this story ?", [
+      { text: "Cancel", onPress: () => null },
+      { text: "OK", onPress: () => handleDeletePost() },
+    ]);
+  };
   return (
     <View
       style={{
@@ -59,9 +95,9 @@ const LoadStories = () => {
         flex: 1,
       }}
     >
-      <View style={{ flexDirection: "row" }}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <TouchableOpacity
-          onPress={() => navigation.navigate("main")}
+          onPress={() => navigation.goBack()}
           style={{ marginLeft: 10 }}
         >
           <Image
@@ -69,35 +105,45 @@ const LoadStories = () => {
             source={require("../../../assets/dummyicon/left_line_64.png")}
           />
         </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => alertDeleteStory()}
+          style={{ marginLeft: 10 }}
+        >
+          <Image
+            style={styles.iconforAll}
+            source={require("../../../assets/dummyicon/more_1_line.png")}
+          />
+        </TouchableOpacity>
       </View>
       <View
         style={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: 'auto',
+          justifyContent: "center",
+          alignItems: "center",
+          width: "auto",
           marginBottom: 50,
           marginTop: 50,
-          flex: 1
+          flex: 1,
         }}
       >
-
-        {receivedData && validateFile(receivedData.post.fileUrl[0]) === "IMAGE" ? (
+        {receivedData &&
+        validateFile(receivedData.post.fileUrl[0]) === "IMAGE" ? (
           <Image
             source={{ uri: receivedData.post.fileUrl[0] }}
             style={{
-              width: '100%',
-              height: '100%',
-              resizeMode: 'contain',
-              alignItems: 'center',
+              width: "100%",
+              height: "100%",
+              resizeMode: "contain",
+              alignItems: "center",
             }}
           />
-        ) : receivedData && validateFile(receivedData.post.fileUrl[0]) === "VIDEO" ? (
+        ) : receivedData &&
+          validateFile(receivedData.post.fileUrl[0]) === "VIDEO" ? (
           <Video
             style={{
-              width: '100%',
-              height: '100%',
-              resizeMode: 'contain',
-              alignItems: 'center',
+              width: "100%",
+              height: "100%",
+              resizeMode: "contain",
+              alignItems: "center",
             }}
             source={{ uri: receivedData.post.fileUrl[0] }}
             useNativeControls
@@ -106,10 +152,10 @@ const LoadStories = () => {
         ) : (
           <Video
             style={{
-              width: '100%',
-              height: '100%',
-              resizeMode: 'contain',
-              alignItems: 'center',
+              width: "100%",
+              height: "100%",
+              resizeMode: "contain",
+              alignItems: "center",
             }}
             source={{ uri: receivedData.post.fileUrl[0] }}
             useNativeControls
@@ -117,7 +163,6 @@ const LoadStories = () => {
           />
         )}
       </View>
-
 
       <Comments data={receivedData.post} users={receivedData.users} />
     </View>
@@ -144,7 +189,10 @@ const Comments = ({ data, users }) => {
         dataUserLocal.accessToken
       );
 
-      if ("errors" in dataRoomchatAsync && dataRoomchatAsync.errors[0].message !== "This roomchat does not exist") {
+      if (
+        "errors" in dataRoomchatAsync &&
+        dataRoomchatAsync.errors[0].message !== "This roomchat does not exist"
+      ) {
         const dataUpdate = await updateAccessTokenAsync(
           dataUserLocal.id,
           dataUserLocal.refreshToken
@@ -155,7 +203,10 @@ const Comments = ({ data, users }) => {
           dataUpdate.accessToken
         );
       }
-      if ("errors" in dataRoomchatAsync && dataRoomchatAsync.errors[0].message === "This roomchat does not exist") {
+      if (
+        "errors" in dataRoomchatAsync &&
+        dataRoomchatAsync.errors[0].message === "This roomchat does not exist"
+      ) {
         dataRoomchatAsync = await getRoomchatByTitleAsync(
           data.ownerUserId + dataUserLocal.id,
           dataUserLocal.accessToken
@@ -190,7 +241,7 @@ const Comments = ({ data, users }) => {
       fileUrl: [data.fileUrl[0]],
       roomchatId: dataRoomchat.id,
     });
-    navigation.replace('chatwindow', { data: dataRoomchat });
+    navigation.replace("chatwindow", { data: dataRoomchat });
     setText("");
   };
 

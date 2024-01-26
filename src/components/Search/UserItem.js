@@ -42,6 +42,7 @@ const UserItem = ({ user, onPress }) => {
           ) : (
             <Image
             style={searchStyles.avt}
+            source={require("../../../assets/img/avt.png")}
           />
           )}
 

@@ -87,13 +87,15 @@ const Item = ({ data, users, removeRq }) => {
       dataUserLocal.refreshToken
     );
 
-    await acceptFriendAsync(dataUserLocal.id, friendId, dataUpdate.accessToken)
+    const dataRe2 = await acceptFriendAsync(dataUserLocal.id, friendId, dataUpdate.accessToken)
+    console.log(dataRe2);
     const dto = new RoomchatDto(
       dataUserLocal.id,
       [friendId],
       dataUserLocal.id + friendId,
       true)
-    await createRoomchatAsync(dto, dataUpdate.accessToken);
+    const dataRe = await createRoomchatAsync(dto, dataUpdate.accessToken);
+    console.log(dataRe);
     removeRq(requestId)
   }
 
