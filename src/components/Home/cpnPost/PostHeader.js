@@ -135,16 +135,17 @@ const PostHeader = ({
             </Text>
           </View>
         )}
-        {post.ownerUserId !== userCurrent.id && (
+        {post.ownerUserId === userCurrent.id && (
           <View>
-            <TouchableOpacity style={{ paddingHorizontal: 20, color: headerColor }} onPress={toggleModal}>
-              <MaterialCommunityIcons name="dots-horizontal" size={25} />
+            <TouchableOpacity style={{ paddingHorizontal: 20,}} onPress={toggleModal}>
+              {/* <MaterialCommunityIcons style={{color: "black", borderColor: "white", borderWidth: 2 }} name="dots-horizontal" size={25} /> */}
+              <Image style={{width: 40, height: 20}} source={require("../../../../assets/dummyicon/more_1_line.png")}/>
             </TouchableOpacity>
           </View>
         )}
       </View>
 
-      {post.ownerUserId !== userCurrent.id && (
+      {post.ownerUserId === userCurrent.id && (
         <Modal
           isVisible={isModalVisible}
           onBackdropPress={toggleModal}

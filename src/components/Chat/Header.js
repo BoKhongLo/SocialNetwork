@@ -103,7 +103,7 @@ const Header = ({ user }) => {
     <View>
       <View style={chatStyles.headerContainer}>
         <View style={{ flexDirection: "row", justifyContent: "flex-start" }}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TouchableOpacity onPress={() => navigation.navigate("main")}>
             <Image
               style={styles.iconforAll}
               source={require("../../../assets/dummyicon/left_line_64.png")}

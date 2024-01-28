@@ -32,7 +32,7 @@ const SignupScreen = () => {
     >
       <ToastManager  />
       <View style={{ flexDirection: "row", justifyContent: "flex-start",padding:5 }}>
-        <TouchableOpacity onPress={()=> navigation.navigate('Login')}>
+        <TouchableOpacity onPress={()=> navigation.navigate('fillPass', {data: receivedData})}>
           <Image
             style={{ height: 40, width: 40, padding:10 }}
             source={require("../../assets/dummyicon/left_line_64.png")}

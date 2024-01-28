@@ -31,7 +31,7 @@ const VerifyScreen = () => {
       }}
     >
       <ToastManager  />
-      <Header />
+      <Header receivedData={receivedData}/>
       <Form receivedData={receivedData} />
     </View>
   );

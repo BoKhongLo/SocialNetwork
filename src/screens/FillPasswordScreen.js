@@ -28,7 +28,7 @@ const NewPassScreen = () => {
         paddingRight: insets.right + 10,
       }}
     >
-      <Header />
+      <Header receivedData={receivedData} />
       <Form receivedData={receivedData} />
     </View>
   );

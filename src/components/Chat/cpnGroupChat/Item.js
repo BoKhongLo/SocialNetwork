@@ -17,7 +17,7 @@ const Item = ({ user, onAdd, onRemove }) => {
   }
   return (
     <View style={{ marginVertical: 10, flexDirection: "row", alignItems:'center' }}>
-      {user.detail.avatarUrl ? (
+      {user && user.detail.avatarUrl ? (
         <Image
           style={newGroup.itemAvt}
           source={{ uri: user.detail.avatarUrl }}
@@ -26,7 +26,7 @@ const Item = ({ user, onAdd, onRemove }) => {
         <Image style={newGroup.itemAvt} source={require("../../../../assets/img/avt.png")}/>
       )}
       <View style={{ flex: 1, marginHorizontal: 10 }}>
-        <Text style={newGroup.text}>{user.detail.name}</Text>
+        <Text style={newGroup.text}>{user && (user.detail.name)}</Text>
       </View>
       <TouchableOpacity
         style={newGroup.addButton}

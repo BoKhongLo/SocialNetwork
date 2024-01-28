@@ -9,7 +9,8 @@ import {
     PostDto,
     InteractDto,
     BookmarksDto,
-    ForgetPasswordDto
+    ForgetPasswordDto,
+    PaymentDto
 } from './dto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from "jwt-decode";
@@ -414,11 +415,11 @@ export async function updateAccessTokenAsync(userId: string, refreshToken: strin
             "refreshToken": response.data.data.Refresh.refresh_token,
             "lastUpdated": new Date().toISOString()
         }
-        const keys = await getAllIdUserLocal();
-        const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
-        saveData.id = dataLocal.id
-        await deleteDataUserLocal(dataLocal.id)
-        await saveDataUserLocal(dataLocal.id, saveData)
+        // const keys = await getAllIdUserLocal();
+        // const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
+        // saveData.id = dataLocal.id
+        // await deleteDataUserLocal(dataLocal.id)
+        // await saveDataUserLocal(dataLocal.id, saveData)
         return saveData;
 
     } catch (error) {
@@ -1151,6 +1152,45 @@ export async function getFriendRequestAsync(userId: string, accessToken: string)
     }
 }
 
+export async function getFriendReceiveAsync(userId: string, accessToken: string): Promise<[]> {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const GET_USER_QUERY = `
+    query GetFriendReceive ($userId: String!) {
+        getFriendReceive(id: $userId) {
+            id
+            createdUserId
+            receiveUserId
+            value
+            isDisplay
+            created_at
+            updated_at
+        }
+    }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: GET_USER_QUERY,
+                variables: {
+                    userId: userId,
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.getFriendReceive
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
 
 export async function createPostAsync(dto: PostDto, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
@@ -1645,7 +1685,6 @@ export async function addCommentPostAsync(dto: ValidateMessagesDto, accessToken:
             },
             { headers: headers }
         );
-        console.log(response.data);
         if ("errors" in response.data) return response.data;
         return response.data.data.addComment
 
@@ -1935,6 +1974,52 @@ export async function removeBookmarkAsync(dto: BookmarksDto, accessToken: string
         console.log(response.data);
         if ("errors" in response.data) return response.data;
         return response.data.data.removeBookMarkUser
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+
+export async function GenerateMomoPaymentAsync(dto: PaymentDto, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const REMOVE_INTERACT_QUERY = `
+        mutation GenerateMomoPayment ($userId: String!, $method: String!, $select: String!) {
+            generateMomoPayment(
+                payment: {
+                    userId: $userId
+                    method: $method
+                    select: $select
+                }
+            ) {
+                status
+                url
+            }
+        }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: REMOVE_INTERACT_QUERY,
+                variables: {
+                    userId: dto.userId,
+                    method: dto.method,
+                    select: dto.select
+                },
+            },
+            { headers: headers }
+        );
+        console.log(response.data);
+        if ("errors" in response.data) return response.data;
+        return response.data.data.generateMomoPayment
 
     } catch (error) {
         console.error('Error:', error);

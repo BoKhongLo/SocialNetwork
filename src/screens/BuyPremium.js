@@ -10,6 +10,17 @@ import {
 import React, { useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import {
+  getAllIdUserLocal,
+  getDataUserLocal,
+  updateAccessTokenAsync,
+  GenerateMomoPaymentAsync
+} from "../util";
+
+import {
+  PaymentDto
+} from "../util/dto";
+import * as WebBrowser from 'expo-web-browser';
 
 const BuyPremium = () => {
   const insets = useSafeAreaInsets();
@@ -21,9 +32,24 @@ const BuyPremium = () => {
     // You can implement the logic for handling the purchase here
     // For now, let's just show an alert
   };
-  const handleBuyMomo = () => {
-    // You can implement the logic for handling the purchase here
-    // For now, let's just show an alert
+  const handleBuyMomo = async () => {
+    const selectIndex = clickedMonths.findIndex(x => x === true);
+    if (selectIndex === -1) return;
+
+    const keys = await getAllIdUserLocal();
+    const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
+    const dataUserLocal = { ...dataLocal }
+    const dataUpdate = await updateAccessTokenAsync(
+      dataUserLocal.id,
+      dataUserLocal.refreshToken
+    );
+
+    const dto = new PaymentDto(dataUserLocal.id, "Momo", (selectIndex+1).toString())
+    console.log(dto);
+    let dataReturn = await GenerateMomoPaymentAsync(dto, dataUpdate.accessToken)
+    if (dataReturn.status === "fail") return;
+    let result = await WebBrowser.openBrowserAsync(dataReturn.url);
+    
   };
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
@@ -74,6 +100,8 @@ const BuyPremium = () => {
               onPress={() => {
                 const updatedClickedMonths = [...clickedMonths];
                 updatedClickedMonths[0] = !clickedMonths[0];
+                updatedClickedMonths[1] = false;
+                updatedClickedMonths[2] = false;
                 setClickedMonths(updatedClickedMonths);
               }}
             />
@@ -84,7 +112,9 @@ const BuyPremium = () => {
               isClicked={clickedMonths[1]}
               onPress={() => {
                 const updatedClickedMonths = [...clickedMonths];
+                updatedClickedMonths[0] = false;
                 updatedClickedMonths[1] = !clickedMonths[1];
+                updatedClickedMonths[2] = false;
                 setClickedMonths(updatedClickedMonths);
               }}
             />
@@ -95,6 +125,8 @@ const BuyPremium = () => {
               isClicked={clickedMonths[2]}
               onPress={() => {
                 const updatedClickedMonths = [...clickedMonths];
+                updatedClickedMonths[0] = false;
+                updatedClickedMonths[1] = false;
                 updatedClickedMonths[2] = !clickedMonths[2];
                 setClickedMonths(updatedClickedMonths);
               }}
@@ -230,10 +262,10 @@ const Pack = () => {
 };
 
 const paymentStyle = StyleSheet.create({
-  title: { fontSize: 40, marginLeft: 10 },
+  title: { fontSize: 30, marginLeft: 10 },
   month: {
-    height: 250,
-    width: 120,
+    height: 200,
+    width: 110,
     borderRadius: 20,
     alignItems: "center",
     justifyContent: "space-around",
@@ -241,7 +273,7 @@ const paymentStyle = StyleSheet.create({
   text: { fontSize: 20 },
   number: { fontSize: 30 },
   textPack: {
-    fontSize: 28,
+    fontSize: 18,
     marginVertical: 5,
     marginHorizontal: 10,
   },

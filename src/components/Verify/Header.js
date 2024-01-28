@@ -3,12 +3,12 @@ import React from "react";
 import forgotPass from "../../styles/forgotPassStyles";
 import { useNavigation } from "@react-navigation/native";
 
-const Header = () => {
+const Header = ({receivedData}) => {
   const navigation = useNavigation();
 
   return (
     <View style={forgotPass.headerContainer}>
-      <TouchableOpacity onPress={() => navigation.navigate("fillEmail")}>
+      <TouchableOpacity onPress={() => navigation.navigate("fillEmail", {data: receivedData})}>
         <Image
           style={forgotPass.headerButton}
           source={require("../../../assets/dummyicon/left_line_64.png")}
