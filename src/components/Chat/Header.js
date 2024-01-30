@@ -80,6 +80,8 @@ const Header = ({ user }) => {
     setModalVisible(false);
   };
   const handleCreateGroup = async () => {
+    if (groupMember.length == 0 || groupName == "") return;
+    
     const keys = await getAllIdUserLocal();
     const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
     const dataUpdate = await updateAccessTokenAsync(

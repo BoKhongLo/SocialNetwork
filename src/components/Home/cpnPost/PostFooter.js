@@ -9,6 +9,7 @@ import {
   FlatList,
   TextInput,
   Touch,
+  Alert,
 } from "react-native";
 import Modal from "react-native-modal";
 import headerPostStyles from "./../../../styles/postHeaderStyles";
@@ -31,7 +32,7 @@ import {
   addInteractPostAsync,
   removeInteractPostAsync,
   getSocketIO,
-  getUserDataLiteAsync
+  getUserDataLiteAsync,
 } from "../../../util";
 import {
   InteractDto,
@@ -134,9 +135,7 @@ const PostFooter = ({
         if ("errors" in dataReturn) return;
         setLikePressed(false);
         setLikePostId("");
-
-      }
-      else if (likePostId == false) {
+      } else if (likePostId == false) {
         const dto = new InteractDto(dataUserLocal.id, post.id, "", "HEART", "");
         let dataReturn = await addInteractPostAsync(
           dto,
@@ -324,7 +323,7 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
         });
         setRefreshing(false);
       });
-      
+
       newSocket.on("addInteractionComment", async (comments) => {
         setRefreshing(true);
         if (!(comments.userId in dataUsers)) {
@@ -354,7 +353,7 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
         });
         setRefreshing(false);
       });
-      
+
       newSocket.on("removeInteractionComment", (comment) => {
         setRefreshing(true);
         setDataPost((preData) => {
@@ -385,9 +384,9 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
     const validateData = async () => {
       for (let i = 0; i < dataPost.comment.length; i++) {
         if (!dataPost.comment[i].interaction) continue;
-        dataPost.comment[i].interaction = dataPost.comment[i].interaction.filter(
-          (item) => item.isDisplay !== false
-        );
+        dataPost.comment[i].interaction = dataPost.comment[
+          i
+        ].interaction.filter((item) => item.isDisplay !== false);
       }
     };
 
@@ -456,84 +455,95 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
     }
   };
 
-  const Item = useCallback(({item}) =>  {
-    return (
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          width: widthPercentageToDP('95%'),
-          marginVertical: 5,
-        }}
-      >
-        <View>
-          <TouchableOpacity onPress={async () => await handlePressedAvatar(item.userId)}>
-            {dataUsers[item.userId] && dataUsers[item.userId].detail.avatarUrl ? (
-              <Image
-                style={{
-                  height: 45,
-                  width: 45,
-                  borderRadius: 40,
-                  borderWidth: 0.3,
-                  backgroundColor: "black",
-                }}
-                source={{ uri: dataUsers[item.userId].detail.avatarUrl }}
-              />
-            ) : (
-              <Image
-                style={{
-                  height: 45,
-                  width: 45,
-                  borderRadius: 40,
-                  borderWidth: 0.3,
-                  backgroundColor: "black",
-                }}
+  const Item = useCallback(({ item }) => {
+      
+    const alertDeleteComment = () => {
+        Alert.alert("", "Delete this comment ?", [
+          { text: "Edit", onPress: () => null },
+          { text: "OK", onPress: () => null },
+        ]);
+      };
 
-              />
-            )}
-
-          </TouchableOpacity>
-        </View>
-        <View style={{ flex: 0.9 }}>
-          {dataUsers[item.userId] && (
-            <Text style={{ fontWeight: "700" }}>
-            {dataUsers[item.userId].detail.name}
-          </Text>
-          )}
-          <Text style={{ fontSize: 17 }}>{item.content}</Text>
-          {item.interaction && (
-                <Text
-                style={{ color: "#A9A9A9" }}
-              >
-              {`${item.interaction.length} likes`}</Text>
-          )}
-   
-        </View>
-        <TouchableOpacity onPress={() => handleLikePress(item)}>
+      return (
+        <TouchableOpacity
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: widthPercentageToDP("95%"),
+            marginVertical: 5,
+          }}
+          onLongPress={() => alertDeleteComment()}
+        >
           <View>
+            <TouchableOpacity>
+              {dataUsers[item.userId] &&
+              dataUsers[item.userId].detail.avatarUrl ? (
+                <Image
+                  style={{
+                    height: 45,
+                    width: 45,
+                    borderRadius: 40,
+                    borderWidth: 0.3,
+                    backgroundColor: "black",
+                  }}
+                  source={{ uri: dataUsers[item.userId].detail.avatarUrl }}
+                />
+              ) : (
+                <Image
+                  style={{
+                    height: 45,
+                    width: 45,
+                    borderRadius: 40,
+                    borderWidth: 0.3,
+                    backgroundColor: "black",
+                  }}
+                  source={require("../../../../assets/img/avt.png")}
+                />
+              )}
+            </TouchableOpacity>
+          </View>
+          <View style={{ flex: 0.9 }}>
+            {dataUsers[item.userId] && (
+              <Text style={{ fontWeight: "700" }}>
+                {dataUsers[item.userId].detail.name}
+              </Text>
+            )}
+            <Text style={{ fontSize: 17 }}>{item.content}</Text>
             {item.interaction && (
-              <Image
-                style={{ height: 25, width: 25 }}
-                source={
-                  item.interaction.findIndex(it => it.userId === userCurrent.id) !== -1
-                    ? require('../../../../assets/dummyicon/heart_fill.png')
-                    : require('../../../../assets/dummyicon/heart.png')
-                }
-              />
+              <Text style={{ color: "#A9A9A9" }}>
+                {`${item.interaction.length} likes`}
+              </Text>
             )}
           </View>
+          <TouchableOpacity onPress={() => handleLikePress(item)}>
+            <View>
+              {item.interaction && (
+                <Image
+                  style={{ height: 25, width: 25 }}
+                  source={
+                    item.interaction.findIndex(
+                      (it) => it.userId === userCurrent.id
+                    ) !== -1
+                      ? require("../../../../assets/dummyicon/heart_fill.png")
+                      : require("../../../../assets/dummyicon/heart.png")
+                  }
+                />
+              )}
+            </View>
+          </TouchableOpacity>
         </TouchableOpacity>
-      </View>
-    );
-  }, [dataUsers, userCurrent, dataPost]);
+      );
+    },
+    [dataUsers, userCurrent, dataPost]
+  );
 
   return (
     <>
       <FlatList
         ref={flatListRef}
         data={dataPost.comment}
-        renderItem={({item}) => <Item item={item}/>}
+        renderItem={({ item }) => <Item item={item} />}
         keyExtractor={(item) => item.id}
         refreshing={refreshing}
       />
@@ -544,7 +554,12 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
         style={{ justifyContent: "flex-end", margin: 0 }}
       >
         <View
-          style={{backgroundColor: "lightgrey", borderTopLeftRadius:20,borderTopRightRadius:20,paddingVertical:7}}
+          style={{
+            backgroundColor: "lightgrey",
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+            paddingVertical: 7,
+          }}
         >
           <TouchableOpacity>
             <Text

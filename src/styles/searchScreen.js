@@ -33,6 +33,7 @@ const searchStyles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 10,
     backgroundColor: "lightgrey",
+    marginHorizontal:2
   },
 });
 
