@@ -66,7 +66,6 @@ const ChatWindows = ({ user }) => {
         receivedData.id,
         dataUserLocal.accessToken
       );
-
       if ("errors" in dataRoomchatAsync) {
         const dataUpdate = await updateAccessTokenAsync(
           dataUserLocal.id,
@@ -74,7 +73,7 @@ const ChatWindows = ({ user }) => {
         );
         dataUserLocal.accessToken = dataUpdate.accessToken;
         dataRoomchatAsync = await getRoomchatAsync(
-          dataUpdate.id,
+          receivedData.id,
           dataUpdate.accessToken
         );
       }

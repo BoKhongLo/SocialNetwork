@@ -94,7 +94,7 @@ const ChatScreen = ({}) => {
           }
         }
       }
-
+      console.log(dataRoomchatAsync)
       const { detail, id, friends } = dataUserAsync;
 
       newProfile.id = id;
