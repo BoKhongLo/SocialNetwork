@@ -24,6 +24,7 @@ import {
   getDataUserLocal,
   updateAccessTokenAsync,
   getUserDataAsync,
+  removeCommentPostAsync,
   addBookmarkAsync,
   removeBookmarkAsync,
   addCommentPostAsync,
@@ -212,13 +213,16 @@ const PostFooter = ({
         >
           <TextInput
             placeholder="Enter your comments"
-            style={{ padding: 10, marginLeft: 5 }}
+            style={{
+              paddingHorizontal: 100,
+              paddingVertical: 10,
+            }}
             value={comment}
             onChangeText={(text) => setComment(text)}
           />
           <TouchableOpacity
             onPress={handleSendPress}
-            style={{ paddingHorizontal: 20, paddingVertical: 10 }}
+            style={{ paddingHorizontal: 10, paddingVertical: 10}}
           >
             <MaterialCommunityIcons name="send" size={25} />
           </TouchableOpacity>
@@ -323,7 +327,17 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
         });
         setRefreshing(false);
       });
-
+      newSocket.on("removeComment", async (comments) => {
+        setRefreshing(true);
+        setDataPost((preData) => {
+          if (!preData) return preData;
+          if (comments.postId !== preData.id) return preData;
+          let newDataPost = preData;
+          newDataPost.comment = newDataPost.comment.filter(comment => comment.id !== comments.commentId)
+          return newDataPost;
+        });
+        setRefreshing(false);
+      });
       newSocket.on("addInteractionComment", async (comments) => {
         setRefreshing(true);
         if (!(comments.userId in dataUsers)) {
@@ -401,6 +415,7 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
     receivedData.id = userId;
     navigation.replace("Profile", { data: receivedData });
   }
+
   const handleLikePress = async (comment) => {
     if (!comment) return;
     const keys = await getAllIdUserLocal();
@@ -455,15 +470,38 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
     }
   };
 
+  const alertDeleteComment = async (comment) => {
+    Alert.alert("", "Delete this comment ?", [
+      { text: "Cancel", onPress: () => null },
+      { text: "OK", onPress: async() => {
+        if (!comment) return;
+        const keys = await getAllIdUserLocal();
+        const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+        const dto = new ValidateMessagesDto(
+          dataUserLocal.id,
+          dataPost.id,
+          comment.id,
+          "",
+          []
+        );
+        let dataReturn = await removeCommentPostAsync(
+          dto,
+          dataUserLocal.accessToken
+        );
+        if ("errors" in dataReturn) {
+          const dataUpdate = await updateAccessTokenAsync(
+            dataUserLocal.id,
+            dataUserLocal.refreshToken
+          );
+          dataReturn = await removeCommentPostAsync(dto, dataUpdate.accessToken);
+        }
+        if ("errors" in dataReturn) return;
+      }},
+    ]);
+  };
+  
   const Item = useCallback(({ item }) => {
-      
-    const alertDeleteComment = () => {
-        Alert.alert("", "Delete this comment ?", [
-          { text: "Edit", onPress: () => null },
-          { text: "OK", onPress: () => null },
-        ]);
-      };
-
+    
       return (
         <TouchableOpacity
           style={{
@@ -473,10 +511,13 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
             width: widthPercentageToDP("95%"),
             marginVertical: 5,
           }}
-          onLongPress={() => alertDeleteComment()}
+
+          onLongPress={async () => await alertDeleteComment(item)}
         >
           <View>
-            <TouchableOpacity>
+            <TouchableOpacity
+            onPress={async () => await handlePressedAvatar()}
+            >
               {dataUsers[item.userId] &&
               dataUsers[item.userId].detail.avatarUrl ? (
                 <Image

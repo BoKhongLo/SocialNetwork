@@ -1698,6 +1698,52 @@ export async function addCommentPostAsync(dto: ValidateMessagesDto, accessToken:
     }
 }
 
+export async function removeCommentPostAsync(dto: ValidateMessagesDto, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const ADD_COMMENT_QUERY = `
+        mutation RemoveComment ($userId: String!, $postId: String!, $commentId: String, $content: String!, $fileUrl: [String!]!){
+            removeComment(
+                removeComment: {
+                    userId: $userId
+                    postId: $postId
+                    commentId: $commentId
+                    content: $content
+                    fileUrl: $fileUrl
+                }
+            ) {
+                data
+            }
+        }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: ADD_COMMENT_QUERY,
+                variables: {
+                    userId: dto.userId,
+                    postId: dto.roomchatId,
+                    commentId: dto.messagesId,
+                    content: dto.content,
+                    fileUrl: dto.fileUrl
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.removeComment
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
 
 export async function addInteractPostAsync(dto: InteractDto, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
