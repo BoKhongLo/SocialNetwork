@@ -44,6 +44,7 @@ const LoginForm = () => {
     } catch (err) {
       console.log(err);
     }
+    
   };
 
   const handleSignUp = () => {
@@ -88,8 +89,6 @@ const LoginForm = () => {
         >
           <Text style={styles.buttonLoginText}>Log in</Text>
         </TouchableOpacity>
-
-
         <View style={{
           marginTop: 30,
           alignItems: "center",
