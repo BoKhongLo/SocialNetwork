@@ -9,6 +9,7 @@ import {
   FlatList,
   TextInput,
   Touch,
+  Alert,
 } from "react-native";
 import Modal from "react-native-modal";
 import headerPostStyles from "./../../../styles/postHeaderStyles";
@@ -31,7 +32,7 @@ import {
   addInteractPostAsync,
   removeInteractPostAsync,
   getSocketIO,
-  getUserDataLiteAsync
+  getUserDataLiteAsync,
 } from "../../../util";
 import {
   InteractDto,
@@ -134,9 +135,7 @@ const PostFooter = ({
         if ("errors" in dataReturn) return;
         setLikePressed(false);
         setLikePostId("");
-
-      }
-      else if (likePostId == false) {
+      } else if (likePostId == false) {
         const dto = new InteractDto(dataUserLocal.id, post.id, "", "HEART", "");
         let dataReturn = await addInteractPostAsync(
           dto,
@@ -305,18 +304,26 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
             dataUserLocal.id,
             dataUserLocal.refreshToken
           );
-          let dataReturn = await getUserDataLiteAsync(comments.userId, dataUpdate.accessToken);
-          let newDataUser = {...dataUsers};
-          newDataUser[dataReturn.id] = dataReturn
+          let dataReturn = await getUserDataLiteAsync(
+            comments.userId,
+            dataUpdate.accessToken
+          );
+          let newDataUser = { ...dataUsers };
+          newDataUser[dataReturn.id] = dataReturn;
           setDataUsers(newDataUser);
         }
-        if (dataPost.comment.findIndex(comment => comment.id === comments.id) !== -1) return;
+        if (
+          dataPost.comment.findIndex(
+            (comment) => comment.id === comments.id
+          ) !== -1
+        )
+          return;
         let newDataPost = dataPost;
         newDataPost.comment.push(comments);
         setDataPost(newDataPost);
         setRefreshing(false);
       });
-      
+
       newSocket.on("addInteractionComment", async (comments) => {
         if (comments.roomId !== dataPost.id) return;
         setRefreshing(true);
@@ -325,34 +332,43 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
             dataUserLocal.id,
             dataUserLocal.refreshToken
           );
-          let dataReturn = await getUserDataLiteAsync(comments.userId, dataUpdate.accessToken);
-          let newDataUser = {...dataUsers};
-          newDataUser[dataReturn.id] = dataReturn
+          let dataReturn = await getUserDataLiteAsync(
+            comments.userId,
+            dataUpdate.accessToken
+          );
+          let newDataUser = { ...dataUsers };
+          newDataUser[dataReturn.id] = dataReturn;
           setDataUsers(newDataUser);
         }
-        const existingComment = dataPost.comment.findIndex(item => item.id === comments.id);
+        const existingComment = dataPost.comment.findIndex(
+          (item) => item.id === comments.id
+        );
         if (existingComment == -1) return;
         let newDataPost = dataPost;
-        newDataPost.comment[existingComment] = comments
+        newDataPost.comment[existingComment] = comments;
         setDataPost(newDataPost);
         setRefreshing(false);
       });
-      
+
       newSocket.on("removeInteractionComment", (comment) => {
         if (comment.postId !== dataPost.id) return;
         setRefreshing(true);
-        const indexComment = dataPost.comment.findIndex(item => item.id === comment.commentId);
+        const indexComment = dataPost.comment.findIndex(
+          (item) => item.id === comment.commentId
+        );
         if (indexComment == -1) return;
-        const indexInter = dataPost.comment[indexComment].interaction.findIndex(item => item.id === comment.interactionId);
+        const indexInter = dataPost.comment[indexComment].interaction.findIndex(
+          (item) => item.id === comment.interactionId
+        );
         if (indexInter == -1) return;
         let newDataPost = dataPost;
         newDataPost.comment[indexComment].interaction.splice(indexInter, 1);
         setDataPost(newDataPost);
         setRefreshing(false);
       });
-    }
-    socketConnect()
-  }, [dataPost, dataUsers, dataUserCurrent])
+    };
+    socketConnect();
+  }, [dataPost, dataUsers, dataUserCurrent]);
 
   const handleLongPress = (comment) => {
     setSelectedComment(comment);
@@ -365,15 +381,14 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
     const validateData = async () => {
       for (let i = 0; i < dataPost.comment.length; i++) {
         if (!dataPost.comment[i].interaction) continue;
-        dataPost.comment[i].interaction = dataPost.comment[i].interaction.filter(
-          (item) => item.isDisplay !== false
-        );
+        dataPost.comment[i].interaction = dataPost.comment[
+          i
+        ].interaction.filter((item) => item.isDisplay !== false);
       }
     };
 
     validateData();
   }, [dataPost, dataUsers, userCurrent]);
-
 
   const handleLikePress = async (comment) => {
     if (!comment) return;
@@ -429,84 +444,94 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
     }
   };
 
-  const Item = useCallback(({item}) =>  {
-    return (
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          width: widthPercentageToDP('95%'),
-          marginVertical: 5,
-        }}
-      >
-        <View>
-          <TouchableOpacity>
-            {dataUsers[item.userId] && dataUsers[item.userId].detail.avatarUrl ? (
-              <Image
-                style={{
-                  height: 45,
-                  width: 45,
-                  borderRadius: 40,
-                  borderWidth: 0.3,
-                  backgroundColor: "black",
-                }}
-                source={{ uri: dataUsers[item.userId].detail.avatarUrl }}
-              />
-            ) : (
-              <Image
-                style={{
-                  height: 45,
-                  width: 45,
-                  borderRadius: 40,
-                  borderWidth: 0.3,
-                  backgroundColor: "black",
-                }}
+  const Item = useCallback(({ item }) => {
+      
+    const alertDeleteComment = () => {
+        Alert.alert("", "Delete this comment ?", [
+          { text: "Edit", onPress: () => null },
+          { text: "OK", onPress: () => null },
+        ]);
+      };
 
-              />
-            )}
-
-          </TouchableOpacity>
-        </View>
-        <View style={{ flex: 0.9 }}>
-          {dataUsers[item.userId] && (
-            <Text style={{ fontWeight: "700" }}>
-            {dataUsers[item.userId].detail.name}
-          </Text>
-          )}
-          <Text style={{ fontSize: 17 }}>{item.content}</Text>
-          {item.interaction && (
-                <Text
-                style={{ color: "#A9A9A9" }}
-              >
-              {`${item.interaction.length} likes`}</Text>
-          )}
-   
-        </View>
-        <TouchableOpacity onPress={() => handleLikePress(item)}>
+      return (
+        <TouchableOpacity
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: widthPercentageToDP("95%"),
+            marginVertical: 5,
+          }}
+          onLongPress={() => alertDeleteComment()}
+        >
           <View>
+            <TouchableOpacity>
+              {dataUsers[item.userId] &&
+              dataUsers[item.userId].detail.avatarUrl ? (
+                <Image
+                  style={{
+                    height: 45,
+                    width: 45,
+                    borderRadius: 40,
+                    borderWidth: 0.3,
+                    backgroundColor: "black",
+                  }}
+                  source={{ uri: dataUsers[item.userId].detail.avatarUrl }}
+                />
+              ) : (
+                <Image
+                  style={{
+                    height: 45,
+                    width: 45,
+                    borderRadius: 40,
+                    borderWidth: 0.3,
+                    backgroundColor: "black",
+                  }}
+                />
+              )}
+            </TouchableOpacity>
+          </View>
+          <View style={{ flex: 0.9 }}>
+            {dataUsers[item.userId] && (
+              <Text style={{ fontWeight: "700" }}>
+                {dataUsers[item.userId].detail.name}
+              </Text>
+            )}
+            <Text style={{ fontSize: 17 }}>{item.content}</Text>
             {item.interaction && (
-              <Image
-                style={{ height: 25, width: 25 }}
-                source={
-                  item.interaction.findIndex(it => it.userId === userCurrent.id) !== -1
-                    ? require('../../../../assets/dummyicon/heart_fill.png')
-                    : require('../../../../assets/dummyicon/heart.png')
-                }
-              />
+              <Text style={{ color: "#A9A9A9" }}>
+                {`${item.interaction.length} likes`}
+              </Text>
             )}
           </View>
+          <TouchableOpacity onPress={() => handleLikePress(item)}>
+            <View>
+              {item.interaction && (
+                <Image
+                  style={{ height: 25, width: 25 }}
+                  source={
+                    item.interaction.findIndex(
+                      (it) => it.userId === userCurrent.id
+                    ) !== -1
+                      ? require("../../../../assets/dummyicon/heart_fill.png")
+                      : require("../../../../assets/dummyicon/heart.png")
+                  }
+                />
+              )}
+            </View>
+          </TouchableOpacity>
         </TouchableOpacity>
-      </View>
-    );
-  }, [dataUsers, userCurrent, dataPost]);
+      );
+    },
+    [dataUsers, userCurrent, dataPost]
+  );
 
   return (
     <>
       <FlatList
         ref={flatListRef}
         data={dataPost.comment}
-        renderItem={({item}) => <Item item={item}/>}
+        renderItem={({ item }) => <Item item={item} />}
         keyExtractor={(item) => item.id}
         refreshing={refreshing}
       />
@@ -517,7 +542,12 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
         style={{ justifyContent: "flex-end", margin: 0 }}
       >
         <View
-          style={{backgroundColor: "lightgrey", borderTopLeftRadius:20,borderTopRightRadius:20,paddingVertical:7}}
+          style={{
+            backgroundColor: "lightgrey",
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+            paddingVertical: 7,
+          }}
         >
           <TouchableOpacity>
             <Text
