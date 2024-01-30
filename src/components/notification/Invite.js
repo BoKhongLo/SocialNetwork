@@ -6,7 +6,7 @@ import {
   getDataUserLocal,
   updateAccessTokenAsync,
   getUserDataAsync,
-  getFriendRequestAsync,
+  getFriendReceiveAsync,
   acceptFriendAsync,
   removeFriendAsync,
   createRoomchatAsync
@@ -35,7 +35,7 @@ const Invite = () => {
       const keys = await getAllIdUserLocal();
       const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
       let dataUserLocal = { ...dataLocal }
-      let dataRequest = await getFriendRequestAsync(
+      let dataRequest = await getFriendReceiveAsync(
         dataUserLocal.id,
         dataUserLocal.accessToken
       );
@@ -45,7 +45,7 @@ const Invite = () => {
           dataUserLocal.refreshToken
         );
         dataUserLocal.accessToken = dataUpdate.accessToken;
-        dataRequest = await getFriendRequestAsync(dataUserLocal.id, dataUpdate.accessToken);
+        dataRequest = await getFriendReceiveAsync(dataUserLocal.id, dataUpdate.accessToken);
       }
       if ("errors" in dataRequest) return;
       dataRequest = removeDuplicates(dataRequest, 'id');
@@ -87,13 +87,15 @@ const Item = ({ data, users, removeRq }) => {
       dataUserLocal.refreshToken
     );
 
-    await acceptFriendAsync(dataUserLocal.id, friendId, dataUpdate.accessToken)
+    const dataRe2 = await acceptFriendAsync(dataUserLocal.id, friendId, dataUpdate.accessToken)
+    console.log(dataRe2);
     const dto = new RoomchatDto(
       dataUserLocal.id,
       [friendId],
       dataUserLocal.id + friendId,
       true)
-    await createRoomchatAsync(dto, dataUpdate.accessToken);
+    const dataRe = await createRoomchatAsync(dto, dataUpdate.accessToken);
+    console.log(dataRe);
     removeRq(requestId)
   }
 

@@ -168,7 +168,7 @@ const Caption = ({ user, onUpdateData }) => {
         {user.detail.avatarUrl ? (
           <Image style={chat.avtChat} source={{ uri: user.detail.avatarUrl }} />
         ) : (
-          <Image style={chat.avtChat} />
+          <Image style={chat.avtChat} source={require('../../assets/img/avt.png')}/>
         )}
         <View style={chat.nameChatContainer}>
           <Text style={chat.chatUSerName}> {user.detail.name}</Text>

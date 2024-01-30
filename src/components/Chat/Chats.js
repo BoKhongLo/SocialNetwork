@@ -52,7 +52,7 @@ const ListOfChat = ({ roomchat }) => {
       <View style={chat.KhungChat}>
         <TouchableOpacity
         onLongPress={()=> alertDeleteChat()}
-          onPress={() => navigation.navigate("chatwindow", { data: roomchat })}
+          onPress={() => navigation.replace("chatwindow", { data: roomchat })}
         >
           <View style={{ flexDirection: "row" }}>
             <Image style={chat.avtChat} source={roomchat.imgDisplay} />

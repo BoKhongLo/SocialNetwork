@@ -3,7 +3,7 @@ import React from "react";
 import forgotPass from "../../styles/forgotPassStyles";
 import { useNavigation } from "@react-navigation/native";
 
-const Header = () => {
+const Header = ({receivedData}) => {
   const navigation = useNavigation();
 
   return (
@@ -14,7 +14,9 @@ const Header = () => {
           source={require("../../../assets/dummyicon/left_line_64.png")}
         />
       </TouchableOpacity>
-      <Text style={forgotPass.title}>Forgot PassWord</Text>
+      <Text style={forgotPass.title}>
+      {receivedData.type === "SignUp" ? "Sign Up" : receivedData.type === "ForgotPassword" && "Forgot Password"}
+      </Text>
     </View>
   );
 };

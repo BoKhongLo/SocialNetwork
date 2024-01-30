@@ -36,12 +36,12 @@ const ChatScreen = ({}) => {
       }
       const dataUserLocal = receivedData;
 
-      const dataUserAsync = await getUserDataAsync(
+      let dataUserAsync = await getUserDataAsync(
         dataUserLocal.id,
         dataUserLocal.accessToken
       );
 
-      const dataRoomchatAsync = await getAllRoomchatAsync(
+      let dataRoomchatAsync = await getAllRoomchatAsync(
         dataUserLocal.id,
         dataUserLocal.accessToken
       );

@@ -13,6 +13,7 @@ import {
   removeFriendAsync,
   acceptFriendAsync,
   getFriendRequestAsync,
+  getFriendReceiveAsync,
   createRoomchatAsync,
 } from "../../util";
 import { RoomchatDto } from "../../util/dto";
@@ -23,6 +24,7 @@ const Options = ({ data }) => {
   const [isFriendAdded, setFriendAdded] = useState(false);
   const [isFriend, setIsFriend] = useState("Cancel request");
   const [isPending, setPending] = useState(false);
+  const [isFetching, setFetching] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,6 +36,10 @@ const Options = ({ data }) => {
         dataUserLocal.accessToken
       );
       let dataRequest = await getFriendRequestAsync(
+        dataUserLocal.id,
+        dataUserLocal.accessToken
+      );
+      let dataReceive = await getFriendReceiveAsync(
         dataUserLocal.id,
         dataUserLocal.accessToken
       );
@@ -50,6 +56,10 @@ const Options = ({ data }) => {
           dataUserLocal.id,
           dataUpdate.accessToken
         );
+        dataReceive = await getFriendReceiveAsync(
+          dataUserLocal.id,
+          dataUserLocal.accessToken
+        );
       }
 
       if ("errors" in dataUserAsync) {
@@ -59,22 +69,25 @@ const Options = ({ data }) => {
       if (dataUserAsync.friends.includes(data.id)) {
         setIsFriend("Friend");
         setFriendAdded(true);
-      } else {
-        for (let friends of dataRequest) {
-          if (friends.createdUserId === data.id) {
-            setIsFriend("Accept");
-            setPending(true);
-            setFriendAdded(true);
-            break;
-          }
-        }
+      } 
+      else if (dataReceive.findIndex(item => item.createdUserId === data.id) !== -1) {
+        setIsFriend("Accept");
+        setPending(true);
+        setFriendAdded(true);
       }
+      else if (dataRequest.findIndex(item => item.receiveUserId === data.id) !== -1) {
+        setIsFriend("Cancel request");
+        setPending(false);
+        setFriendAdded(true);
+      }
+      setFetching(true);
     };
 
     fetchData();
   }, [data]);
 
   const handleAddFriendPress = async () => {
+    if (!isFetching) return;
     const keys = await getAllIdUserLocal();
     const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
     const dataUpdate = await updateAccessTokenAsync(

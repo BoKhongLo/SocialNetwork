@@ -3,12 +3,12 @@ import React from "react";
 import settingChat from "../../../styles/ChatStyles/settingStyle";
 import { useNavigation, useRoute } from "@react-navigation/native";
 
-const Header = () => {
+const Header = ({receivedData}) => {
     const navigation = useNavigation();
 
   return (
     <View style={settingChat.headerContainer}>
-      <TouchableOpacity onPress={()=>navigation.goBack()}>
+      <TouchableOpacity onPress={()=>navigation.navigate("chatwindow", { data: receivedData })}>
         <Image
           style={settingChat.button}
           source={require("../../../../assets/dummyicon/left_line_64.png")}

@@ -1,13 +1,19 @@
 import { View, Text, TextInput, TouchableOpacity, Image, Alert } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import forgotPass from "../../styles/forgotPassStyles";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { Toast } from 'toastify-react-native';
+import { ForgetPasswordDto, LoginDto } from './../../util/dto';
+import { forgetPasswordValidate, LoginAsync } from "../../util";
 
-const Form = () => {
+
+
+const Form = ({receivedData}) => {
   const navigation = useNavigation();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
 
   const handlePasswordChange = (text) => {
     setPassword(text);
@@ -26,7 +32,7 @@ const Form = () => {
     return passwordRegex.test(password);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Validate password
     if (!validatePassword()) {
       Alert.alert("Invalid Password", "Password must have at least 8 characters, one uppercase letter, one lowercase letter, and one digit.");
@@ -39,12 +45,39 @@ const Form = () => {
       return;
     }
 
-    // Handle submission logic here
+
     console.log("Password:", password);
     console.log("Confirm Password:", confirmPassword);
 
-    // Example: Navigate to the 'verify' screen
-    navigation.navigate("verify");
+    if (password == "") return;
+
+    const data = { ...receivedData }
+    data.password = password
+    if (data.type === "SignUp") {
+      navigation.replace('Signup', { data: data });
+    }
+    else if (data.type === "ForgotPassword") {
+      const dto = new ForgetPasswordDto(data.email, data.otpId, data.password, data.password);
+      const dataRe = await forgetPasswordValidate(dto);
+      if ("errors" in dataRe) {
+        Toast.error(dataRe.errors[0].message);
+        return;
+      }
+      const dtoLogin = new LoginDto(data.email, data.password);
+      try {
+        const dataLogin = await LoginAsync(dtoLogin);
+        if ("errors" in dataLogin) {
+          Toast.error(dataLogin.errors[0].message);
+          return;
+        }
+        if (dataLogin != null && dataLogin != undefined) {
+          navigation.navigate("main", { data: dataLogin });
+        }
+  
+      } catch (err) {
+        console.log(err);
+      }
+    }
   };
 
   return (

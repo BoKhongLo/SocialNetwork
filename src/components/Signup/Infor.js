@@ -14,7 +14,7 @@ const Infor = () => {
         paddingRight: insets.right,
         flex: 1,
       }}>
-      <Text>Infor</Text>
+      <Text>Info</Text>
     </View>
   )
 }

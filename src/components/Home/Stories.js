@@ -28,7 +28,7 @@ const Stories = React.memo(({ post, users }) => {
           {users[item.ownerUserId] && users[item.ownerUserId].detail.avatarUrl ? (
             <Image style={styles.storyImg} source={{ uri: users[item.ownerUserId].detail.avatarUrl }} />
           ) : (
-            <Image style={styles.storyImg} />
+            <Image style={styles.storyImg} source={require('../../../assets/img/avt.png')}/>
           )}
         </TouchableHighlight>
       </LinearGradient>

@@ -17,7 +17,7 @@ const Header = ({ receivedData }) => {
         </TouchableOpacity>
         <View style={styles.iconContainer}>
           <TouchableOpacity
-          onPress={() => navigation.navigate('noti', {data: receivedData})}
+          onPress={() => navigation.replace('noti', {data: receivedData})}
           style={{ marginRight: 20 }}>
             <Image
               style={styles.icon}
@@ -26,7 +26,7 @@ const Header = ({ receivedData }) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={{ flexDirection: 'row'}}
-            onPress={() => navigation.navigate('chat', {data: receivedData})}
+            onPress={() => navigation.replace('chat', {data: receivedData})}
           >
             <Image
               style={styles.icon}

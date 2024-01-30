@@ -1,14 +1,25 @@
 import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
-import React from "react";
+import React, {useEffect} from "react";
 import styles from "../styles/styles";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import SignupForm from "../components/Signup/SignupForm";
 import ToastManager from 'toastify-react-native'
+
 const SignupScreen = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
-  
+  const route = useRoute();
+  const receivedData = route.params?.data;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (receivedData == null) {
+        navigation.navigate('Login');
+      }
+    };
+    fetchData();
+  }, []);
   return (
     <View
       style={{
@@ -21,7 +32,7 @@ const SignupScreen = () => {
     >
       <ToastManager  />
       <View style={{ flexDirection: "row", justifyContent: "flex-start",padding:5 }}>
-        <TouchableOpacity onPress={()=> navigation.navigate('Login')}>
+        <TouchableOpacity onPress={()=> navigation.navigate('fillPass', {data: receivedData})}>
           <Image
             style={{ height: 40, width: 40, padding:10 }}
             source={require("../../assets/dummyicon/left_line_64.png")}
@@ -32,7 +43,7 @@ const SignupScreen = () => {
         </Text>
       </View>
       <ScrollView>
-        <SignupForm />
+        <SignupForm  receivedData={receivedData}/>
       </ScrollView>
     </View>
   );

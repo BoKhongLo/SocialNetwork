@@ -1,5 +1,5 @@
 import { View, Text, Image, TouchableOpacity } from "react-native";
-import React, { useState } from "react";
+import React, {useState} from "react";
 import newGroup from "../../../styles/ChatStyles/newGroupStyles";
 
 const Item = ({ user, onAdd, onRemove }) => {
@@ -7,27 +7,26 @@ const Item = ({ user, onAdd, onRemove }) => {
 
   const handleUpdate = (id) => {
     if (isAdd === "Add") {
-      onAdd(id);
+      onAdd(id)
       setIsAdd("Added");
-    } else if (isAdd === "Added") {
-      onRemove(id);
+    }
+    else if (isAdd === "Added") {
+      onRemove(id)
       setIsAdd("Add");
     }
-  };
-
+  }
   return (
     <View style={{ marginVertical: 10, flexDirection: "row", alignItems:'center' }}>
-      {user.detail.avatarUrl ? (
+      {user && user.detail.avatarUrl ? (
         <Image
           style={newGroup.itemAvt}
           source={{ uri: user.detail.avatarUrl }}
         />
       ) : (
-        <Image style={newGroup.itemAvt} />
+        <Image style={newGroup.itemAvt} source={require("../../../../assets/img/avt.png")}/>
       )}
       <View style={{ flex: 1, marginHorizontal: 10 }}>
-        <Text style={newGroup.text}>{user.detail.name}</Text>
-
+        <Text style={newGroup.text}>{user && (user.detail.name)}</Text>
       </View>
       <TouchableOpacity
         style={newGroup.addButton}

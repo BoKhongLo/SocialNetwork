@@ -94,7 +94,7 @@ const Item = ({ data, users, removeRq }) => {
                 {users[data].detail.avatarUrl ? (
                     <Image style={cpnNotiStyles.avt} source={{ uri: users[data].detail.avatarUrl }} />
                 ) : (
-                    <Image style={cpnNotiStyles.avt} />
+                    <Image style={cpnNotiStyles.avt} source={require("../../../assets/img/avt.png")}/>
                 )}
 
             </View>

@@ -37,6 +37,14 @@ const HomeScreen = () => {
   const [dataUser, setDataUser] = useState({});
   const [dataUserCurrent, setDataUserCurrent] = useState({});
 
+  const handleRemovePost = (id) => {
+    setDataPost((prevPosts) => prevPosts.filter(item => item.id !== id));
+  }
+
+  const handleAddPost = (newPost) => {
+    setDataPost((prevPosts) => [...prevPosts, newPost]);
+  }
+  
   useEffect(() => {
     const fetchData = async () => {
       const keys = await getAllIdUserLocal();
@@ -116,155 +124,22 @@ const HomeScreen = () => {
   }, []);
 
   useEffect(() => {
-    const socketConnect = async () => {
-      const keys = await getAllIdUserLocal();
-      const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
-      const dataUpdate = await updateAccessTokenAsync(
-        dataUserLocal.id,
-        dataUserLocal.refreshToken
-      );
-
-      const newSocket = await getSocketIO(dataUpdate.accessToken);
-
-      newSocket.on("removePost", (post) => {
-        setDataPost((prevPosts) => prevPosts.filter(item => item.id !== post.postId));
-      });
-      
-      newSocket.on("addComment", async (comments) => {
-        setDataUser(async (preUser) => {
-          if (!(comments.userId in preUser)) {
-            const dataUpdate = await updateAccessTokenAsync(
-              dataUserLocal.id,
-              dataUserLocal.refreshToken
-            );
-            let dataReturn = await getUserDataLiteAsync(comments.userId, dataUpdate.accessToken);
-            preUser[dataReturn.id] = dataReturn;
-          }
-          return preUser;
-        });
-      
-        setDataPost((prePost) => {
-          const existingPost = prePost.find(item => item.id === comments.roomId);
-          if (existingPost) {
-            const existingComment = existingPost.comment.find(item => item.id === comments.id);
-            if (!existingComment) {
-              existingPost.comment.push(comments);
-              return [...prePost];
-            }
-          }
-          return prePost;
-        });
-      });
-      
-      newSocket.on("addInteractionPost!", (post) => {
-        setDataPost((prePost) => {
-          const existingPost = prePost.find(item => item.id === post.postId);
-          if (existingPost) {
-            const existingInteraction = existingPost.interaction.find(item => item.id === post.id);
-            if (!existingInteraction) {
-              existingPost.interaction.push(post);
-              return [...prePost];
-            }
-          }
-          return prePost;
-        });
-      });
-      
-      newSocket.on("removeInteractionPost", (post) => {
-        setDataPost((prePost) => {
-          const existingPost = prePost.find(item => item.id === post.postId);
-          if (existingPost) {
-            const indexInter = existingPost.interaction.findIndex(item => item.id === post.interactionId);
-            if (indexInter !== -1) {
-              existingPost.interaction.splice(indexInter, 1);
-              return [...prePost];
-            }
-          }
-          return prePost;
-        });
-      });
-      
-      newSocket.on("addInteractionComment", (comment) => {
-        setDataUser(async (preUser) => {
-          if (!(comment.userId in preUser)) {
-            const dataUpdate = await updateAccessTokenAsync(
-              dataUserLocal.id,
-              dataUserLocal.refreshToken
-            );
-            let dataReturn = await getUserDataLiteAsync(comment.userId, dataUpdate.accessToken);
-            preUser[dataReturn.id] = dataReturn;
-          }
-          return preUser;
-        });
-      
-        setDataPost((prePost) => {
-          const existingPost = prePost.find(item => item.id === comment.roomId);
-          if (existingPost) {
-            const existingComment = existingPost.comment.find(item => item.id === comment.id);
-            if (existingComment) {
-              existingComment.interaction.push(comment);
-              return [...prePost];
-            }
-          }
-          return prePost;
-        });
-      });
-      
-      newSocket.on("removeInteractionComment", (comment) => {
-        setDataPost((prePost) => {
-          const existingPost = prePost.find(item => item.id === comment.postId);
-          if (existingPost) {
-            const existingComment = existingPost.comment.find(item => item.id === comment.commentId);
-            if (existingComment) {
-              const indexInter = existingComment.interaction.findIndex(item => item.id === comment.interactionId);
-              if (indexInter !== -1) {
-                existingComment.interaction.splice(indexInter, 1);
-                return [...prePost];
-              }
-            }
-          }
-          return prePost;
-        });
-      });
-    }
-    socketConnect()
-  }, [])
-
-  const MemoizedPost = React.memo(({ post, users, userCurrent }) => (
-    <Post key={`${post.id}`} post={post} users={users} userCurrent={userCurrent} style={{ flex: 1 }} />
-  ));
-  useEffect(() => {
     console.log("HasChange!")
   })
-  const flatListRef = useRef(null);
-  useEffect(() => {
-    flatListRef.current.scrollToOffset({ offset: 0, animated: true });
-  }, [dataPost]);
 
-  const VirtualizedView = useMemo(() => {
+  const VirtualizedView = (props) => {
     return (
       <FlatList
-        ref={flatListRef}
-        data={dataPost}
-        ListEmptyComponent={() => (
-          <View style={styles.container}>
-            <Text style={styles.text}>Welcome to Black Cat Chat</Text>
-          </View>
-        )}
+        data={[]}
+        ListEmptyComponent={null}
+        keyExtractor={() => "dummy"}
+        renderItem={null}
         ListHeaderComponent={() => (
-          <React.Fragment>
-            <Stories post={dataStory} users={dataUser} />
-          </React.Fragment>
-        )}
-        keyExtractor={(item) => `${item.id}`}
-        renderItem={({ item }) => (
-          <MemoizedPost post={item} users={dataUser} userCurrent={dataUserCurrent} />
+          <React.Fragment>{props.children}</React.Fragment>
         )}
       />
     );
-  }, [dataPost, dataStory, dataUser, dataUserCurrent]); // Add dependencies to the dependency array
-  
-
+  }
 
   return (
     <View
@@ -278,7 +153,17 @@ const HomeScreen = () => {
     >
       <Header receivedData={receivedData} />
       <View style={{ flex: 1 }}>
-        {VirtualizedView}
+        <VirtualizedView style={{ flex: 1 }}>
+          {dataPost.map((item, index) => (
+            <Post
+              key={`${item.id}`}
+              post={item}
+              users={dataUser}
+              userCurrent={dataUserCurrent}
+              onRemovePost={handleRemovePost}
+              style={{ flex: 1 }} />
+          ))}
+        </VirtualizedView>
       </View>
       <BottomTabs receivedData={receivedData}
       />

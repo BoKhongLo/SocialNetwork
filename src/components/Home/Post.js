@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   View,
   Text,
@@ -21,7 +21,70 @@ import {
   widthPercentageToDP,
 } from "react-native-responsive-screen";
 
-const Post = React.memo(({ post, users, userCurrent }) => {
+import {
+  getUserDataAsync,
+  getAllIdUserLocal,
+  getDataUserLocal,
+  updateAccessTokenAsync,
+  findFriendAsync,
+  getSocketIO,
+} from "../../util";
+import { useNavigation } from "@react-navigation/native";
+const Post = React.memo(({ post, users, userCurrent, onRemovePost }) => {
+  const [countLike, setCountLike] = useState(post.interaction.length);
+  const [dataUsers, setDataUsers] = useState(users);
+  const [dataPost, setDataPost] = useState(post);
+  const [dataUserCurrent, setDataUsersCurrent] = useState(userCurrent);
+
+  useEffect(() => {
+    const socketConnect = async () => {
+      const keys = await getAllIdUserLocal();
+      const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+      let dataUpdate = await updateAccessTokenAsync(
+        dataUserLocal.id,
+        dataUserLocal.refreshToken
+      );
+
+      const newSocket = await getSocketIO(dataUpdate.accessToken);
+      console.log("Connect like");
+
+      newSocket.on("removePost", (post) => {
+        if (post.postId !== dataPost.id) return;
+        onRemovePost(dataPost.id);
+      });
+
+      newSocket.on("addInteractionPost!", async (post) => {
+        if (post.postId !== dataPost.id) return;
+        if (!(post.userId in dataUsers)) {
+          dataUpdate = await updateAccessTokenAsync(
+            dataUserLocal.id,
+            dataUserLocal.refreshToken
+          );
+          let dataReturn = await getUserDataLiteAsync(post.userId, dataUpdate.accessToken);
+          let newDataUser = {...dataUsers};
+          newDataUser[dataReturn.id] = dataReturn
+          setDataUsers(newDataUser);
+        }
+        if (dataPost.interaction.findIndex(interaction => interaction.id === post.id) !== -1) return;
+        let newDataPost = dataPost;
+        newDataPost.interaction.push(post);
+        setDataPost(newDataPost);
+        setCountLike(newDataPost.interaction.length)
+      });
+
+      newSocket.on("removeInteractionPost", (post) => {
+        if (post.postId !== dataPost.id) return;
+        const indexInter = dataPost.interaction.findIndex(item => item.id === post.interactionId);
+        if (indexInter === -1) return;
+        let newDataPost = dataPost;
+        newDataPost.interaction.splice(indexInter, 1);
+        setDataPost(newDataPost);
+        setCountLike(newDataPost.interaction.length)
+      });
+    }
+    socketConnect()
+  }, [dataPost, dataUsers, countLike])
+
   const validateFile = (file) => {
     if (!file || file == "") return "Null";
     const imgExt = ["jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp", "raf"];
@@ -48,53 +111,63 @@ const Post = React.memo(({ post, users, userCurrent }) => {
   return (
     <View>
       {fileType == "VIDEO" && (
-        <View>
+        <View style={{marginBottom: 5}}>
           <View style={{
             position: "absolute",
             zIndex: 1,
             top: 0,
             left: 0,
           }}>
-            <PostHeader post={post} users={users} userCurrent={userCurrent} headerColor='white' />
+            <PostHeader post={dataPost} users={dataUsers} userCurrent={dataUserCurrent} headerColor='white' />
           </View>
-          <PostImage post={post} users={users} />
+          <PostImage post={dataPost} users={dataUsers} />
           <View>
-            <PostFooter post={post} users={users} userCurrent={userCurrent} />
+            <PostFooter post={dataPost} users={dataUsers} userCurrent={dataUserCurrent} />
             <View style={{ marginLeft: 14 }}>
-              <Likes post={post} users={users} />
+              <Likes post={dataPost} users={dataUsers} likes={countLike} />
             </View>
           </View>
           <View style={{ marginLeft: 14 }}>
-            <Caption post={post} users={users} />
+            <Caption post={dataPost} users={dataUsers} />
           </View>
         </View>)}
       {fileType == "IMAGE" && (
-        <View>
-          <PostHeader post={post} users={users} userCurrent={userCurrent} />
-          <PostImage post={post} users={users} />
+        <View style={{marginBottom: 5}}>
+          <PostHeader post={dataPost} users={dataUsers} userCurrent={dataUserCurrent} />
+          <PostImage post={dataPost} users={dataUsers} />
           <View>
-            <PostFooter post={post} users={users} userCurrent={userCurrent} />
+            <PostFooter post={dataPost} users={dataUsers} userCurrent={dataUserCurrent}  />
             <View style={{ marginLeft: 14 }}>
-              <Likes post={post} users={users} />
+              <Likes post={dataPost} users={dataUsers}  likes={countLike} />
             </View>
           </View>
           <View style={{ marginLeft: 14 }}>
-            <Caption post={post} users={users} />
+            <Caption post={dataPost} users={dataUsers} />
           </View>
         </View>)}
+      {fileType == 'Null' && (
+      <View style={{marginBottom: 5}}>
+        <PostHeader post={dataPost} users={dataUsers} userCurrent={dataUserCurrent} />
+        <View style={{ marginLeft: 14 }}>
+          <Caption post={dataPost} users={dataUsers} />
+        </View>
+        <View>
+          <PostFooter post={dataPost} users={dataUsers} userCurrent={dataUserCurrent} />
+          <View style={{ marginLeft: 14 }}>
+            <Likes post={dataPost} users={dataUsers} likes={countLike} />
+          </View>
+        </View>
+      </View>)}
     </View>
   );
 });
 
 
-const Likes = ({ post, users }) => {
+const Likes = ({ post, users, likes }) => {
   const [isCommentModalVisible, setCommentModalVisible] = useState(false);
 
-  const handlePress = (action) => {
-    console.log(`${action} pressed!`);
-    if (action === "Comment") {
-      setCommentModalVisible(true);
-    }
+  const handlePress = () => {
+    setCommentModalVisible(true);
   };
 
   const closeCommentModal = () => {
@@ -104,11 +177,9 @@ const Likes = ({ post, users }) => {
   return (
     <TouchableOpacity
       style={[headerPostStyles.ItemFooterContainer]}
-      onPress={() => handlePress("Comment")}
+      onPress={() => handlePress()}
     >
-      <Text style={headerPostStyles.likes}>
-        {post.interaction.length} likes
-      </Text>
+      <Text style={headerPostStyles.likes}>{likes} likes</Text>
 
       <Modal
         isVisible={isCommentModalVisible}
@@ -125,11 +196,16 @@ const Likes = ({ post, users }) => {
 };
 
 const ItemLike = ({ post, users }) => {
-  const [isFriendAdded, setFriendAdded] = useState(false);
+  const navigation = useNavigation();
+  const [dataPost, setDataPost] = useState(post);
+  const [dataUsers, setDataUsers] = useState(users);
 
-  const handleAddFriendPress = () => {
-    setFriendAdded(!isFriendAdded);
-    // Perform other actions when the button is pressed
+  const handlePressAvatar = async (id) => {
+    const keys = await getAllIdUserLocal();
+    const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+    const receivedData = { ...dataUserLocal };
+    receivedData.id = id;
+    navigation.replace("Profile", { data: receivedData });
   };
 
   const renderItem = ({ item }) => (
@@ -143,8 +219,10 @@ const ItemLike = ({ post, users }) => {
       }}
     >
       <View>
-        {users[item.userId] && (
-          <TouchableOpacity>
+        {dataUsers[item.userId] && (
+          <TouchableOpacity
+            onPress={async () => await handlePressAvatar(item.userId)}
+          >
             <Image
               style={{
                 height: 45,
@@ -153,46 +231,28 @@ const ItemLike = ({ post, users }) => {
                 borderWidth: 0.3,
                 backgroundColor: "black",
               }}
-              source={{ uri: users[item.userId].detail.avatarUrl }}
+              source={{ uri: dataUsers[item.userId].detail.avatarUrl }}
             />
           </TouchableOpacity>
         )}
 
       </View>
       <View style={{ flex: 0.9 }}>
-        {users[item.userId] && (
-          <Text style={{ fontWeight: "700" }}>{users[item.userId].detail.name}</Text>
+        {dataUsers[item.userId] && (
+          <Text style={{ fontWeight: "700" }}>{dataUsers[item.userId].detail.name}</Text>
         )}
 
-        {users[item.userId] && users[item.userId].detail.nickName && (
-          <Text style={{ color: "#A9A9A9" }}>{users[item.userId].detail.nickName}</Text>
+        {dataUsers[item.userId] && dataUsers[item.userId].detail.nickName && (
+          <Text style={{ color: "#A9A9A9" }}>{dataUsers[item.userId].detail.nickName}</Text>
         )}
       </View>
-      <TouchableOpacity
-        style={[
-          profileStyle.editContainer,
-          isFriendAdded
-            ? { backgroundColor: "#1E90FF" }
-            : { backgroundColor: "lightgrey" },
-          { marginHorizontal: 12 },
-        ]}
-        onPress={handleAddFriendPress}
-      >
-        <Text
-          style={[
-            profileStyle.textEdit,
-            isFriendAdded ? { color: "white" } : null,
-          ]}
-        >
-          {isFriendAdded ? "   Added     " : "Add Friend"}
-        </Text>
-      </TouchableOpacity>
+      <Image style={{width: 30, height: 30}} source={require("../../../assets/dummyicon/heart_fill.png")}/>
     </View>
   );
 
   return (
     <FlatList
-      data={post.interaction}
+      data={dataPost.interaction}
       renderItem={renderItem}
       keyExtractor={(item) => item.id.toString()}
     />
@@ -217,7 +277,7 @@ function capitalizeFirstLetter(str) {
 const Caption = ({ post, users }) => {
   return (
     <View style={[headerPostStyles.ItemFooterContainer]}>
-      {users[post.ownerUserId] && (
+      {users[post.ownerUserId] && post.fileUrl.length != 0 && (
         <Text style={{ fontWeight: "600" }}>{users[post.ownerUserId].detail.name}</Text>
       )}
       <Text style={headerPostStyles.caption}> {post.content}</Text>

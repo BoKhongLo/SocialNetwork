@@ -5,11 +5,13 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import styles from "../../styles/styles";
 import ToastManager from 'toastify-react-native'
 import { Toast } from 'toastify-react-native'
+import { CreateOtpCodeAsync } from "../../util";
 
 const FillEmail = () => {
   const insets = useSafeAreaInsets();
   const route = useRoute();
   const navigation = useNavigation();
+  const receivedData = route.params?.data;
   const [email, setEmail] = useState("");
 
   const nextStep = async () => {
@@ -19,7 +21,23 @@ const FillEmail = () => {
       Toast.error("This is a not email!");
       return;
     };
-    navigation.navigate('fillPass', {data: {email: email}});
+    if (!receivedData) {
+      return;
+    }
+    const data = { ...receivedData }
+    data.email = email;
+    navigation.replace('verify', {data: data});
+    return;
+    const dataRe = await CreateOtpCodeAsync(email, "SignUp")
+    if ("errors" in dataRe) {
+      Toast.error(dataRe.errors[0].message);
+      return;
+    }
+    if (dataRe.isRequest == false) {
+      Toast.error("Request is not allowed!");
+      return;
+    }
+    navigation.navigate('verify', {data: data});
   }
 
   return (
@@ -37,7 +55,7 @@ const FillEmail = () => {
         style={{
           flexDirection: "row",
           justifyContent: "flex-start",
-          padding: 5,
+          // padding: 5,
           alignItems: "center",
         }}
       >
@@ -47,8 +65,8 @@ const FillEmail = () => {
             source={require("../../../assets/dummyicon/left_line_64.png")}
           />
         </TouchableOpacity>
-        <Text style={{ fontSize: 20, fontWeight: "500", marginBottom: 10 }}>
-          Login
+        <Text style={{ fontSize: 20, fontWeight: "500", marginBottom: 2 }}>
+          {receivedData.type === "SignUp" ? "Sign Up" : receivedData.type === "ForgotPassword" && "Forgot Password"}
         </Text>
       </View>
       <Text
@@ -65,10 +83,10 @@ const FillEmail = () => {
         <View style={styles.inputField}>
           <TextInput
             placeholderTextColor="#444"
-            placeholder="Email"
-            autoCapitalize="none"
-            keyboardType="email-address"
+            placeholder="example@gmail.com"
             textContentType="emailAddress"
+            keyboardType="email-address"
+            autoCapitalize="none"
             autoFocus={true}
             value={email}
             onChangeText={(text) => setEmail(text)}

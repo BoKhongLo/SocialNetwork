@@ -122,7 +122,9 @@ const PostHeader = ({
                 source={{ uri: users[post.ownerUserId].detail.avatarUrl }}
               />
             ) : (
-              <Image style={headerPostStyles.avatar} />
+              <Image style={headerPostStyles.avatar} 
+                source={require("../../../../assets/img/avt.png")}
+               />
             )}
           </TouchableHighlight>
         </LinearGradient>
@@ -134,12 +136,12 @@ const PostHeader = ({
           </View>
         )}
         {post.ownerUserId === userCurrent.id && (
-          <TouchableOpacity
-            style={{ justifyContent: "center" }}
-            onPress={toggleModal}
-          >
-            <MaterialCommunityIcons name="dots-horizontal" size={25} />
-          </TouchableOpacity>
+          <View>
+            <TouchableOpacity style={{ paddingHorizontal: 20,}} onPress={toggleModal}>
+              {/* <MaterialCommunityIcons style={{color: "black", borderColor: "white", borderWidth: 2 }} name="dots-horizontal" size={25} /> */}
+              <Image style={{width: 40, height: 20}} source={require("../../../../assets/dummyicon/more_1_line.png")}/>
+            </TouchableOpacity>
+          </View>
         )}
       </View>
 

@@ -31,6 +31,13 @@ const SearchScreen = () => {
     navigation.replace("Profile", { data: receivedData });
   };
 
+  function removeDuplicates(array, key) {
+    return array.filter((item, index, self) =>
+        index === self.findIndex((t) => (
+            t[key] === item[key]
+        ))
+    );
+  }
   const handleSearch = async (content) => {
     const keys = await getAllIdUserLocal();
     const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
@@ -38,14 +45,20 @@ const SearchScreen = () => {
       searchText,
       dataUserLocal.accessToken
     );
+    
+    dataRequest = removeDuplicates(dataRequest, 'id');
+    
     if ("errors" in dataRequest) {
       const dataUpdate = await updateAccessTokenAsync(
         dataUserLocal.id,
         dataUserLocal.refreshToken
       );
+      
+      // Gọi lại hàm findFriendAsync với accessToken mới và lọc phần tử trùng
       dataRequest = await findFriendAsync(content, dataUpdate.accessToken);
+      dataRequest = removeDuplicates(dataRequest, 'id');
     }
-
+    console.log(dataRequest);
     setDataSearch(dataRequest);
   };
   const renderItem = ({ item }) => (

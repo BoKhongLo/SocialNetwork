@@ -8,11 +8,14 @@ import {
     RoomchatDto,
     PostDto,
     InteractDto,
-    BookmarksDto
+    BookmarksDto,
+    ForgetPasswordDto,
+    PaymentDto
 } from './dto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from "jwt-decode";
 import "core-js/stable/atob";
+
 
 class JwtPayload {
     id: string;
@@ -120,17 +123,148 @@ export async function LoginAsync(dto: LoginDto) {
 }
 
 
+export async function CreateOtpCodeAsync(email: string, type: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const SIGNUP_MUTATION = `
+            mutation CreateOtpCode($email: String!, $type: String!) {
+                createOtpCode(createOtp: { 
+                        email: $email
+                        type: $type
+                    }) {
+                    isRequest
+                }
+            }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: SIGNUP_MUTATION,
+                variables: {
+                    email: email,
+                    type: type,
+                },
+            },
+            { headers: headers }
+        );
+
+        if ("errors" in response.data) return response.data;
+        return response.data.data.createOtpCode
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+export async function ValidateOtpCodeAsync(email: string, otpCode: string, type: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const SIGNUP_MUTATION = `
+            mutation ValidateOtpCode ($email: String!, $otpCode: String, $type: String!){
+                validateOtpCode(validateOtp: { 
+                    email: $email
+                    otpCode: $otpCode
+                    type: $type
+                }) {
+                    isRequest
+                    otpId
+                }
+            }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: SIGNUP_MUTATION,
+                variables: {
+                    email: email,
+                    otpCode:otpCode,
+                    type: type
+                },
+            },
+            { headers: headers }
+        );
+
+        if ("errors" in response.data) return response.data;
+        return response.data.data.validateOtpCode
+
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+export async function forgetPasswordValidate(dto: ForgetPasswordDto) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const SIGNUP_MUTATION = `
+            query ForgetPasswordValidate ($email: String!, $otpCode: String!, $newPassword: String!, $validatePassword: String!) {
+                forgetPasswordValidate(
+                    forgetPassword: {
+                        email: $email
+                        otpId: $otpCode
+                        newPassword: $newPassword
+                        validatePassword: $validatePassword
+                    }
+                ) {
+                    id
+                    email
+                    role
+                    isOnline
+                    friends
+                    bookMarks
+                    created_at
+                    updated_at
+                }
+            }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: SIGNUP_MUTATION,
+                variables: {
+                    email: dto.email,
+                    otpId: dto.otpId,
+                    newPassword: dto.newPassword,
+                    validatePassword: dto.validatePassword,
+                },
+            },
+            { headers: headers }
+        );
+
+        if ("errors" in response.data) return response.data;
+        return response.data.data.forgetPasswordValidate
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
 export async function SignupAsync(dto: SignUpDto) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
     const SIGNUP_MUTATION = `
-            mutation SignUp($email: String!, $password: String!, $name: String!, $birthday: DateTime, $phoneNumber: Float) {
+            mutation SignUp($email: String!, $password: String!, $name: String!, $birthday: DateTime, $phoneNumber: Float, $otpId: String!) {
                 SignUp(userDto: {
                     email: $email
                     password: $password
                     name: $name
                     birthday: $birthday
                     phoneNumber: $phoneNumber
+                    otpId: $otpId
                 }) {
                     access_token
                     refresh_token
@@ -152,7 +286,8 @@ export async function SignupAsync(dto: SignUpDto) {
                     password: dto.password,
                     name: dto.name,
                     birthday: dto.birthday,
-                    phoneNumber: dto.phoneNumber
+                    phoneNumber: dto.phoneNumber,
+                    otpId: dto.otpId
                 },
             },
             { headers: headers }
@@ -179,7 +314,6 @@ export async function SignupAsync(dto: SignUpDto) {
         throw error;
     }
 }
-
 export async function validateUserDataAsync(dto: ValidateUserDto, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
@@ -281,11 +415,11 @@ export async function updateAccessTokenAsync(userId: string, refreshToken: strin
             "refreshToken": response.data.data.Refresh.refresh_token,
             "lastUpdated": new Date().toISOString()
         }
-        const keys = await getAllIdUserLocal();
-        const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
-        saveData.id = dataLocal.id
-        await deleteDataUserLocal(dataLocal.id)
-        await saveDataUserLocal(dataLocal.id, saveData)
+        // const keys = await getAllIdUserLocal();
+        // const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
+        // saveData.id = dataLocal.id
+        // await deleteDataUserLocal(dataLocal.id)
+        // await saveDataUserLocal(dataLocal.id, saveData)
         return saveData;
 
     } catch (error) {
@@ -1018,6 +1152,45 @@ export async function getFriendRequestAsync(userId: string, accessToken: string)
     }
 }
 
+export async function getFriendReceiveAsync(userId: string, accessToken: string): Promise<[]> {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const GET_USER_QUERY = `
+    query GetFriendReceive ($userId: String!) {
+        getFriendReceive(id: $userId) {
+            id
+            createdUserId
+            receiveUserId
+            value
+            isDisplay
+            created_at
+            updated_at
+        }
+    }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: GET_USER_QUERY,
+                variables: {
+                    userId: userId,
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.getFriendReceive
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
 
 export async function createPostAsync(dto: PostDto, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
@@ -1512,7 +1685,6 @@ export async function addCommentPostAsync(dto: ValidateMessagesDto, accessToken:
             },
             { headers: headers }
         );
-        console.log(response.data);
         if ("errors" in response.data) return response.data;
         return response.data.data.addComment
 
@@ -1802,6 +1974,52 @@ export async function removeBookmarkAsync(dto: BookmarksDto, accessToken: string
         console.log(response.data);
         if ("errors" in response.data) return response.data;
         return response.data.data.removeBookMarkUser
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+
+export async function GenerateMomoPaymentAsync(dto: PaymentDto, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const REMOVE_INTERACT_QUERY = `
+        mutation GenerateMomoPayment ($userId: String!, $method: String!, $select: String!) {
+            generateMomoPayment(
+                payment: {
+                    userId: $userId
+                    method: $method
+                    select: $select
+                }
+            ) {
+                status
+                url
+            }
+        }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: REMOVE_INTERACT_QUERY,
+                variables: {
+                    userId: dto.userId,
+                    method: dto.method,
+                    select: dto.select
+                },
+            },
+            { headers: headers }
+        );
+        console.log(response.data);
+        if ("errors" in response.data) return response.data;
+        return response.data.data.generateMomoPayment
 
     } catch (error) {
         console.error('Error:', error);

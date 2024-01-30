@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import { Divider } from "react-native-elements";
 import searchStyles from "../../styles/searchScreen";
@@ -35,14 +35,15 @@ const UserItem = ({ user, onPress }) => {
       >
         <View style={{ flexDirection: "row" }}>
           {user.detail.avatarUrl ? (
-          <Image
-          style={searchStyles.avt}
-            source={{uri: user.detail.avatarUrl}} 
-        />
+            <Image
+              style={searchStyles.avt}
+              source={{ uri: user.detail.avatarUrl }}
+            />
           ) : (
             <Image
-            style={searchStyles.avt}
-          />
+              style={searchStyles.avt}
+              source={require("../../../assets/img/avt.png")}
+            />
           )}
 
           <View style={{ marginLeft: 10 }}>
@@ -52,11 +53,20 @@ const UserItem = ({ user, onPress }) => {
             )}
           </View>
         </View>
-
-        {/* <TouchableOpacity
-        style={searchStyles.addButton} onPress={handleAddFriendPress}>
-          <Text>Add</Text>
-        </TouchableOpacity> */}
+        <View style={{flexDirection:'row'}}>
+          <TouchableOpacity
+            style={searchStyles.addButton}
+            onPress={handleAddFriendPress}
+          >
+            <Text>Deny</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[searchStyles.addButton,{backgroundColor:'#6BB0F5'}]}
+            onPress={handleAddFriendPress}
+          >
+            <Text style={{color:'white'}}>Accept</Text>
+          </TouchableOpacity>
+        </View>
       </View>
       <Divider orientation="horizontal" />
     </TouchableOpacity>

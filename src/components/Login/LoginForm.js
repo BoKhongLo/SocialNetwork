@@ -21,7 +21,7 @@ const LoginForm = () => {
   const navigation = useNavigation();
 
   const handleForgotPassword = () => {
-    navigation.navigate('forgotPass')
+    navigation.replace('fillEmail', {data: {type: "ForgotPassword"}})
   };
 
   const handleLogin = async () => {
@@ -48,7 +48,7 @@ const LoginForm = () => {
   };
 
   const handleSignUp = () => {
-    navigation.navigate("fillEmail");
+    navigation.replace("fillEmail", {data: {type: "SignUp"}});
   };
 
   return (
@@ -64,7 +64,7 @@ const LoginForm = () => {
             autoCapitalize="none"
             keyboardType="email-address"
             textContentType="emailAddress"
-            autoFocus={true}
+            // autoFocus={true}
             value={email}
             onChangeText={(text) => setEmail(text)}
           />

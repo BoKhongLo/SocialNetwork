@@ -21,24 +21,15 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Toast } from 'toastify-react-native'
 
-const SignupForm = () => {
-  const route = useRoute();
-  const receivedData = route.params?.data;
+const SignupForm = ({receivedData}) => {
   const [name, setName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [date, setDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
   const [dateOfBirth, setDateOfBirth] = useState("");
-  const insets = useSafeAreaInsets();
   const navigation = useNavigation();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (receivedData == null) {
-        navigation.navigate('Login');
-      }};
-    fetchData();
-  }, []);
+
 
   const toggleDatePicker = () => {
     setShowPicker(!showPicker);
@@ -84,12 +75,15 @@ const SignupForm = () => {
     dto.name = name;
     dto.phoneNumber = parseFloat(phoneNumber.replace(/\D/g, ''));
     dto.birthday = dateOfBirth;
-
+    dto.otpId = receivedData.otpId;
     try {
       const dataSignUp = await SignupAsync(dto);
-      if (dataSignUp != null && dataSignUp != undefined) {
-        navigation.navigate("main", { data: dataSignUp });
+      if ("errors" in dataSignUp) {
+        console.log(dataSignUp.errors[0]);
+        console.log(dto)
+        return;
       }
+      navigation.navigate("main", { data: dataSignUp });
     } catch (err) {
       console.log(err);
     }

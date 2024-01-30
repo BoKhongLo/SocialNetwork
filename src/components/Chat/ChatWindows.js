@@ -43,6 +43,7 @@ const ChatWindows = ({ user }) => {
     member: [],
     memberOut: [],
     title: "",
+    isSingle: false,
     ownerUserId: "",
     currentUserId: "",
     data: [],
@@ -56,7 +57,7 @@ const ChatWindows = ({ user }) => {
       if (receivedData == null) {
         navigation.navigate("main");
       }
-
+      console.log(receivedData);
       const keys = await getAllIdUserLocal();
       const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
       setUserCurrentData({ ...dataUserLocal });
@@ -100,6 +101,7 @@ const ChatWindows = ({ user }) => {
       newRoomchat.memberOut = dataRoomchatAsync.memberOut;
       newRoomchat.id = dataRoomchatAsync.id;
       newRoomchat.data = dataRoomchatAsync.data;
+      newRoomchat.isSingle = dataRoomchatAsync.isSingle;
       if (dataRoomchatAsync.ownerUserId)
         newRoomchat.ownerUserId = dataRoomchatAsync.ownerUserId;
       if (dataRoomchatAsync.description)
@@ -121,7 +123,7 @@ const ChatWindows = ({ user }) => {
         backgroundColor: "#FFFFFF",
       }}
     >
-      <Header userProfile={receivedData} userData={userCurrentData} />
+      <Header roomProfile={receivedData} userData={userCurrentData} />
       <Divider width={1} orientation="vertical" />
       <Content roomProfile={dataRoomchat} />
       <View>
@@ -131,7 +133,7 @@ const ChatWindows = ({ user }) => {
   );
 };
 //justificontent:'space-between'
-const Header = ({ userProfile, userData }) => {
+const Header = ({ roomProfile, userData }) => {
   const navigation = useNavigation();
   return (
     <View
@@ -152,10 +154,17 @@ const Header = ({ userProfile, userData }) => {
         />
       </TouchableOpacity>
       <Text style={{ fontSize: 20, fontWeight: "500" }}>
-        {userProfile.title}
+        {roomProfile.title}
       </Text>
       <TouchableOpacity
-        onPress={() => navigation.replace("settingGroupChat")}
+        onPress={() => {
+          if (roomProfile.isSingle === true) {
+            navigation.replace("settingChat", {data: roomProfile})
+          }
+          else {
+            navigation.replace("settingGroupChat", {data: roomProfile})
+          }
+        }}
         style={{ padding: 10 }}
       >
         <Image
