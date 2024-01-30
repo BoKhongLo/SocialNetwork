@@ -39,7 +39,7 @@ import {
   BookmarksDto,
 } from "../../../util/dto";
 import { TouchableHighlight } from "react-native-gesture-handler";
-
+import { useNavigation } from "@react-navigation/native";
 const PostFooter = ({
   post,
   onPressComment,
@@ -284,6 +284,7 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
   const [dataUserCurrent, setDataUsersCurrent] = useState(userCurrent);
   const [refreshing, setRefreshing] = useState(false);
   const flatListRef = useRef(null);
+  const navigation = useNavigation();
 
   useEffect(() => {
     const socketConnect = async () => {
@@ -298,61 +299,80 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
       console.log("Connect socket");
 
       newSocket.on("addComment", async (comments) => {
-        if (comments.roomId !== dataPost.id) return;
         setRefreshing(true);
         if (!(comments.userId in dataUsers)) {
           dataUpdate = await updateAccessTokenAsync(
             dataUserLocal.id,
             dataUserLocal.refreshToken
-          );
+            );
           let dataReturn = await getUserDataLiteAsync(comments.userId, dataUpdate.accessToken);
-          let newDataUser = {...dataUsers};
-          newDataUser[dataReturn.id] = dataReturn
-          setDataUsers(newDataUser);
+          setDataUsers( (preData) => {
+            console.log(preData)
+            if (!preData) return preData;
+            let newDataUser = preData;
+            newDataUser[dataReturn.id] = dataReturn
+            return newDataUser;
+          });
         }
-        if (dataPost.comment.findIndex(comment => comment.id === comments.id) !== -1) return;
-        let newDataPost = dataPost;
-        newDataPost.comment.push(comments);
-        setDataPost(newDataPost);
+        setDataPost((preData) => {
+          if (!preData) return preData;
+          if (comments.roomId !== preData.id) return preData;
+          if (preData.comment.findIndex(comment => comment.id === comments.id) !== -1) return preData;
+          let newDataPost = preData;
+          newDataPost.comment.push(comments);
+          return newDataPost;
+        });
         setRefreshing(false);
       });
       
       newSocket.on("addInteractionComment", async (comments) => {
-        if (comments.roomId !== dataPost.id) return;
         setRefreshing(true);
         if (!(comments.userId in dataUsers)) {
           dataUpdate = await updateAccessTokenAsync(
             dataUserLocal.id,
             dataUserLocal.refreshToken
-          );
+            );
           let dataReturn = await getUserDataLiteAsync(comments.userId, dataUpdate.accessToken);
-          let newDataUser = {...dataUsers};
-          newDataUser[dataReturn.id] = dataReturn
-          setDataUsers(newDataUser);
+          setDataUsers( (preData) => {
+            console.log(preData)
+            if (!preData) return preData;
+            let newDataUser = preData;
+            newDataUser[dataReturn.id] = dataReturn
+            return newDataUser;
+          });
         }
-        const existingComment = dataPost.comment.findIndex(item => item.id === comments.id);
-        if (existingComment == -1) return;
-        let newDataPost = dataPost;
-        newDataPost.comment[existingComment] = comments
-        setDataPost(newDataPost);
+     
+        setDataPost((preData) => {
+          if (!preData) return preData;
+          if (comments.roomId !== preData.id) return preData;
+          const existingComment = preData.comment.findIndex(item => item.id === comments.id);
+          if (existingComment == -1) return preData;
+          let newDataPost = preData;
+          newDataPost.comment[existingComment] = comments;
+          newDataPost.comment[existingComment].interaction = newDataPost.comment[existingComment].interaction.filter(item => item.isDisplay === true)
+          return newDataPost;
+        });
         setRefreshing(false);
       });
       
       newSocket.on("removeInteractionComment", (comment) => {
-        if (comment.postId !== dataPost.id) return;
         setRefreshing(true);
-        const indexComment = dataPost.comment.findIndex(item => item.id === comment.commentId);
-        if (indexComment == -1) return;
-        const indexInter = dataPost.comment[indexComment].interaction.findIndex(item => item.id === comment.interactionId);
-        if (indexInter == -1) return;
-        let newDataPost = dataPost;
-        newDataPost.comment[indexComment].interaction.splice(indexInter, 1);
-        setDataPost(newDataPost);
+        setDataPost((preData) => {
+          if (!preData) return preData;
+          if (comment.postId !== preData.id) return preData;
+          const indexComment = preData.comment.findIndex(item => item.id === comment.commentId);
+          if (indexComment == -1) return preData;
+          const indexInter = preData.comment[indexComment].interaction.findIndex(item => item.id === comment.interactionId);
+          if (indexInter == -1) return preData;
+          let newDataPost = preData;
+          newDataPost.comment[indexComment].interaction = newDataPost.comment[indexComment].interaction.filter(item => item.id !== comment.interactionId)
+          return newDataPost;
+        });
         setRefreshing(false);
       });
     }
     socketConnect()
-  }, [dataPost, dataUsers, dataUserCurrent])
+  }, [dataUsers])
 
   const handleLongPress = (comment) => {
     setSelectedComment(comment);
@@ -374,7 +394,14 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
     validateData();
   }, [dataPost, dataUsers, userCurrent]);
 
-
+  const handlePressedAvatar = async (userId) => {
+    if (!userId) return;
+    const keys = await getAllIdUserLocal();
+    const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+    const receivedData = { ...dataUserLocal };
+    receivedData.id = userId;
+    navigation.replace("Profile", { data: receivedData });
+  }
   const handleLikePress = async (comment) => {
     if (!comment) return;
     const keys = await getAllIdUserLocal();
@@ -441,7 +468,7 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
         }}
       >
         <View>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={async () => await handlePressedAvatar(item.userId)}>
             {dataUsers[item.userId] && dataUsers[item.userId].detail.avatarUrl ? (
               <Image
                 style={{

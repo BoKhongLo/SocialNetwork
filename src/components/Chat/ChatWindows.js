@@ -57,14 +57,16 @@ const ChatWindows = ({ user }) => {
       if (receivedData == null) {
         navigation.navigate("main");
       }
-      console.log(receivedData);
+
       const keys = await getAllIdUserLocal();
       const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
       setUserCurrentData({ ...dataUserLocal });
-      const dataRoomchatAsync = await getRoomchatAsync(
+
+      let dataRoomchatAsync = await getRoomchatAsync(
         receivedData.id,
         dataUserLocal.accessToken
       );
+
       if ("errors" in dataRoomchatAsync) {
         const dataUpdate = await updateAccessTokenAsync(
           dataUserLocal.id,
@@ -76,7 +78,10 @@ const ChatWindows = ({ user }) => {
           dataUpdate.accessToken
         );
       }
-
+      console.log(dataRoomchatAsync);
+      if ("errors" in dataRoomchatAsync) {
+        return;
+      }
       const newRoomchat = { ...dataRoomchat };
       for (let member of dataRoomchatAsync.member) {
         let dataUserAsync = await getUserDataAsync(

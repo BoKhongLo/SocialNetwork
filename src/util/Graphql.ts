@@ -584,20 +584,28 @@ export async function getRoomchatAsync(id: string, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
     const GET_ROOMCHAT_QUERY = `
-    query GetRomchatById ($roomchatId: String!) {
+    query GetRomchatById ($roomchatId: String!){
         getRomchatById(roomchatId: $roomchatId) {
             id
+            title
             isDisplay
+            isSingle
+            isBlock
             ownerUserId
             description
             imgDisplay
-            isSingle
             member
             created_at
             updated_at
+            memberOut {
+                memberId
+                messageCount
+                created_at
+                updated_at
+            }
             data {
                 id
-                userId
+                roomId
                 isDisplay
                 content
                 fileUrl
@@ -612,13 +620,6 @@ export async function getRoomchatAsync(id: string, accessToken: string) {
                     updated_at
                 }
             }
-            memberOut {
-                memberId
-                messageCount
-                created_at
-                updated_at
-            }
-            title
         }
     }`;
 

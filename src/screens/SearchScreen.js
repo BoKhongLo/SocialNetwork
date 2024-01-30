@@ -46,18 +46,17 @@ const SearchScreen = () => {
       dataUserLocal.accessToken
     );
     
-    dataRequest = removeDuplicates(dataRequest, 'id');
-    
+
     if ("errors" in dataRequest) {
       const dataUpdate = await updateAccessTokenAsync(
         dataUserLocal.id,
         dataUserLocal.refreshToken
       );
-      
-      // Gọi lại hàm findFriendAsync với accessToken mới và lọc phần tử trùng
       dataRequest = await findFriendAsync(content, dataUpdate.accessToken);
       dataRequest = removeDuplicates(dataRequest, 'id');
     }
+    dataRequest = removeDuplicates(dataRequest, 'id');
+    
     console.log(dataRequest);
     setDataSearch(dataRequest);
   };

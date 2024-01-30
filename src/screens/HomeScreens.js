@@ -153,7 +153,9 @@ const HomeScreen = () => {
     >
       <Header receivedData={receivedData} />
       <View style={{ flex: 1 }}>
+
         <VirtualizedView style={{ flex: 1 }}>
+          <Stories post={dataStory} users={dataUser} />
           {dataPost.map((item, index) => (
             <Post
               key={`${item.id}`}
