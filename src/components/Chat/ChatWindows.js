@@ -23,6 +23,7 @@ import {
   getSocketIO,
   uploadFile,
   removeMessageAsync,
+  saveDataUserLocal
 } from "../../util";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -71,13 +72,13 @@ const ChatWindows = ({ user }) => {
           dataUserLocal.id,
           dataUserLocal.refreshToken
         );
+        await saveDataUserLocal(dataUpdate.id, dataUpdate)
         dataUserLocal.accessToken = dataUpdate.accessToken;
         dataRoomchatAsync = await getRoomchatAsync(
           receivedData.id,
           dataUpdate.accessToken
         );
       }
-      console.log(dataRoomchatAsync);
       if ("errors" in dataRoomchatAsync) {
         return;
       }

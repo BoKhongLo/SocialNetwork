@@ -151,7 +151,15 @@ const ProfileUser = () => {
 
     fetchData();
   }, []);
+  
+  const handleRemovePost = (id) => {
+    setDataPost((prevPosts) => prevPosts.filter(item => item.id !== id));
+  }
 
+  const handleAddPost = (newPost) => {
+    setDataPost((prevPosts) => [...prevPosts, newPost]);
+  }
+  
   
   const VirtualizedView = (props) => {
     return (
@@ -197,6 +205,7 @@ const ProfileUser = () => {
               post={item}
               users={dataUser}
               userCurrent={dataUserCurrent}
+              onRemovePost={handleRemovePost}
               style={{ flex: 1 }} />
           ))}
         </VirtualizedView>

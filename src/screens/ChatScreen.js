@@ -14,6 +14,7 @@ import {
   getAllRoomchatAsync,
   updateAccessTokenAsync,
   getSocketIO,
+  saveDataUserLocal
 } from "../util";
 const ChatScreen = ({}) => {
   const route = useRoute();
@@ -53,6 +54,7 @@ const ChatScreen = ({}) => {
           dataUserLocal.id,
           dataUserLocal.refreshToken
         );
+        await saveDataUserLocal(dataUpdate.id, dataUpdate)
         dataUserLocal.accessToken = dataUpdate.accessToken;
         dataUserAsync = await getUserDataAsync(
           dataUpdate.id,

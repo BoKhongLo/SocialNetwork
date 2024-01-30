@@ -34,6 +34,8 @@ import {
   removeInteractPostAsync,
   getSocketIO,
   getUserDataLiteAsync,
+  getPostAsync,
+  saveDataUserLocal
 } from "../../../util";
 import {
   InteractDto,
@@ -42,6 +44,7 @@ import {
 } from "../../../util/dto";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
+import { isEmptyObj } from "native-base";
 const PostFooter = ({
   post,
   onPressComment,
@@ -290,6 +293,27 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
   const navigation = useNavigation();
 
   useEffect(() => {
+    const validateData = async () => {
+      const keys = await getAllIdUserLocal();
+      const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+      let dataRe = await getPostAsync(post.id, dataUserLocal.accessToken)
+      if ("errors" in dataRe) {
+        const dataUpdate = await updateAccessTokenAsync(
+          dataUserLocal.id,
+          dataUserLocal.refreshToken
+        );
+        await saveDataUserLocal(dataUpdate.id, dataUpdate)
+        dataRe = await getPostAsync(post.id, dataUserLocal.accessToken)
+      }
+
+      setDataPost(dataRe);
+    };
+
+    validateData();
+  }, []);
+
+
+  useEffect(() => {
     const socketConnect = async () => {
       const keys = await getAllIdUserLocal();
       const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
@@ -394,18 +418,6 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
   const closeModal = () => {
     setIsModalVisible(false);
   };
-  useEffect(() => {
-    const validateData = async () => {
-      for (let i = 0; i < dataPost.comment.length; i++) {
-        if (!dataPost.comment[i].interaction) continue;
-        dataPost.comment[i].interaction = dataPost.comment[
-          i
-        ].interaction.filter((item) => item.isDisplay !== false);
-      }
-    };
-
-    validateData();
-  }, [dataPost, dataUsers, userCurrent]);
 
   const handlePressedAvatar = async (userId) => {
     if (!userId) return;
@@ -501,7 +513,7 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
   };
   
   const Item = useCallback(({ item }) => {
-    
+      if (item.isDisplay == false) return;
       return (
         <TouchableOpacity
           style={{
@@ -516,7 +528,7 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
         >
           <View>
             <TouchableOpacity
-            onPress={async () => await handlePressedAvatar()}
+            onPress={async () => await handlePressedAvatar(item.userId)}
             >
               {dataUsers[item.userId] &&
               dataUsers[item.userId].detail.avatarUrl ? (

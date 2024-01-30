@@ -23,7 +23,8 @@ import {
   getPostDailyAsync,
   getUserDataLiteAsync,
   getSocketIO,
-  getUserDataAsync
+  getUserDataAsync,
+  saveDataUserLocal
 } from "../util";
 import { registerIndieID, unregisterIndieDevice } from 'native-notify';
 import NewStory from './NewStory';
@@ -64,6 +65,7 @@ const HomeScreen = () => {
           dataUserLocal.id,
           dataUserLocal.refreshToken
         );
+        await saveDataUserLocal(dataUpdate.id, dataUpdate)
         dataUserLocal.accessToken = dataUpdate.accessToken;
         dataReturn = await getPostDailyAsync(
           dataUserLocal.id,

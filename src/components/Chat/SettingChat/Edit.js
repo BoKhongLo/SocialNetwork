@@ -10,8 +10,19 @@ import {
 } from "react-native";
 import settingChat from "../../../styles/ChatStyles/settingStyle";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import {
+  getAllIdUserLocal,
+  getDataUserLocal,
+  updateAccessTokenAsync,
+  getUserDataAsync,
+  getSocketIO,
+  getUserDataLiteAsync,
+} from "../../../util";
+import {
+  InteractDto,
+} from "../../../util/dto";
 
-const Edit = () => {
+const Edit = ({receivedData}) => {
   const navigation = useNavigation();
   
   const [isEditAvatarModalVisible, setEditAvatarModalVisible] = useState(false);
@@ -42,6 +53,20 @@ const Edit = () => {
     setNicknameModalVisible(false);
   };
 
+  const handlePressedProfile = async () => {
+    const keys = await getAllIdUserLocal();
+    const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+    const returnData = { ...dataUserLocal };
+    if (returnData.id == receivedData.member[0]) {
+      returnData.id = receivedData.member[1];
+    }
+    else {
+      returnData.id = receivedData.member[0];
+    }
+
+    navigation.replace("Profile", { data: returnData });
+  }
+
   return (
     <View style={settingChat.editContainer}>
       <View>
@@ -49,7 +74,7 @@ const Edit = () => {
         <View>
           <TouchableOpacity
             style={settingChat.editItemContainer}
-            onPress={() => null}
+            onPress={async () => await handlePressedProfile()}
           >
             <Text style={settingChat.editItem}>View Profile</Text>
           </TouchableOpacity>

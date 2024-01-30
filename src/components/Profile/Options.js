@@ -15,6 +15,7 @@ import {
   getFriendRequestAsync,
   getFriendReceiveAsync,
   createRoomchatAsync,
+  saveDataUserLocal,
 } from "../../util";
 import { RoomchatDto } from "../../util/dto";
 import styles from "./../../styles/styles";
@@ -48,6 +49,7 @@ const Options = ({ data }) => {
           dataUserLocal.id,
           dataUserLocal.refreshToken
         );
+        await saveDataUserLocal(dataUpdate.id, dataUpdate)
         dataUserAsync = await getUserDataAsync(
           dataUpdate.id,
           dataUpdate.accessToken
@@ -61,21 +63,19 @@ const Options = ({ data }) => {
           dataUserLocal.accessToken
         );
       }
-
       if ("errors" in dataUserAsync) {
         navigation.navigate("main");
       }
-
       if (dataUserAsync.friends.includes(data.id)) {
         setIsFriend("Friend");
         setFriendAdded(true);
       } 
-      else if (dataReceive.findIndex(item => item.createdUserId === data.id) !== -1) {
+      else if (dataReceive && dataReceive.findIndex(item => item.createdUserId === data.id) !== -1) {
         setIsFriend("Accept");
         setPending(true);
         setFriendAdded(true);
       }
-      else if (dataRequest.findIndex(item => item.receiveUserId === data.id) !== -1) {
+      else if (dataRequest && dataRequest.findIndex(item => item.receiveUserId === data.id) !== -1) {
         setIsFriend("Cancel request");
         setPending(false);
         setFriendAdded(true);
