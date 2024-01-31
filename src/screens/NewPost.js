@@ -253,6 +253,7 @@ const ChoseImg = ({ upFile, postData, onUpdateData }) => {
       allowsEditing: true,
       quality: 1,
     });
+    
     if (result.canceled) return;
 
     const keys = await getAllIdUserLocal();
@@ -278,20 +279,25 @@ const ChoseImg = ({ upFile, postData, onUpdateData }) => {
       multiple: true,
     });
 
-    if (result.type !== "success") return
+    if (result.canceled) return;
     const keys = await getAllIdUserLocal();
     const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
-    const dto = new FileUploadDto(dataLocal.id, result.uri, result.name, result.mimeType)
-    let data = await uploadFile(dto, dataLocal.accessToken)
-    if (data == null) {
-      const dataUpdate = await updateAccessTokenAsync(dataLocal.id, dataLocal.refreshToken)
-      data = await uploadFile(dto, dataUpdate.accessToken)
-    }
+    let dataUpdate = await updateAccessTokenAsync(dataLocal.id, dataLocal.refreshToken);
 
-    let newFile = { id: data.id, source: { uri: data.url } }
-    upFile(preFile => [...preFile, newFile])
     let newPostData = { ...postData };
-    newPostData.fileUrl.push(data.url);
+    for (let i = 0; i < result.assets.length; i++) {
+      const dto = new FileUploadDto(dataLocal.id, result.assets[i].uri, result.assets[i].name, result.assets[i].mimeType)
+      let data = await uploadFile(dto, dataUpdate.accessToken)
+      if (data == null) {
+        dataUpdate = await updateAccessTokenAsync(dataLocal.id, dataLocal.refreshToken);
+      }
+      if (data == null) {
+        continue;
+      }
+      let newFile = { id: data.id, source: { uri: data.url } }
+      upFile(preFile => [...preFile, newFile])
+      newPostData.fileUrl.push(data.url);
+    }
     onUpdateData({ fileUrl: newPostData.fileUrl });
   }
 
