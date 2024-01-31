@@ -13,16 +13,82 @@ import {
   getFriendRequestAsync,
   createRoomchatAsync,
 } from "../../util";
-const UserItem = ({ user, onPress }) => {
+const UserItem = ({ user, onPress, userCurrent, friendRequest, friendReceive }) => {
+  const [isUser, setIsUser] = useState(true);
   const [isFriendAdded, setFriendAdded] = useState(false);
-  const [isFriend, setIsFriend] = useState("Added");
+  const [isFriend, setIsFriend] = useState("Cancel request");
   const [isPending, setPending] = useState(false);
 
-  const handleAddFriendPress = () => {
-    // Thực hiện các hành động khi nút được nhấn để thêm bạn bè
-    console.log("Add Friend button pressed");
-    // Gọi hàm hoặc thực hiện logic thêm bạn bè ở đây
+  useEffect(() => {
+    const fetchData = async () => {
+      if (user.id !== userCurrent.id) {
+        setIsUser(false);
+      }
+      if (userCurrent.friends.includes(user.id)) {
+        setIsFriend("Friend");
+        setFriendAdded(true);
+      }
+      else if (friendReceive && friendReceive.findIndex(item => item.createdUserId === user.id) !== -1) {
+        setIsFriend("Accept");
+        setPending(true);
+        setFriendAdded(true);
+      }
+      else if (friendRequest && friendRequest.findIndex(item => item.receiveUserId === user.id) !== -1) {
+        setIsFriend("Cancel request");
+        setPending(false);
+        setFriendAdded(true);
+      }
+    };
+    fetchData();
+  }, [userCurrent, friendRequest, friendReceive]);
+
+  const handleAddFriend = async (friendId) => {
+    const keys = await getAllIdUserLocal();
+    const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+    const dataUpdate = await updateAccessTokenAsync(
+      dataUserLocal.id,
+      dataUserLocal.refreshToken
+    );
+    if (isFriend === "Friend" && isFriendAdded) {
+      await removeFriendAsync(
+        dataUserLocal.id,
+        friendId,
+        dataUpdate.accessToken
+      );
+    } else if (isFriend === "Accept" && isFriendAdded) {
+      await acceptFriendAsync(
+        dataUserLocal.id,
+        friendId,
+        dataUpdate.accessToken
+      );
+      const dto = new RoomchatDto(
+        dataUserLocal.id,
+        [friendId],
+        dataUserLocal.id + friendId,
+        true
+      );
+      await createRoomchatAsync(dto, dataUpdate.accessToken);
+      setIsFriend("Friend");
+      setPending(false);
+      return;
+    } else {
+      await addFriendAsync(dataUserLocal.id, data.id, dataUpdate.accessToken);
+    }
+    setFriendAdded(!isFriendAdded);
   };
+
+  const handleDenyFriend = async (friendId) => {
+    const keys = await getAllIdUserLocal();
+    const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+    const dataUpdate = await updateAccessTokenAsync(
+      dataUserLocal.id,
+      dataUserLocal.refreshToken
+    );
+    await removeFriendAsync(dataUserLocal.id, friendId, dataUpdate.accessToken);
+    setFriendAdded(!isFriendAdded);
+    setPending(false);
+  };
+
   return (
     <TouchableOpacity onPress={async () => await onPress(user)}>
       <View
@@ -53,20 +119,26 @@ const UserItem = ({ user, onPress }) => {
             )}
           </View>
         </View>
-        <View style={{flexDirection:'row'}}>
-          <TouchableOpacity
-            style={searchStyles.addButton}
-            onPress={handleAddFriendPress}
-          >
-            <Text>Deny</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[searchStyles.addButton,{backgroundColor:'#6BB0F5'}]}
-            onPress={handleAddFriendPress}
-          >
-            <Text style={{color:'white'}}>Accept</Text>
-          </TouchableOpacity>
-        </View>
+        {isUser === false && (
+          <View style={{ flexDirection: 'row' }}>
+            {isPending && (
+              <TouchableOpacity
+                style={searchStyles.addButton}
+                onPress={async () => await handleDenyFriend(user.id)}
+              >
+                <Text>Deny</Text>
+              </TouchableOpacity>
+            )}
+
+            <TouchableOpacity
+              style={[searchStyles.addButton, { backgroundColor: '#6BB0F5' }]}
+              onPress={async () => await handleAddFriend(user.id)}
+            >
+              <Text style={{ color: 'white' }}>{isFriendAdded ? isFriend : "Add Friend"}</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
       </View>
       <Divider orientation="horizontal" />
     </TouchableOpacity>

@@ -16,8 +16,8 @@ const SettingChat = () => {
     const fetchData = async () => {
       if (receivedData == null) {
         navigation.navigate('main');
-        console.log(receivedData);
       }
+      console.log(receivedData);
     };
     fetchData();
   }, []);
@@ -36,7 +36,7 @@ const SettingChat = () => {
     >
       <Header receivedData={receivedData}/>
       <Infor receivedData={receivedData}/>
-      <Edit/>
+      <Edit receivedData={receivedData}/>
     </View>
   );
 };

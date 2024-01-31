@@ -15,6 +15,7 @@ import {
   getSocketIO,
   getPostAsync,
   getUserDataAsync,
+  saveDataUserLocal
 } from "../util";
 import Post from "../components/Home/Post";
 const ListPost = () => {
@@ -32,6 +33,14 @@ const ListPost = () => {
     }
   }, [])
 
+  const handleRemovePost = (id) => {
+    setDataPost((prevPosts) => prevPosts.filter(item => item.id !== id));
+  }
+
+  const handleAddPost = (newPost) => {
+    setDataPost((prevPosts) => [...prevPosts, newPost]);
+  }
+  
   useEffect(() => {
     const fetchData = async () => {
       const keys = await getAllIdUserLocal();
@@ -48,6 +57,7 @@ const ListPost = () => {
           dataUserLocal.id,
           dataUserLocal.refreshToken
         );
+        await saveDataUserLocal(dataUpdate.id, dataUpdate)
         dataUserLocal.accessToken = dataUpdate.accessToken;
         dataReturn = await getUserDataAsync(
           dataUserLocal.id,
@@ -123,6 +133,7 @@ const ListPost = () => {
             post={item}
             users={dataUser}
             userCurrent={dataUserCurrent}
+            onRemovePost={handleRemovePost}
             style={{ flex: 1 }} />
         ))}
       </VirtualizedView>

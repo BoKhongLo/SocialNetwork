@@ -10,7 +10,9 @@ import {
     InteractDto,
     BookmarksDto,
     ForgetPasswordDto,
-    PaymentDto
+    PaymentDto,
+    ValidateMemberRoomDto,
+    MemberRoomDto
 } from './dto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from "jwt-decode";
@@ -74,7 +76,7 @@ export async function deleteDataUserLocal(userId: string): Promise<void> {
 export async function LoginAsync(dto: LoginDto) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
-    const LOGIN_QUERY = `
+    const QUERY = `
       query Login($email: String!, $password: String!) {
         Login(userDto: {
           email: $email
@@ -94,7 +96,7 @@ export async function LoginAsync(dto: LoginDto) {
         const response = await axios.post(
             endpoint,
             {
-                query: LOGIN_QUERY,
+                query: QUERY,
                 variables: {
                     email: dto.email,
                     password: dto.password
@@ -126,7 +128,7 @@ export async function LoginAsync(dto: LoginDto) {
 export async function CreateOtpCodeAsync(email: string, type: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
-    const SIGNUP_MUTATION = `
+    const MUTATION = `
             mutation CreateOtpCode($email: String!, $type: String!) {
                 createOtpCode(createOtp: { 
                         email: $email
@@ -144,7 +146,7 @@ export async function CreateOtpCodeAsync(email: string, type: string) {
         const response = await axios.post(
             endpoint,
             {
-                query: SIGNUP_MUTATION,
+                query: MUTATION,
                 variables: {
                     email: email,
                     type: type,
@@ -163,7 +165,7 @@ export async function CreateOtpCodeAsync(email: string, type: string) {
 export async function ValidateOtpCodeAsync(email: string, otpCode: string, type: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
-    const SIGNUP_MUTATION = `
+    const MUTATION = `
             mutation ValidateOtpCode ($email: String!, $otpCode: String, $type: String!){
                 validateOtpCode(validateOtp: { 
                     email: $email
@@ -183,7 +185,7 @@ export async function ValidateOtpCodeAsync(email: string, otpCode: string, type:
         const response = await axios.post(
             endpoint,
             {
-                query: SIGNUP_MUTATION,
+                query: MUTATION,
                 variables: {
                     email: email,
                     otpCode:otpCode,
@@ -205,7 +207,7 @@ export async function ValidateOtpCodeAsync(email: string, otpCode: string, type:
 export async function forgetPasswordValidate(dto: ForgetPasswordDto) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
-    const SIGNUP_MUTATION = `
+    const MUTATION = `
             query ForgetPasswordValidate ($email: String!, $otpCode: String!, $newPassword: String!, $validatePassword: String!) {
                 forgetPasswordValidate(
                     forgetPassword: {
@@ -234,7 +236,7 @@ export async function forgetPasswordValidate(dto: ForgetPasswordDto) {
         const response = await axios.post(
             endpoint,
             {
-                query: SIGNUP_MUTATION,
+                query: MUTATION,
                 variables: {
                     email: dto.email,
                     otpId: dto.otpId,
@@ -256,7 +258,7 @@ export async function forgetPasswordValidate(dto: ForgetPasswordDto) {
 export async function SignupAsync(dto: SignUpDto) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
-    const SIGNUP_MUTATION = `
+    const MUTATION = `
             mutation SignUp($email: String!, $password: String!, $name: String!, $birthday: DateTime, $phoneNumber: Float, $otpId: String!) {
                 SignUp(userDto: {
                     email: $email
@@ -280,7 +282,7 @@ export async function SignupAsync(dto: SignUpDto) {
         const response = await axios.post(
             endpoint,
             {
-                query: SIGNUP_MUTATION,
+                query: MUTATION,
                 variables: {
                     email: dto.email,
                     password: dto.password,
@@ -317,7 +319,7 @@ export async function SignupAsync(dto: SignUpDto) {
 export async function validateUserDataAsync(dto: ValidateUserDto, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
-    const VALIDATE_USER_QUERY = `
+    const QUERY = `
         mutation ValidateUser ($userId: String!, $name: String!, $nickName: String!, $description: String!, $avatarUrl: String, $birthday: DateTime) {
             validateUser(
                 validateUser: {
@@ -356,7 +358,7 @@ export async function validateUserDataAsync(dto: ValidateUserDto, accessToken: s
         const response = await axios.post(
             endpoint,
             {
-                query: VALIDATE_USER_QUERY,
+                query: QUERY,
                 variables: {
                     userId: dto.userId,
                     name: dto.name,
@@ -381,7 +383,7 @@ export async function validateUserDataAsync(dto: ValidateUserDto, accessToken: s
 export async function updateAccessTokenAsync(userId: string, refreshToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
-    const SIGNUP_MUTATION = `
+    const MUTATION = `
         query Refresh ($userId: String!) {
             Refresh(id: $userId) {
                 access_token
@@ -398,7 +400,7 @@ export async function updateAccessTokenAsync(userId: string, refreshToken: strin
         const response = await axios.post(
             endpoint,
             {
-                query: SIGNUP_MUTATION,
+                query: MUTATION,
                 variables: {
                     userId: userId
                 },
@@ -432,7 +434,7 @@ export async function updateAccessTokenAsync(userId: string, refreshToken: strin
 export async function getUserDataAsync(userId: string, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
-    const GET_USER_QUERY = `
+    const QUERY = `
         query GetUser($userId: String!) {
             getUser(id: $userId) {
                 id
@@ -451,10 +453,14 @@ export async function getUserDataAsync(userId: string, accessToken: string) {
                 notification {
                     id
                     type
-                    content
-                    fileUrl
+                    isRead
+                    isDisplay
                     created_at
                     updated_at
+                    content {
+                        roomId
+                        userDtoId
+                    }
                 }
                 friends
                 bookMarks
@@ -471,7 +477,7 @@ export async function getUserDataAsync(userId: string, accessToken: string) {
         const response = await axios.post(
             endpoint,
             {
-                query: GET_USER_QUERY,
+                query: QUERY,
                 variables: {
                     userId: userId
                 },
@@ -490,7 +496,7 @@ export async function getUserDataAsync(userId: string, accessToken: string) {
 export async function getUserDataLiteAsync(userId: string, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
-    const GET_USER_QUERY = `
+    const QUERY = `
         query GetUser($userId: String!) {
             getUser(id: $userId) {
                 id
@@ -514,7 +520,7 @@ export async function getUserDataLiteAsync(userId: string, accessToken: string) 
         const response = await axios.post(
             endpoint,
             {
-                query: GET_USER_QUERY,
+                query: QUERY,
                 variables: {
                     userId: userId
                 },
@@ -533,7 +539,7 @@ export async function getUserDataLiteAsync(userId: string, accessToken: string) 
 export async function getAllRoomchatAsync(userId: string, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
-    const GET_ALL_ROOMCHAT_QUERY = `
+    const QUERY = `
     query GetAllRomchatByUserId ($userId: String!) {
         getAllRomchatByUserId(id: $userId) {
             isDisplay
@@ -564,7 +570,7 @@ export async function getAllRoomchatAsync(userId: string, accessToken: string) {
         const response = await axios.post(
             endpoint,
             {
-                query: GET_ALL_ROOMCHAT_QUERY,
+                query: QUERY,
                 variables: {
                     userId: userId
                 },
@@ -583,44 +589,48 @@ export async function getAllRoomchatAsync(userId: string, accessToken: string) {
 export async function getRoomchatAsync(id: string, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
-    const GET_ROOMCHAT_QUERY = `
-    query GetRomchatById ($roomchatId: String!) {
-        getRomchatById(roomchatId: $roomchatId) {
-            id
-            isDisplay
-            ownerUserId
-            description
-            imgDisplay
-            isSingle
-            member
-            created_at
-            updated_at
-            data {
-                id
-                userId
+    const QUERY = `
+        query GetRomchatById ($roomchatId: String!) {
+            getRomchatById(roomchatId: $roomchatId) {
+                title
                 isDisplay
-                content
-                fileUrl
+                isSingle
+                isBlock
+                ownerUserId
+                description
+                imgDisplay
+                member
+                memberNickname
+                role
                 created_at
                 updated_at
-                interaction {
-                    id
-                    content
-                    userId
-                    isDisplay
+                id
+                memberOut {
+                    memberId
+                    messageCount
                     created_at
                     updated_at
                 }
+                data {
+                    id
+                    userId
+                    roomId
+                    isDisplay
+                    content
+                    fileUrl
+                    created_at
+                    updated_at
+                    interaction {
+                        id
+                        content
+                        userId
+                        isDisplay
+                        created_at
+                        updated_at
+                    }
+                }
             }
-            memberOut {
-                memberId
-                messageCount
-                created_at
-                updated_at
-            }
-            title
-        }
-    }`;
+        }`;
 
     const headers = {
         'Content-Type': 'application/json',
@@ -631,7 +641,7 @@ export async function getRoomchatAsync(id: string, accessToken: string) {
         const response = await axios.post(
             endpoint,
             {
-                query: GET_ROOMCHAT_QUERY,
+                query: QUERY,
                 variables: {
                     roomchatId: id
                 },
@@ -650,44 +660,44 @@ export async function getRoomchatAsync(id: string, accessToken: string) {
 export async function getRoomchatByTitleAsync(id: string, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
-    const GET_ROOMCHAT_QUERY = `
-    query GetRomchatByTitle ($roomchatId: String!) {
-        getRomchatByTitle (roomchatId: $roomchatId) {
-            id
-            isDisplay
-            ownerUserId
-            description
-            imgDisplay
-            isSingle
-            member
-            created_at
-            updated_at
-            data {
+    const QUERY = `
+        query GetRomchatByTitle ($roomchatId: String!) {
+            getRomchatByTitle (roomchatId: $roomchatId) {
                 id
-                userId
                 isDisplay
-                content
-                fileUrl
+                ownerUserId
+                description
+                imgDisplay
+                isSingle
+                member
                 created_at
                 updated_at
-                interaction {
+                data {
                     id
-                    content
                     userId
                     isDisplay
+                    content
+                    fileUrl
+                    created_at
+                    updated_at
+                    interaction {
+                        id
+                        content
+                        userId
+                        isDisplay
+                        created_at
+                        updated_at
+                    }
+                }
+                memberOut {
+                    memberId
+                    messageCount
                     created_at
                     updated_at
                 }
+                title
             }
-            memberOut {
-                memberId
-                messageCount
-                created_at
-                updated_at
-            }
-            title
-        }
-    }`;
+        }`;
 
     const headers = {
         'Content-Type': 'application/json',
@@ -698,7 +708,7 @@ export async function getRoomchatByTitleAsync(id: string, accessToken: string) {
         const response = await axios.post(
             endpoint,
             {
-                query: GET_ROOMCHAT_QUERY,
+                query: QUERY,
                 variables: {
                     roomchatId: id
                 },
@@ -714,11 +724,386 @@ export async function getRoomchatByTitleAsync(id: string, accessToken: string) {
     }
 }
 
+export async function addMemberRoomchatAsync(payload: MemberRoomDto, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
 
+    const QUERY = `
+        mutation AddMemberRomchat ($userId: String!, $roomchatId: String!, $member: [String!]) {
+            addMemberRomchat(
+                addMember: { 
+                    userId: $userId
+                    roomchatId: $roomchatId
+                    member: $member
+                }
+            ) {
+                id
+                title
+                isDisplay
+                isSingle
+                isBlock
+                ownerUserId
+                description
+                imgDisplay
+                member
+                memberNickname
+                role
+                created_at
+                updated_at
+            }
+        }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: QUERY,
+                variables: {
+                    userId: payload.userId,
+                    roomchatId: payload.roomId,
+                    member: payload.member
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.addMemberRomchat
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+export async function removeMemberRoomchatAsync(payload: MemberRoomDto, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const QUERY = `
+        mutation RemoveMemberRoomchat ($userId: String!, $roomchatId: String!, $member: [String!]) {
+            removeMemberRoomchat(
+                removeMember: { 
+                    userId: $userId
+                    roomchatId: $roomchatId
+                    member: $member
+                }
+            ) {
+                data
+            }
+        }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: QUERY,
+                variables: {
+                    userId: payload.userId,
+                    roomchatId: payload.roomId,
+                    member: payload.member
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.removeMemberRoomchat
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+export async function blockRoomchatAsync(userId: string, roomId: string, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const QUERY = `
+        mutation BlockRoomchat ($userId: String!, $title: String!, $roomchatId: String!){
+            blockRoomchat(
+                blockRoomchat: { 
+                    userId: $userId
+                    title: $title
+                    roomchatId: $roomchatId
+                }
+            ) {
+                id
+                title
+                isDisplay
+                isSingle
+                isBlock
+                ownerUserId
+                description
+                imgDisplay
+                member
+                memberNickname
+                role
+                created_at
+                updated_at
+            }
+        }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: QUERY,
+                variables: {
+                    userId: userId,
+                    title: "",
+                    roomchatId: roomId
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.blockRoomchat
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+export async function unblockRoomchatAsync(userId: string, roomId: string, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const QUERY = `
+        mutation UnblockRoomchat ($userId: String!, $title: String!, $roomchatId: String!) {
+            unblockRoomchat(
+                unblockRoomchat: { 
+                    userId: $userId
+                    title: $title
+                    roomchatId: $roomchatId
+                }
+            ) {
+                id
+                title
+                isDisplay
+                isSingle
+                isBlock
+                ownerUserId
+                description
+                imgDisplay
+                member
+                memberNickname
+                role
+                created_at
+                updated_at
+            }
+        }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: QUERY,
+                variables: {
+                    userId: userId,
+                    title: "",
+                    roomchatId: roomId
+     
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.unblockRoomchat
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+export async function addModRoomchatAsync(payload: MemberRoomDto, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const QUERY = `
+        mutation AddModRoomchat ($userId: String!, $roomchatId: String!, $member: [String!]){
+            addModRoomchat(
+                addMod: { 
+                    userId: $userId
+                    roomchatId: $roomchatId
+                    member: $member
+                }
+            ) {
+                id
+                title
+                isDisplay
+                isSingle
+                isBlock
+                ownerUserId
+                description
+                imgDisplay
+                member
+                memberNickname
+                role
+                created_at
+                updated_at
+            }
+        }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: QUERY,
+                variables: {
+                    userId: payload.userId,
+                    roomchatId: payload.roomId,
+                    member: payload.member
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.addModRoomchat
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+export async function removeModRoomchatAsync(payload: MemberRoomDto, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const QUERY = `
+        mutation RemoveModRoomchat ($userId: String!, $roomchatId: String!, $member: [String!]){
+            removeModRoomchat(
+                removeMod: { 
+                    userId: $userId
+                    roomchatId: $roomchatId
+                    member: $member
+                }
+            ) {
+                id
+                title
+                isDisplay
+                isSingle
+                isBlock
+                ownerUserId
+                description
+                imgDisplay
+                member
+                memberNickname
+                role
+                created_at
+                updated_at
+            }
+        }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: QUERY,
+                variables: {
+                    userId: payload.userId,
+                    roomchatId: payload.roomId,
+                    member: payload.member
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.removeModRoomchat
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+
+export async function validateNicknameMemberRoomchatAsync(payload: ValidateMemberRoomDto, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const QUERY = `
+    mutation ValidateNicknameMemberRoomchat ($userId: String!, $roomchatId: String!, $nickName: String, $fileUrl: [String!]) {
+        validateNicknameMemberRoomchat(
+            validateNicknameMember: {
+                userId: $userId
+                roomchatId: $roomchatId
+                nickName: $nickName
+                fileUrl: $fileUrl
+            }
+        ) {
+            id
+            title
+            isDisplay
+            isSingle
+            isBlock
+            ownerUserId
+            description
+            imgDisplay
+            member
+            memberNickname
+            role
+            created_at
+            updated_at
+        }
+    }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: QUERY,
+                variables: {
+                    userId: payload.userId,
+                    roomchatId: payload.roomId,
+                    nickName: payload.nickname,
+                    fileUrl: payload.fileUrl
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.validateNicknameMemberRoomchat
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
 export async function changePasswordAsync(dto: ChangePasswordDto, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
-    const CHANGE_PASSWORD_QUERY = `
+    const QUERY = `
     mutation ChangePassword ($userId: String!, $currentPassword: String!, $newPassword: String!, $validatePassword: String!) {
         changePassword(
             changePassword: {
@@ -744,7 +1129,7 @@ export async function changePasswordAsync(dto: ChangePasswordDto, accessToken: s
         const response = await axios.post(
             endpoint,
             {
-                query: CHANGE_PASSWORD_QUERY,
+                query: QUERY,
                 variables: {
                     userId: dto.userId,
                     currentPassword: dto.currentPassword,
@@ -767,7 +1152,7 @@ export async function changePasswordAsync(dto: ChangePasswordDto, accessToken: s
 export async function removeMessageAsync(dto: ValidateMessagesDto, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
-    const GET_USER_QUERY = `
+    const QUERY = `
     mutation RemoveMessageRoomchat ($userId: String!, $roomchatId: String!, $messageId: String!) {
         removeMessageRoomchat(
             removeMessage: {
@@ -789,7 +1174,7 @@ export async function removeMessageAsync(dto: ValidateMessagesDto, accessToken: 
         const response = await axios.post(
             endpoint,
             {
-                query: GET_USER_QUERY,
+                query: QUERY,
                 variables: {
                     userId: dto.userId,
                     roomchatId: dto.roomchatId,
@@ -1155,7 +1540,7 @@ export async function getFriendRequestAsync(userId: string, accessToken: string)
 export async function getFriendReceiveAsync(userId: string, accessToken: string): Promise<[]> {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
-    const GET_USER_QUERY = `
+    const QUERY = `
     query GetFriendReceive ($userId: String!) {
         getFriendReceive(id: $userId) {
             id
@@ -1177,7 +1562,7 @@ export async function getFriendReceiveAsync(userId: string, accessToken: string)
         const response = await axios.post(
             endpoint,
             {
-                query: GET_USER_QUERY,
+                query: QUERY,
                 variables: {
                     userId: userId,
                 },
@@ -1195,7 +1580,7 @@ export async function getFriendReceiveAsync(userId: string, accessToken: string)
 export async function createPostAsync(dto: PostDto, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
-    const CREATE_POST_QUERY = `
+    const QUERY = `
     mutation CreatePost ($userId: String!, $type: String!, $content: String, $fileUrl: [String!]!) {
         createPost(
             createPost: {
@@ -1252,7 +1637,7 @@ export async function createPostAsync(dto: PostDto, accessToken: string) {
         const response = await axios.post(
             endpoint,
             {
-                query: CREATE_POST_QUERY,
+                query: QUERY,
                 variables: {
                     userId: dto.userId,
                     type: dto.type,
@@ -1274,7 +1659,7 @@ export async function createPostAsync(dto: PostDto, accessToken: string) {
 export async function findPostAsync(content: string, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
-    const FIND_POST_QUERY = `
+    const QUERY = `
     query SearchPost ($content: String!) {
         searchPost(content: $content) {
             id
@@ -1324,7 +1709,7 @@ export async function findPostAsync(content: string, accessToken: string) {
         const response = await axios.post(
             endpoint,
             {
-                query: FIND_POST_QUERY,
+                query: QUERY,
                 variables: {
                     content: content
                 },
@@ -1344,7 +1729,7 @@ export async function findPostAsync(content: string, accessToken: string) {
 export async function getPostDailyAsync(userId: string, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
-    const FIND_POST_QUERY = `
+    const QUERY = `
     query GetDailyPostByUserId($userId: String!) {
         getDailyPostByUserId(userId: $userId) {
             id
@@ -1394,7 +1779,7 @@ export async function getPostDailyAsync(userId: string, accessToken: string) {
         const response = await axios.post(
             endpoint,
             {
-                query: FIND_POST_QUERY,
+                query: QUERY,
                 variables: {
                     userId: userId
                 },
@@ -1482,7 +1867,7 @@ export async function getPostAsync(postId: string, accessToken: string) {
 export async function getAllPostUserAsync(userId: string, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
-    const FIND_POST_QUERY = `
+    const QUERY = `
     query GetAllPostByUserId($userId: String!) {
         getAllPostByUserId(userId: $userId) {
             id
@@ -1532,7 +1917,7 @@ export async function getAllPostUserAsync(userId: string, accessToken: string) {
         const response = await axios.post(
             endpoint,
             {
-                query: FIND_POST_QUERY,
+                query: QUERY,
                 variables: {
                     userId: userId
                 },
@@ -1551,7 +1936,7 @@ export async function getAllPostUserAsync(userId: string, accessToken: string) {
 export async function validatePostAsync(dto: PostDto, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
-    const VALIDATE_POST_QUERY = `
+    const QUERY = `
     mutation ValidatePost ($userId: String!, $postId: String!, $content: String, $fileUrl: [String!]!){
         validatePost(
             validatePost: {
@@ -1582,7 +1967,7 @@ export async function validatePostAsync(dto: PostDto, accessToken: string) {
         const response = await axios.post(
             endpoint,
             {
-                query: VALIDATE_POST_QUERY,
+                query: QUERY,
                 variables: {
                     userId: dto.userId,
                     postId: dto.postId,
@@ -1604,7 +1989,7 @@ export async function validatePostAsync(dto: PostDto, accessToken: string) {
 export async function removePostAsync(userId: string, postId: string, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
-    const REMOVE_POST_QUERY = `
+    const QUERY = `
         mutation RemovePost ($userId: String!, $postId: String!, $fileUrl: [String!]!) {
             removePost(
                 removePost: {
@@ -1626,7 +2011,7 @@ export async function removePostAsync(userId: string, postId: string, accessToke
         const response = await axios.post(
             endpoint,
             {
-                query: REMOVE_POST_QUERY,
+                query: QUERY,
                 variables: {
                     userId: userId,
                     postId: postId,
@@ -1647,7 +2032,7 @@ export async function removePostAsync(userId: string, postId: string, accessToke
 export async function addCommentPostAsync(dto: ValidateMessagesDto, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
-    const ADD_COMMENT_QUERY = `
+    const QUERY = `
     mutation AddComment ($userId: String!, $postId: String!, $content: String!, $fileUrl: [String!]!){
         addComment(
             addComment: {
@@ -1675,7 +2060,7 @@ export async function addCommentPostAsync(dto: ValidateMessagesDto, accessToken:
         const response = await axios.post(
             endpoint,
             {
-                query: ADD_COMMENT_QUERY,
+                query: QUERY,
                 variables: {
                     userId: dto.userId,
                     postId: dto.roomchatId,
@@ -1694,11 +2079,57 @@ export async function addCommentPostAsync(dto: ValidateMessagesDto, accessToken:
     }
 }
 
+export async function removeCommentPostAsync(dto: ValidateMessagesDto, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const QUERY = `
+        mutation RemoveComment ($userId: String!, $postId: String!, $commentId: String, $content: String!, $fileUrl: [String!]!){
+            removeComment(
+                removeComment: {
+                    userId: $userId
+                    postId: $postId
+                    commentId: $commentId
+                    content: $content
+                    fileUrl: $fileUrl
+                }
+            ) {
+                data
+            }
+        }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: QUERY,
+                variables: {
+                    userId: dto.userId,
+                    postId: dto.roomchatId,
+                    commentId: dto.messagesId,
+                    content: dto.content,
+                    fileUrl: dto.fileUrl
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.removeComment
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
 
 export async function addInteractPostAsync(dto: InteractDto, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
-    const INTERACT_POST_QUERY = `
+    const QUERY = `
     mutation InteractPost ($userId: String!, $postId: String!, $content: String){
         interactPost(
             addInteractPost: {
@@ -1725,7 +2156,7 @@ export async function addInteractPostAsync(dto: InteractDto, accessToken: string
         const response = await axios.post(
             endpoint,
             {
-                query: INTERACT_POST_QUERY,
+                query: QUERY,
                 variables: {
                     userId: dto.userId,
                     postId: dto.postId,
@@ -1746,7 +2177,7 @@ export async function addInteractPostAsync(dto: InteractDto, accessToken: string
 export async function removeInteractPostAsync(dto: InteractDto, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
-    const REMOVE_INTERACT_QUERY = `
+    const QUERY = `
     mutation RemoveInteractionPost ($userId: String!, $postId: String!, $interactionId: String) {
         RemoveInteractionPost(
             removeInteractionPost: {
@@ -1769,7 +2200,7 @@ export async function removeInteractPostAsync(dto: InteractDto, accessToken: str
         const response = await axios.post(
             endpoint,
             {
-                query: REMOVE_INTERACT_QUERY,
+                query: QUERY,
                 variables: {
                     userId: dto.userId,
                     postId: dto.postId,
@@ -1792,7 +2223,7 @@ export async function removeInteractPostAsync(dto: InteractDto, accessToken: str
 export async function addInteractCommentAsync(dto: InteractDto, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
-    const INTERACT_COMMENT_QUERY = `
+    const QUERY = `
     mutation InteractComment ($userId: String!, $postId: String!, $commentId: String, $content: String){
         InteractComment(
             addInteractComment: {
@@ -1831,7 +2262,7 @@ export async function addInteractCommentAsync(dto: InteractDto, accessToken: str
         const response = await axios.post(
             endpoint,
             {
-                query: INTERACT_COMMENT_QUERY,
+                query: QUERY,
                 variables: {
                     userId: dto.userId,
                     postId: dto.postId,
@@ -1854,19 +2285,19 @@ export async function addInteractCommentAsync(dto: InteractDto, accessToken: str
 export async function removeInteractCommentAsync(dto: InteractDto, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
-    const REMOVE_INTERACT_QUERY = `
-    mutation RemoveInteractionComment ($userId: String!, $postId: String!, $commentId: String, $interactionId: String) {
-        RemoveInteractionComment(
-            removeInteractionComment: {
-                userId: $userId
-                postId: $postId
-                commentId: $commentId
-                interactionId: $interactionId
+    const QUERY = `
+        mutation RemoveInteractionComment ($userId: String!, $postId: String!, $commentId: String, $interactionId: String) {
+            RemoveInteractionComment(
+                removeInteractionComment: {
+                    userId: $userId
+                    postId: $postId
+                    commentId: $commentId
+                    interactionId: $interactionId
+                }
+            ) {
+                data
             }
-        ) {
-            data
-        }
-    }`;
+        }`;
 
     const headers = {
         'Content-Type': 'application/json',
@@ -1877,7 +2308,7 @@ export async function removeInteractCommentAsync(dto: InteractDto, accessToken: 
         const response = await axios.post(
             endpoint,
             {
-                query: REMOVE_INTERACT_QUERY,
+                query: QUERY,
                 variables: {
                     userId: dto.userId,
                     postId: dto.postId,
@@ -1901,7 +2332,7 @@ export async function removeInteractCommentAsync(dto: InteractDto, accessToken: 
 export async function addBookmarkAsync(dto: BookmarksDto, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
-    const ADD_BOOKMARK_QUERY = `
+    const QUERY = `
         mutation AddBookMarkUser ($userId: String!, $bookMarkId: String!) {
             addBookMarkUser(
                 addBookMark: { 
@@ -1922,7 +2353,7 @@ export async function addBookmarkAsync(dto: BookmarksDto, accessToken: string) {
         const response = await axios.post(
             endpoint,
             {
-                query: ADD_BOOKMARK_QUERY,
+                query: QUERY,
                 variables: {
                     userId: dto.userId,
                     bookMarkId: dto.postId
@@ -1943,7 +2374,7 @@ export async function addBookmarkAsync(dto: BookmarksDto, accessToken: string) {
 export async function removeBookmarkAsync(dto: BookmarksDto, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
-    const REMOVE_INTERACT_QUERY = `
+    const QUERY = `
         mutation RemoveBookMarkUser ($userId: String!, $bookMarkId: String!) {
             removeBookMarkUser(
                 removeBookMark: { 
@@ -1963,7 +2394,7 @@ export async function removeBookmarkAsync(dto: BookmarksDto, accessToken: string
         const response = await axios.post(
             endpoint,
             {
-                query: REMOVE_INTERACT_QUERY,
+                query: QUERY,
                 variables: {
                     userId: dto.userId,
                     bookMarkId: dto.postId,
@@ -1985,7 +2416,7 @@ export async function removeBookmarkAsync(dto: BookmarksDto, accessToken: string
 export async function GenerateMomoPaymentAsync(dto: PaymentDto, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
-    const REMOVE_INTERACT_QUERY = `
+    const QUERY = `
         mutation GenerateMomoPayment ($userId: String!, $method: String!, $select: String!) {
             generateMomoPayment(
                 payment: {
@@ -2008,7 +2439,7 @@ export async function GenerateMomoPaymentAsync(dto: PaymentDto, accessToken: str
         const response = await axios.post(
             endpoint,
             {
-                query: REMOVE_INTERACT_QUERY,
+                query: QUERY,
                 variables: {
                     userId: dto.userId,
                     method: dto.method,
@@ -2020,6 +2451,58 @@ export async function GenerateMomoPaymentAsync(dto: PaymentDto, accessToken: str
         console.log(response.data);
         if ("errors" in response.data) return response.data;
         return response.data.data.generateMomoPayment
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+
+export async function removeNotificationAsync(userId: string, notiId: string, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const QUERY = `
+            mutation RemoveNotificationUser ($userId: String!, $notificationId: String!) {
+                removeNotificationUser(
+                    removeNotification: { 
+                        userId: $userId
+                        notificationId: $notificationId
+                        }
+                ) {
+                    id
+                    email
+                    hash
+                    refreshToken
+                    role
+                    isOnline
+                    friends
+                    bookMarks
+                    created_at
+                    updated_at
+                }
+            }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: QUERY,
+                variables: {
+                    userId: userId,
+                    notificationId: notiId,
+                },
+            },
+            { headers: headers }
+        );
+        console.log(response.data);
+        if ("errors" in response.data) return response.data;
+        return response.data.data.removeNotificationUser
 
     } catch (error) {
         console.error('Error:', error);

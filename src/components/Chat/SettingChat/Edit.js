@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -7,11 +7,28 @@ import {
   TextInput,
   Button,
   Image,
+  Pressable,
+  FlatList
 } from "react-native";
 import settingChat from "../../../styles/ChatStyles/settingStyle";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import {
+  getAllIdUserLocal,
+  getDataUserLocal,
+  updateAccessTokenAsync,
+  getUserDataAsync,
+  getSocketIO,
+  getUserDataLiteAsync,
+  blockRoomchatAsync,
+  unblockRoomchatAsync,
 
-const Edit = () => {
+} from "../../../util";
+import {
+  InteractDto,
+} from "../../../util/dto";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+
+const Edit = ({receivedData}) => {
   const navigation = useNavigation();
   
   const [isEditAvatarModalVisible, setEditAvatarModalVisible] = useState(false);
@@ -42,6 +59,20 @@ const Edit = () => {
     setNicknameModalVisible(false);
   };
 
+  const handlePressedProfile = async () => {
+    const keys = await getAllIdUserLocal();
+    const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+    const returnData = { ...dataUserLocal };
+    if (returnData.id == receivedData.member[0]) {
+      returnData.id = receivedData.member[1];
+    }
+    else {
+      returnData.id = receivedData.member[0];
+    }
+
+    navigation.replace("Profile", { data: returnData });
+  }
+
   return (
     <View style={settingChat.editContainer}>
       <View>
@@ -49,7 +80,7 @@ const Edit = () => {
         <View>
           <TouchableOpacity
             style={settingChat.editItemContainer}
-            onPress={() => null}
+            onPress={async () => await handlePressedProfile()}
           >
             <Text style={settingChat.editItem}>View Profile</Text>
           </TouchableOpacity>
@@ -61,94 +92,15 @@ const Edit = () => {
             <Text style={settingChat.editItem}>Nickname</Text>
           </TouchableOpacity>
           <Modal visible={isNicknameModalVisible} animationType="slide">
-            <View style={{ flex: 1 }}>
-              <TouchableOpacity onPress={hideNicknameModal}>
-                <Image
-                  style={settingChat.button}
-                  source={require("../../../../assets/dummyicon/left_line_64.png")}
-                />
-              </TouchableOpacity>
-              <View style={settingChat.nicknameContainer}>
-                <View style={settingChat.nicknameItem}>
-                  <Image style={settingChat.avtCustom} />
-                  <View style={settingChat.textInputContainer}>
-                    <TextInput
-                      style={{
-                        marginLeft: 10,
-                        padding: 10,
-                        fontSize: 18,
-                      }}
-                      placeholder="Nickname"
-                      onChangeText={(text) => {
-                        // Handle text input changes for the first nickname
-                        console.log("Nickname:", text);
-                      }}
-                      onBlur={() => {
-                        // Handle onBlur event for the first nickname
-                        console.log("Nickname blurred");
-                      }}
-                    />
-                  </View>
-                </View>
-                <View style={settingChat.nicknameItem}>
-                  <Image style={settingChat.avtCustom} />
-                  <View style={settingChat.textInputContainer}>
-                    <TextInput
-                      style={{
-                        marginLeft: 10,
-                        padding: 10,
-                        fontSize: 18,
-                      }}
-                      placeholder="Nickname"
-                      onChangeText={(text) => {
-                        // Handle text input changes for the second nickname
-                        console.log("Nickname:", text);
-                      }}
-                      onBlur={() => {
-                        // Handle onBlur event for the second nickname
-                        console.log("Nickname blurred");
-                      }}
-                    />
-                  </View>
-                </View>
-                <View
-                  style={{ justifyContent: "flex-end", flexDirection: "row" }}
-                >
-                  <TouchableOpacity
-                    style={{
-                      paddingHorizontal: 20,
-                      paddingVertical: 10,
-                      borderRadius: 10,
-                      backgroundColor: "#D3D3D3",
-                      margin: 5,
-                    }}
-                    onPress={() => {
-                      // Handle save button press
-                      console.log("Save button pressed");
-                      // You can add logic here to save the nicknames or perform any other actions.
-                    }}
-                  >
-                    <Text style={{ fontSize: 18 }}>Save</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={{
-                      paddingHorizontal: 20,
-                      paddingVertical: 10,
-                      borderRadius: 10,
-                      backgroundColor: "#D3D3D3",
-                      margin: 5,
-                    }}
-                    onPress={() => {
-                      // Handle save button press
-                      console.log("Save button pressed");
-                      // You can add logic here to save the nicknames or perform any other actions.
-                    }}
-                  >
-                    <Text style={{ fontSize: 18 }}>Clear</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
+          <View style={{ flex: 1 }}>
+            <TouchableOpacity onPress={() => hideNicknameModal(false)}>
+              <Image
+                style={settingChat.button}
+                source={require('../../../../assets/dummyicon/left_line_64.png')}
+              />
+            </TouchableOpacity>
+            <EditNickname room={receivedData}/>
+          </View>
           </Modal>
         </View>
         <View>
@@ -156,13 +108,78 @@ const Edit = () => {
           <TouchableOpacity style={settingChat.editItemContainer}>
             <Text style={settingChat.editItem}>Block User</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={settingChat.editItemContainer}>
+          {/* <TouchableOpacity style={settingChat.editItemContainer}>
             <Text style={settingChat.editItem}>Hide</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
     </View>
   );
 };
+const EditNickname = ({users, room}) => {
 
+  const [dataMember, setDataMember] = useState([{}]);
+  useEffect(() => {
+    let tmpDataMember = [];
+    console.log(room)
+    for (let i = 0; i < room.member.length; i++) {
+      let tmpMember = {
+        id: room.member[i],
+        placeholder: 'Nickname',
+        typeButton: "edit",
+        
+      }
+    }
+  }, [])
+  const data = [
+    { id: 1, placeholder: 'Nickname', typeButton: "edit", onPress: () => console.log('Nickname1') },
+    { id: 2, placeholder: 'Nickname', typeButton: "edit", onPress: () => console.log('Nickname2') },
+    { id: 3, placeholder: 'Nickname', typeButton: "edit", onPress: () => console.log('Nickname2') },
+    { id: 4, placeholder: 'Nickname', typeButton: "edit", onPress: () => console.log('Nickname2') },
+    // Add more items as needed
+  ];
+
+  const renderItem = ({ item }) => (
+    <View style={settingChat.nicknameItem}>
+      <Image style={settingChat.avtCustom} />
+      <View style={settingChat.textInputContainer}>
+        <TextInput
+          style={{
+            marginLeft: 10,
+            padding: 10,
+            fontSize: 18,
+          }}
+          placeholder={item.placeholder}
+          editable={false}
+          onChangeText={(text) => {
+            // Handle text input changes for the nickname
+            console.log('Nickname:', text);
+          }}
+          onBlur={() => {
+            // Handle onBlur event for the nickname
+            console.log('Nickname blurred');
+          }}
+        />
+      </View>
+      <TouchableOpacity 
+      style={{ marginTop: 15}}
+      onPress={item.onPress}
+      >
+        <Text>
+          <FontAwesome name={item.typeButton} size={30} color="#333" />
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  return (
+        <View style={settingChat.nicknameContainer}>
+          <FlatList
+            data={data}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={renderItem}
+          />
+        </View>
+  );
+};
 export default Edit;

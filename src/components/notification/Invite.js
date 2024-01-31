@@ -7,6 +7,7 @@ import {
   updateAccessTokenAsync,
   getUserDataAsync,
   getFriendReceiveAsync,
+  getUserDataLiteAsync,
   acceptFriendAsync,
   removeFriendAsync,
   createRoomchatAsync

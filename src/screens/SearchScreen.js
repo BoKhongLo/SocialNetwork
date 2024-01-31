@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, TextInput, FlatList, Button, Text } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import UserItem from "../components/Search/UserItem";
@@ -13,6 +13,9 @@ import {
   getDataUserLocal,
   updateAccessTokenAsync,
   findFriendAsync,
+  getFriendRequestAsync,
+  getFriendReceiveAsync,
+  saveDataUserLocal
 } from "../util";
 import { useNavigation } from "@react-navigation/native";
 import searchStyles from "../styles/searchScreen";
@@ -22,6 +25,52 @@ const SearchScreen = () => {
   const [searchText, setSearchText] = useState("");
   const [dataSearch, setDataSearch] = useState([]);
   const navigation = useNavigation();
+  const [dataUserCurrent, setDataUserCurrent] = useState({})
+  const [dataFriendRequest, setDataFriendRequest] = useState([])
+  const [dataFriendReceive, setDataFriendReceive] = useState([])
+  useEffect(() => {
+    const fetchData = async () => {
+      const keys = await getAllIdUserLocal();
+      const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+
+      let dataUserAsync = await getUserDataAsync(
+        dataUserLocal.id,
+        dataUserLocal.accessToken
+      );
+      let dataRequest = await getFriendRequestAsync(
+        dataUserLocal.id,
+        dataUserLocal.accessToken
+      );
+      let dataReceive = await getFriendReceiveAsync(
+        dataUserLocal.id,
+        dataUserLocal.accessToken
+      );
+      if ("errors" in dataUserAsync) {
+        const dataUpdate = await updateAccessTokenAsync(
+          dataUserLocal.id,
+          dataUserLocal.refreshToken
+        );
+        await saveDataUserLocal(dataUpdate.id, dataUpdate)
+        dataUserAsync = await getUserDataAsync(
+          dataUpdate.id,
+          dataUpdate.accessToken
+        );
+        dataRequest = await getFriendRequestAsync(
+          dataUserLocal.id,
+          dataUpdate.accessToken
+        );
+        dataReceive = await getFriendReceiveAsync(
+          dataUserLocal.id,
+          dataUserLocal.accessToken
+        );
+      }
+      setDataUserCurrent(dataUserAsync);
+      setDataFriendReceive(dataReceive);
+      setDataFriendRequest(dataRequest);
+
+    };
+    fetchData();
+  }, []);
 
   const handleUserPress = async (user) => {
     const keys = await getAllIdUserLocal();
@@ -46,23 +95,28 @@ const SearchScreen = () => {
       dataUserLocal.accessToken
     );
     
-    dataRequest = removeDuplicates(dataRequest, 'id');
-    
+
     if ("errors" in dataRequest) {
       const dataUpdate = await updateAccessTokenAsync(
         dataUserLocal.id,
         dataUserLocal.refreshToken
       );
-      
-      // Gọi lại hàm findFriendAsync với accessToken mới và lọc phần tử trùng
       dataRequest = await findFriendAsync(content, dataUpdate.accessToken);
       dataRequest = removeDuplicates(dataRequest, 'id');
     }
+    dataRequest = removeDuplicates(dataRequest, 'id');
+    
     console.log(dataRequest);
     setDataSearch(dataRequest);
   };
   const renderItem = ({ item }) => (
-    <UserItem user={item} onPress={handleUserPress} />
+    <UserItem 
+      user={item} 
+      onPress={handleUserPress} 
+      friendReceive={dataFriendReceive} 
+      friendRequest={dataFriendRequest}
+      userCurrent={dataUserCurrent}
+    />
   );
 
   return (

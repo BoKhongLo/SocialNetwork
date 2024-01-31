@@ -75,7 +75,7 @@ const LoadStories = () => {
     }
 
     if ("errors" in dataReturn) return;
-    navigation.navigate('main')
+    navigation.replace('main')
   };
 
   const alertDeleteStory = () => {

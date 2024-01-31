@@ -23,6 +23,7 @@ import {
   getSocketIO,
   uploadFile,
   removeMessageAsync,
+  saveDataUserLocal
 } from "../../util";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -57,11 +58,12 @@ const ChatWindows = ({ user }) => {
       if (receivedData == null) {
         navigation.navigate("main");
       }
-      console.log(receivedData);
+
       const keys = await getAllIdUserLocal();
       const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
       setUserCurrentData({ ...dataUserLocal });
-      const dataRoomchatAsync = await getRoomchatAsync(
+
+      let dataRoomchatAsync = await getRoomchatAsync(
         receivedData.id,
         dataUserLocal.accessToken
       );
@@ -70,13 +72,16 @@ const ChatWindows = ({ user }) => {
           dataUserLocal.id,
           dataUserLocal.refreshToken
         );
+        await saveDataUserLocal(dataUpdate.id, dataUpdate)
         dataUserLocal.accessToken = dataUpdate.accessToken;
         dataRoomchatAsync = await getRoomchatAsync(
-          dataUpdate.id,
+          receivedData.id,
           dataUpdate.accessToken
         );
       }
-
+      if ("errors" in dataRoomchatAsync) {
+        return;
+      }
       const newRoomchat = { ...dataRoomchat };
       for (let member of dataRoomchatAsync.member) {
         let dataUserAsync = await getUserDataAsync(
