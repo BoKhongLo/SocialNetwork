@@ -38,7 +38,7 @@ const Form = ({receivedData}) => {
       <Text style={forgotPass.text}>Enter Verification Code</Text>
       <View style={forgotPass.textInput}>
         <TextInput
-          style={{ fontSize: 18, textAlignVertical: "top" }}
+          style={{ fontSize: 18, textAlignVertical: "top", }}
           keyboardType="number-pad"
           autoCapitalize="none"
           maxLength={6} // Set maximum length to 6 digits
@@ -47,11 +47,12 @@ const Form = ({receivedData}) => {
           
           placeholder=""
         />
+        
       </View>
       <View style={{ flexDirection: "row", justifyContent: "center" }}>
-        <Text>Didn't receive a code? </Text>
+        <Text style={{borderBottomWidth:1}}>Check the spam folder in your email  Or </Text>
         <TouchableOpacity>
-          <Text>Resend</Text>
+          <Text style={{color:'#FF0000'}}>Resend</Text>
         </TouchableOpacity>
       </View>
       <TouchableOpacity onPress={handleSubmit} style={forgotPass.buttonNext}>

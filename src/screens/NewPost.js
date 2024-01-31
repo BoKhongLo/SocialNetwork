@@ -21,7 +21,7 @@ import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from 'expo-document-picker';
 import { FileUploadDto, PostDto } from "../util/dto";
 import { Video, Audio } from 'expo-av';
-
+import LoadingAnimation from "../components/Loading/loadingAnimation";
 
 const NewPost = () => {
   const route = useRoute();
@@ -241,7 +241,10 @@ const Caption = ({ user, onUpdateData, postData }) => {
 };
 
 const ChoseImg = ({ upFile, postData, onUpdateData }) => {
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleCamera = async () => {
+    setIsLoading(true);
     const cameraPermission =
       await ImagePicker.requestCameraPermissionsAsync();
     if (cameraPermission.granted === false) {
@@ -271,8 +274,11 @@ const ChoseImg = ({ upFile, postData, onUpdateData }) => {
     let newPostData = { ...postData };
     newPostData.fileUrl.push(data.url);
     onUpdateData({ fileUrl: newPostData.fileUrl });
+    setIsLoading(false);
   }
   const handleGallery = async () => {
+    setIsLoading(true);
+
     let result = await DocumentPicker.getDocumentAsync({
       type: ['image/*', 'video/*', 'audio/*'],
       multiple: true,
@@ -293,6 +299,8 @@ const ChoseImg = ({ upFile, postData, onUpdateData }) => {
     let newPostData = { ...postData };
     newPostData.fileUrl.push(data.url);
     onUpdateData({ fileUrl: newPostData.fileUrl });
+    setIsLoading(false);
+
   }
 
   return (
@@ -304,17 +312,19 @@ const ChoseImg = ({ upFile, postData, onUpdateData }) => {
           justifyContent: "space-between",
         }}
       >
+        {/* Camera Button */}
         <TouchableOpacity
           onPress={handleCamera}
           style={{ alignItems: "center", flexDirection: "row", marginTop: 10 }}
         >
           <Image
-            style={[postSytles.button,]}
+            style={[postSytles.button]}
             source={require("../../assets/dummyicon/camera_2_line.png")}
           />
           <Text style={postSytles.text}>Camera</Text>
-
         </TouchableOpacity>
+
+        {/* Gallery Button */}
         <TouchableOpacity
           onPress={handleGallery}
           style={{ alignItems: "center", flexDirection: "row", marginTop: 10 }}
@@ -324,8 +334,10 @@ const ChoseImg = ({ upFile, postData, onUpdateData }) => {
             source={require("../../assets/dummyicon/file_upload.png")}
           />
           <Text style={postSytles.text}>Gallery</Text>
-
         </TouchableOpacity>
+
+        {/* Loading Animation */}
+        <LoadingAnimation isVisible={isLoading} />
       </View>
     </View>
   );
