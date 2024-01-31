@@ -6,9 +6,9 @@ const LoadingAnimation = ({ isVisible }) => {
   if (!isVisible) return null;
 
   return (
-    <View style={[StyleSheet.absoluteFill, styles.overlay,{flex:1}]}>
+    <View style={[StyleSheet.absoluteFillObject, styles.overlay, { flex: 1 }]}>
       <LottieView
-        style={StyleSheet.absoluteFill}
+        style={[{height:150,width:150,alignItems:'center',}]}
         source={require("../../../assets/animation/Animation_Conmeo.json")}
         autoPlay
         loop
@@ -20,6 +20,9 @@ const LoadingAnimation = ({ isVisible }) => {
 const styles = StyleSheet.create({
   overlay: {
     zIndex: 1,
+    justifyContent:'center',
+    alignItems:'center',
+    backgroundColor:'rgba(0,0,0,0.2)',
   },
 });
 
