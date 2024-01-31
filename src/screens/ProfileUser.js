@@ -22,7 +22,7 @@ const ProfileUser = () => {
   const navigation = useNavigation();
   const [receivedData, setReceivedData] = useState(route.params?.data || null);
   const insets = useSafeAreaInsets();
-  const [isUser, setIsUser] = useState(false);
+  const [isUser, setIsUser] = useState(true);
   const [userProfile, setUserProfile] = useState({
     username: "",
     avatarUrl: require('../../assets/img/avt.png'),
@@ -48,7 +48,6 @@ const ProfileUser = () => {
 
       const keys = await getAllIdUserLocal();
       const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
-      if (dataUserLocal.id === dataLocal.id) setIsUser(true);
 
       let dataUserAsync = await getUserDataAsync(
         dataUserLocal.id,
@@ -89,6 +88,7 @@ const ProfileUser = () => {
         
       }
       setUserProfile(newProfile);
+      if (dataUserLocal.id !== dataLocal.id) setIsUser(false);
     };
 
     fetchData();

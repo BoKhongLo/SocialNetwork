@@ -69,7 +69,7 @@ const Options = ({ data }) => {
       if (dataUserAsync.friends.includes(data.id)) {
         setIsFriend("Friend");
         setFriendAdded(true);
-      } 
+      }
       else if (dataReceive && dataReceive.findIndex(item => item.createdUserId === data.id) !== -1) {
         setIsFriend("Accept");
         setPending(true);
@@ -156,52 +156,56 @@ const Options = ({ data }) => {
     navigation.replace("chatwindow", { data: dataRoomchatAsync });
   };
   return (
-    <View
-      style={{
-        flexDirection: "row",
-        marginVertical: 10,
+    <View>
+      {isFetching && (
+        <View
+          style={{
+            flexDirection: "row",
+            marginVertical: 10,
 
-        paddingBottom: 15,
-        justifyContent: "center",
-      }}
-    >
-      <TouchableOpacity
-        style={[
-          profileStyle.editContainer,
-          isFriendAdded ? { backgroundColor: "#1E90FF" } : null,
-          { marginHorizontal: 1 },
-        ]}
-        onPress={handleAddFriendPress}
-      >
-        <Text style={[
-          profileStyle.textEdit,
-          isFriendAdded ? { backgroundColor: "#1E90FF" } : null,
-        ]}>
-          {isFriendAdded ? isFriend : "Add Friend"}
-        </Text>
-      </TouchableOpacity>
-
-      {isPending && (
-        <TouchableOpacity
-          onPress={handleDenyFriend}
-          style={[
-            profileStyle.editContainer,
-            { paddingHorizontal: 18, marginHorizontal: 1 },
-          ]}
+            paddingBottom: 15,
+            justifyContent: "center",
+          }}
         >
-          <Text style={profileStyle.textEdit}>Deny</Text>
-        </TouchableOpacity>
-      )}
+          <TouchableOpacity
+            style={[
+              profileStyle.editContainer,
+              isFriendAdded ? { backgroundColor: "#1E90FF" } : null,
+              { marginHorizontal: 1 },
+            ]}
+            onPress={handleAddFriendPress}
+          >
+            <Text style={[
+              profileStyle.textEdit,
+              isFriendAdded ? { backgroundColor: "#1E90FF" } : null,
+            ]}>
+              {isFriendAdded ? isFriend : "Add Friend"}
+            </Text>
+          </TouchableOpacity>
 
-      <TouchableOpacity
-        onPress={handleChat}
-        style={[
-          profileStyle.editContainer,
-          { paddingHorizontal: 18, marginHorizontal: 1 },
-        ]}
-      >
-        <Text style={profileStyle.textEdit}>Chat</Text>
-      </TouchableOpacity>
+          {isPending && (
+            <TouchableOpacity
+              onPress={handleDenyFriend}
+              style={[
+                profileStyle.editContainer,
+                { paddingHorizontal: 18, marginHorizontal: 1 },
+              ]}
+            >
+              <Text style={profileStyle.textEdit}>Deny</Text>
+            </TouchableOpacity>
+          )}
+
+          <TouchableOpacity
+            onPress={handleChat}
+            style={[
+              profileStyle.editContainer,
+              { paddingHorizontal: 18, marginHorizontal: 1 },
+            ]}
+          >
+            <Text style={profileStyle.textEdit}>Chat</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 };

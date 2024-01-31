@@ -528,7 +528,7 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
         >
           <View>
             <TouchableOpacity
-            onPress={async () => await handlePressedAvatar(item.userId)}
+            onPress={async () => await handlePressedAvatar(item.userIdw)}
             >
               {dataUsers[item.userId] &&
               dataUsers[item.userId].detail.avatarUrl ? (

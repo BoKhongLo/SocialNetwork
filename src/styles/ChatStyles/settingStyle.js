@@ -41,7 +41,6 @@ const settingChat = StyleSheet.create({
   },
   name: { fontSize: 20, fontWeight: "600" },
   nicknameContainer: {
-    height: 200,
     backgroundColor: "#E0E0E0",
     borderRadius: 10,
     elevation: 7,
