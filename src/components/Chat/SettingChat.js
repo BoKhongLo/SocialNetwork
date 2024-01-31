@@ -5,19 +5,41 @@ import Header from "./SettingChat/Header";
 import Edit from "./SettingChat/Edit";
 import Infor from "./Infor";
 import { useNavigation, useRoute } from "@react-navigation/native";
-
+import {
+  getAllIdUserLocal,
+  getDataUserLocal,
+  updateAccessTokenAsync,
+  getUserDataLiteAsync,
+  getSocketIO,
+  getRoomchatAsync,
+} from "../../util";
 const SettingChat = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const route = useRoute();
-  const receivedData = route.params?.data;
-
+  const [receivedData, setReceivedData] = React.useState(route.params?.data);
+  const [dataUser, setDataUser] = React.useState({})
   useEffect(() => {
     const fetchData = async () => {
       if (receivedData == null) {
         navigation.navigate('main');
       }
-      console.log(receivedData);
+      const keys = await getAllIdUserLocal();
+      const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+      const dataUpdate = await updateAccessTokenAsync(
+        dataUserLocal.id,
+        dataUserLocal.refreshToken
+      );
+      let dataRoomchat = await getRoomchatAsync(receivedData.id, dataUpdate.accessToken)
+      dataRoomchat.title = receivedData.title;
+      dataRoomchat.imgDisplay = receivedData.imgDisplay;
+      setReceivedData(dataRoomchat)
+      let tmpDataMember = {}
+      for (let i = 0; i < receivedData.member.length; i++) {
+        let tmpMember = await getUserDataLiteAsync(receivedData.member[i], dataUpdate.accessToken);
+        tmpDataMember[tmpMember.id] = tmpMember
+      }
+      setDataUser(tmpDataMember)
     };
     fetchData();
   }, []);
@@ -36,7 +58,7 @@ const SettingChat = () => {
     >
       <Header receivedData={receivedData}/>
       <Infor receivedData={receivedData}/>
-      <Edit receivedData={receivedData}/>
+      <Edit receivedData={receivedData} users={dataUser}/>
     </View>
   );
 };

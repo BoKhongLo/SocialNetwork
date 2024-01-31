@@ -44,9 +44,14 @@ const PostImage = ({ post, users }) => {
   };
 
   const renderItem = ({ item, index }) => {
-    if (validateFile(item) === "IMAGE") {
-      Image.getSize(item, (width, height) => {setRatio(width / height)});
-    }
+    // if (validateFile(item) === "IMAGE") {
+    //   try {
+    //     Image.getSize(item, (width, height) => {setRatio(width / height)});
+    //   }
+    //   catch (err) {
+
+    //   }
+    // }
     return(
       <TouchableOpacity
         onPress={() => handleImagePress(index)}
@@ -55,7 +60,8 @@ const PostImage = ({ post, users }) => {
         {validateFile(item) === "IMAGE" ? (
           <Image
             source={{ uri: item }}
-            style={[styles.image, { aspectRatio: ratio}]}
+            // style={[styles.image, { aspectRatio: ratio}]}
+            style={[styles.image]}
             resizeMode="contain"
           />
         ) : validateFile(item) === "VIDEO" ? (
@@ -167,17 +173,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  gridItem: {
+  gridItem: { 
     flex: 1,
     borderWidth: 0.2,
     borderColor: 'lightgrey',
-    // height: 'auto'
+    height: 'auto'
   },
   image: {
-    // flex: 1,
-    // aspectRatio: 1,
-    // height: 100,
-    // width: '100%',
+    flex: 1,
+    aspectRatio: 1,
+    height: 100,
+    width: 100,
     resizeMode: 'contain',
   },
 });

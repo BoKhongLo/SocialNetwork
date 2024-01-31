@@ -7,16 +7,18 @@ import {
   TextInput,
   Button,
   Image,
+  ScrollView,
 } from "react-native";
 import settingChat from "../../../styles/ChatStyles/settingStyle";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import Item from "../cpnGroupChat/Item";
+import newGroup from "../../../styles/ChatStyles/newGroupStyles";
 
 const Edit = () => {
-  const [isEditModalVisible, setEditModalVisible] = useState(false);
+  // const [isEditModalVisible, setEditModalVisible] = useState(false);
   const [isViewMembersModalVisible, setViewMembersModalVisible] =
     useState(false);
-
+  const [isAddMembersModalVisible, setAddMembersModalVisible] = useState(false);
   const showEditModal = () => {
     setEditModalVisible(true);
   };
@@ -33,61 +35,78 @@ const Edit = () => {
     setViewMembersModalVisible(false);
   };
 
+  const showAddMembersModal = () => {
+    setAddMembersModalVisible(true);
+  };
+
+  const hideAddMembersModal = () => {
+    setAddMembersModalVisible(false);
+  };
+
   return (
     <View style={settingChat.editContainer}>
       <View>
         <Text style={settingChat.title}>General</Text>
         <View>
-          <TouchableOpacity
-            style={settingChat.editItemContainer}
-            onPress={showEditModal}
-          >
-            <Text style={settingChat.editItem}>Edit</Text>
-          </TouchableOpacity>
-
+                  {/** View Members Button */}
           <TouchableOpacity
             style={settingChat.editItemContainer}
             onPress={showViewMembersModal}
           >
             <Text style={settingChat.editItem}>View Members</Text>
           </TouchableOpacity>
+
+                {/** Add members Button */}
           <TouchableOpacity
             style={settingChat.editItemContainer}
-            onPress={showEditModal}
+            onPress={showAddMembersModal}
           >
             <Text style={settingChat.editItem}>Add members</Text>
           </TouchableOpacity>
 
-          <Modal visible={isEditModalVisible} animationType="slide">
-            {/* Edit Modal Content */}
-            <TouchableOpacity onPress={hideEditModal}>
-              <Image
-                style={settingChat.button}
-                source={require("../../../../assets/dummyicon/left_line_64.png")}
-              />
-            </TouchableOpacity>
+                {/** Modal Add Members /////////////////////////////////////////*/}
+          <Modal
+            animationType="slide"
+            transparent={false}
+            visible={showAddMembersModal}
+            onRequestClose={hideAddMembersModal}
+          >
           </Modal>
 
+
+                {/* View Members Modal Content */}
           <Modal visible={isViewMembersModalVisible} animationType="slide">
-            {/* View Members Modal Content */}
             <TouchableOpacity onPress={hideViewMembersModal}>
               <Image
                 style={settingChat.button}
                 source={require("../../../../assets/dummyicon/left_line_64.png")}
               />
             </TouchableOpacity>
-            <View>
+            <View style={{ margin: 10, flex: 1 }}>
               <View>
+                {/** renderAdminGroup */}
                 <View>
-                  <Text>Admins & moderators</Text>
-
+                  <Text style={{ fontSize: 15, color: "#A9A9A9" }}>
+                    Admins & moderators
+                  </Text>
+                  {/** ITEM LA MAY CAI THANG MEMBER DAY M SUA LAI KIEU GI THI SUA T CHIU!!! */}
+                  <Item />
+                </View>
+                {/** renderMembers */}
+                <View>
+                  <Text style={{ fontSize: 15, color: "#A9A9A9" }}>
+                    Members
+                  </Text>
+                  {/** ITEM LA MAY CAI THANG MEMBER DAY M SUA LAI KIEU GI THI SUA T CHIU!!! */}
                   <Item />
                 </View>
               </View>
             </View>
-            {/* Add the rest of your modal content here */}
           </Modal>
         </View>
+
+
+
         <View>
           <Text style={settingChat.title}>Privacy</Text>
           <TouchableOpacity style={settingChat.editItemContainer}>

@@ -23,7 +23,7 @@ import {
   getSocketIO,
   uploadFile,
   removeMessageAsync,
-  saveDataUserLocal
+  saveDataUserLocal,
 } from "../../util";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -72,7 +72,7 @@ const ChatWindows = ({ user }) => {
           dataUserLocal.id,
           dataUserLocal.refreshToken
         );
-        await saveDataUserLocal(dataUpdate.id, dataUpdate)
+        await saveDataUserLocal(dataUpdate.id, dataUpdate);
         dataUserLocal.accessToken = dataUpdate.accessToken;
         dataRoomchatAsync = await getRoomchatAsync(
           receivedData.id,
@@ -131,9 +131,6 @@ const ChatWindows = ({ user }) => {
       <Header roomProfile={receivedData} userData={userCurrentData} />
       <Divider width={1} orientation="vertical" />
       <Content roomProfile={dataRoomchat} />
-      <View>
-        <Text></Text>
-      </View>
     </View>
   );
 };
@@ -164,10 +161,9 @@ const Header = ({ roomProfile, userData }) => {
       <TouchableOpacity
         onPress={() => {
           if (roomProfile.isSingle === true) {
-            navigation.replace("settingChat", {data: roomProfile})
-          }
-          else {
-            navigation.replace("settingGroupChat", {data: roomProfile})
+            navigation.replace("settingChat", { data: roomProfile });
+          } else {
+            navigation.replace("settingGroupChat", { data: roomProfile });
           }
         }}
         style={{ padding: 10 }}
@@ -432,36 +428,46 @@ const Content = ({ roomProfile }) => {
 
   const pickDocument = async () => {
     let result = await DocumentPicker.getDocumentAsync({
-      type: ['image/*','video/*','audio/*'],
+      type: ["image/*", "video/*", "audio/*"],
       multiple: true,
-      copyToCacheDirectory: true,
     });
 
-    if (result.type !== "success") return;
+    if (result.canceled) return;
     if (socket == undefined) return;
     if (roomProfile.id === "") return;
 
     const keys = await getAllIdUserLocal();
     const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
-    const dto = new FileUploadDto(
+    let dataUpdate = await updateAccessTokenAsync(
       dataLocal.id,
-      result.uri,
-      result.name,
-      result.mimeType
+      dataLocal.refreshToken
     );
-    const data = await uploadFile(dto, dataLocal.accessToken);
-    if (data == null) {
-      const dataUpdate = await updateAccessTokenAsync(
+
+    let newUrl = [];
+    for (let i = 0; i < result.assets.length; i++) {
+      const dto = new FileUploadDto(
         dataLocal.id,
-        dataLocal.refreshToken
+        result.assets[i].uri,
+        result.assets[i].name,
+        result.assets[i].mimeType
       );
-      data = await uploadFile(dto, dataUpdate.accessToken);
+      let data = await uploadFile(dto, dataUpdate.accessToken);
+      if (data == null) {
+        dataUpdate = await updateAccessTokenAsync(
+          dataLocal.id,
+          dataLocal.refreshToken
+        );
+      }
+      if (data == null) {
+        continue;
+      }
+      newUrl.push(data.url);
     }
 
     socket.emit("sendMessage", {
       userId: dataLocal.id,
       content: "",
-      fileUrl: [data.url],
+      fileUrl: newUrl,
       roomchatId: roomProfile.id,
     });
   };
@@ -491,13 +497,19 @@ const Content = ({ roomProfile }) => {
   // Render send button
   const renderSend = (props) => {
     return (
-      <View style={{ flexDirection: "row" }}>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <TouchableOpacity onPress={pickDocument}>
           <View>
-            <FontAwesome
+            <MaterialCommunityIcons
               name="file"
-              style={{ marginRight: 5, marginTop: 5 }}
-              size={30}
+              style={{ marginHorizontal: 3 }}
+              size={45}
               color="#2e64e5"
             />
           </View>
@@ -506,8 +518,8 @@ const Content = ({ roomProfile }) => {
           <View>
             <MaterialCommunityIcons
               name="send-circle"
-              style={{ marginBottom: 5, marginRight: 5 }}
-              size={32}
+              style={{ marginHorizontal: 3 }}
+              size={45}
               color="#2e64e5"
             />
           </View>

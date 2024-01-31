@@ -111,7 +111,11 @@ const NewPost = () => {
           flex: 1,
         }}
       >
-        <Header postData={dataPost} />
+        <Header
+          postData={dataPost}
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
+        />
         <ScrollView>
           {dataUser != null && (
             <Caption
@@ -144,9 +148,11 @@ const NewPost = () => {
   );
 };
 
-const Header = ({ postData }) => {
+const Header = ({ postData, isLoading, setIsLoading }) => {
   const navigation = useNavigation();
+
   const handleCreatePost = async () => {
+    setIsLoading(true); //////////////////////////////////////
     const dto = new PostDto(
       postData.userId,
       "POST",
@@ -178,7 +184,9 @@ const Header = ({ postData }) => {
       }
       if ("errors" in dataReturn) return;
     }
+    
     navigation.replace("main");
+    setIsLoading(false); //////////////////////////////////////
   };
   return (
     <View
@@ -208,7 +216,7 @@ const Header = ({ postData }) => {
         }}
         onPress={handleCreatePost}
       >
-        <Text style={postSytles.text}>Post</Text>
+        <Text style={[postSytles.text, { color: "#F5F5F5" }]}>Post</Text>
       </TouchableOpacity>
     </View>
   );
@@ -256,8 +264,13 @@ const Caption = ({ user, onUpdateData, postData }) => {
   );
 };
 
-const ChoseImg = ({ upFile, postData, onUpdateData, isLoading, setIsLoading })  => {
-
+const ChoseImg = ({
+  upFile,
+  postData,
+  onUpdateData,
+  isLoading,
+  setIsLoading,
+}) => {
   const handleCamera = async () => {
     setIsLoading(true); //////////////////////////////////////
 
@@ -271,7 +284,10 @@ const ChoseImg = ({ upFile, postData, onUpdateData, isLoading, setIsLoading })  
       allowsEditing: true,
       quality: 1,
     });
-    if (result.canceled) return;
+
+    if (result.canceled) {
+      return setIsLoading(false);
+    }
 
     const keys = await getAllIdUserLocal();
     const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
@@ -282,6 +298,7 @@ const ChoseImg = ({ upFile, postData, onUpdateData, isLoading, setIsLoading })  
       "image/jpeg"
     );
     let data = await uploadFile(dto, dataLocal.accessToken);
+    setIsLoading(false); //////////////////////////////////////
     if (data == null) {
       const dataUpdate = await updateAccessTokenAsync(
         dataLocal.id,
@@ -296,6 +313,7 @@ const ChoseImg = ({ upFile, postData, onUpdateData, isLoading, setIsLoading })  
     onUpdateData({ fileUrl: newPostData.fileUrl });
     setIsLoading(false); //////////////////////////////////////
   };
+
   const handleGallery = async () => {
     setIsLoading(true); //////////////////////////////////////
 
@@ -304,31 +322,42 @@ const ChoseImg = ({ upFile, postData, onUpdateData, isLoading, setIsLoading })  
       multiple: true,
     });
 
-    if (result.type !== "success") return;
+    if (result.canceled) {
+      return setIsLoading(false);
+    }
     const keys = await getAllIdUserLocal();
     const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
-    const dto = new FileUploadDto(
+    let dataUpdate = await updateAccessTokenAsync(
       dataLocal.id,
-      result.uri,
-      result.name,
-      result.mimeType
+      dataLocal.refreshToken
     );
-    let data = await uploadFile(dto, dataLocal.accessToken);
-    if (data == null) {
-      const dataUpdate = await updateAccessTokenAsync(
-        dataLocal.id,
-        dataLocal.refreshToken
-      );
-      data = await uploadFile(dto, dataUpdate.accessToken);
-    }
 
-    let newFile = { id: data.id, source: { uri: data.url } };
-    upFile((preFile) => [...preFile, newFile]);
     let newPostData = { ...postData };
-    newPostData.fileUrl.push(data.url);
-    onUpdateData({ fileUrl: newPostData.fileUrl });
 
-    setIsLoading(false); //////////////////////////////////////
+    for (let i = 0; i < result.assets.length; i++) {
+      const dto = new FileUploadDto(
+        dataLocal.id,
+        result.assets[i].uri,
+        result.assets[i].name,
+        result.assets[i].mimeType
+      );
+
+      let data = await uploadFile(dto, dataUpdate.accessToken);
+      setIsLoading(false); //////////////////////////////////
+      if (data == null) {
+        dataUpdate = await updateAccessTokenAsync(
+          dataLocal.id,
+          dataLocal.refreshToken
+        );
+      }
+      if (data == null) {
+        continue;
+      }
+      let newFile = { id: data.id, source: { uri: data.url } };
+      upFile((preFile) => [...preFile, newFile]);
+      newPostData.fileUrl.push(data.url);
+    }
+    onUpdateData({ fileUrl: newPostData.fileUrl });
   };
 
   return (
@@ -364,7 +393,6 @@ const ChoseImg = ({ upFile, postData, onUpdateData, isLoading, setIsLoading })  
           <Text style={postSytles.text}>Gallery</Text>
         </TouchableOpacity>
       </View>
-
     </View>
   );
 };

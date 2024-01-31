@@ -17,7 +17,8 @@ const settingChat = StyleSheet.create({
     width: 100,
     borderRadius: 50,
     backgroundColor: "black",
-    marginVertical: 10,
+    marginTop: 10,
+    marginRight: -10,
   },
   editContainer: {
     height: 400,
@@ -39,13 +40,18 @@ const settingChat = StyleSheet.create({
     marginHorizontal: 10,
     color: "grey",
   },
-  name: { fontSize: 20, fontWeight: "600" },
+  name: {
+    fontSize: 20,
+    fontWeight: "600",
+    marginHorizontal: 10,
+
+  },
   nicknameContainer: {
     backgroundColor: "#E0E0E0",
     borderRadius: 10,
     elevation: 7,
     margin: 10,
-    justifyContent:'space-between'
+    justifyContent: "space-between",
   },
   nicknameItem: {
     flexDirection: "row",
