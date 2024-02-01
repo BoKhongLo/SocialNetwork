@@ -7,7 +7,7 @@ node_modules/
 .expo/
 dist/
 web-build/
-
+src/util/webAdmin.ts
 # Native
 *.orig.*
 *.jks

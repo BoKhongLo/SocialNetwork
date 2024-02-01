@@ -512,6 +512,7 @@ export async function getUserDataLiteAsync(userId: string, accessToken: string) 
                     nickName
                     avatarUrl
                 }
+                friends
                 created_at
                 updated_at
             }
@@ -1318,7 +1319,7 @@ export async function removeRoomchatAsync(userId: string, roomchatId: string, ac
 export async function findFriendAsync(content: string, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
-    const GET_USER_QUERY = `
+    const QUERY = `
     query FindUser ($content: String!){
         findUser(content: $content) {
             id
@@ -1346,7 +1347,7 @@ export async function findFriendAsync(content: string, accessToken: string) {
         const response = await axios.post(
             endpoint,
             {
-                query: GET_USER_QUERY,
+                query: QUERY,
                 variables: {
                     content: content
                 },

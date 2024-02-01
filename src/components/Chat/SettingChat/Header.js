@@ -8,7 +8,7 @@ const Header = ({receivedData}) => {
 
   return (
     <View style={settingChat.headerContainer}>
-      <TouchableOpacity onPress={()=>navigation.navigate("chatwindow", { data: receivedData })}>
+      <TouchableOpacity onPress={()=>navigation.replace("chatwindow", { data: receivedData })}>
         <Image
           style={settingChat.button}
           source={require("../../../../assets/dummyicon/left_line_64.png")}
