@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
   },
   video: {
     width: "100%",
-    aspectRatio: 1, // Default aspect ratio
+    // aspectRatio: 1, // Default aspect ratio
     backgroundColor: "#111111",
   },
 });
