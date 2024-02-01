@@ -21,6 +21,7 @@ import {
   getUserDataLiteAsync,
   blockRoomchatAsync,
   unblockRoomchatAsync,
+  validateNicknameMemberRoomchatAsync,
 
 } from "../../../util";
 import {
@@ -29,17 +30,60 @@ import {
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Item from './../cpnGroupChat/Item';
 
-const Edit = ({receivedData, users}) => {
+const Edit = ({ receivedData, users, userCurrent }) => {
   const navigation = useNavigation();
-  
+
   const [isEditAvatarModalVisible, setEditAvatarModalVisible] = useState(false);
   const [isProfileModalVisible, setProfileModalVisible] = useState(false);
   const [isNicknameModalVisible, setNicknameModalVisible] = useState(false);
+  const [dataReturn, setDataReturn] = useState(receivedData);
+  const [blockState, setBlockState] = useState("Block User");
+
+  useEffect(() => {
+    setDataReturn(receivedData);
+    console.log(receivedData)
+  }, [receivedData])
 
   const showEditAvatarModal = () => {
     setEditAvatarModalVisible(true);
   };
+  const updateDataReturn = (data) => {
+    setDataReturn(data);
+  }
 
+  const handleBlockUser = async (roomId, userId, state) => {
+    if (state === undefined) return;
+    const keys = await getAllIdUserLocal();
+    const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
+    if (state === null ) {
+      let dataRe = await blockRoomchatAsync(userId, roomId, dataLocal.accessToken);
+      if ("errors" in dataRe) {
+        let dataUpdate = await updateAccessTokenAsync(dataLocal.id, dataLocal.refreshToken);
+        dataRe = await blockRoomchatAsync(userId, roomId, dataLocal.accessToken);
+      }
+      console.log(dataRe)
+      if ("errors" in dataRe) return
+      setDataReturn((dataPre) => {
+        let tmpData = { ...dataPre }
+        tmpData.isBlock = userId;
+        return tmpData;
+      })
+    }
+    if (state === userId) {
+      let dataRe = await unblockRoomchatAsync(userId, roomId, dataLocal.accessToken);
+      if ("errors" in dataRe) {
+        let dataUpdate = await updateAccessTokenAsync(dataLocal.id, dataLocal.refreshToken);
+        dataRe = await unblockRoomchatAsync(userId, roomId, dataLocal.accessToken);
+      }
+      if ("errors" in dataRe) return
+      setDataReturn((dataPre) => {
+        let tmpData = { ...dataPre }
+        tmpData.isBlock = null;
+        return tmpData;
+      })
+    }
+
+  };
   const hideEditAvatarModal = () => {
     setEditAvatarModalVisible(false);
   };
@@ -64,11 +108,11 @@ const Edit = ({receivedData, users}) => {
     const keys = await getAllIdUserLocal();
     const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
     const returnData = { ...dataUserLocal };
-    if (returnData.id == receivedData.member[0]) {
-      returnData.id = receivedData.member[1];
+    if (returnData.id == dataReturn.member[0]) {
+      returnData.id = dataReturn.member[1];
     }
     else {
-      returnData.id = receivedData.member[0];
+      returnData.id = dataReturn.member[0];
     }
 
     navigation.replace("Profile", { data: returnData });
@@ -93,22 +137,31 @@ const Edit = ({receivedData, users}) => {
             <Text style={settingChat.editItem}>Nickname</Text>
           </TouchableOpacity>
           <Modal visible={isNicknameModalVisible} animationType="slide">
-          <View style={{ flex: 1 }}>
-            <TouchableOpacity onPress={() => hideNicknameModal(false)}>
-              <Image
-                style={settingChat.button}
-                source={require('../../../../assets/dummyicon/left_line_64.png')}
-              />
-            </TouchableOpacity>
-            <EditNickname room={receivedData} users={users}/>
-          </View>
+            <View style={{ flex: 1 }}>
+              <TouchableOpacity onPress={() => hideNicknameModal(false)}>
+                <Image
+                  style={settingChat.button}
+                  source={require('../../../../assets/dummyicon/left_line_64.png')}
+                />
+              </TouchableOpacity>
+              <EditNickname room={dataReturn} users={users} updateRoom={updateDataReturn} />
+            </View>
           </Modal>
         </View>
         <View>
           <Text style={settingChat.title}>Privacy</Text>
-          <TouchableOpacity style={settingChat.editItemContainer}>
-            <Text style={settingChat.editItem}>Block User</Text>
-          </TouchableOpacity>
+          {dataReturn.isBlock == null | dataReturn.isBlock == userCurrent.id && (
+            <TouchableOpacity style={settingChat.editItemContainer}
+              onPress={() => handleBlockUser(dataReturn.id, userCurrent.id, dataReturn.isBlock)}
+
+            >
+              <Text style={settingChat.editItem}>{
+                dataReturn.isBlock == null ? "Block User" :
+                  dataReturn.isBlock == userCurrent.id && "Unblock User"}
+              </Text>
+            </TouchableOpacity>
+          )}
+
           {/* <TouchableOpacity style={settingChat.editItemContainer}>
             <Text style={settingChat.editItem}>Hide</Text>
           </TouchableOpacity> */}
@@ -117,7 +170,7 @@ const Edit = ({receivedData, users}) => {
     </View>
   );
 };
-const EditNickname = ({users, room}) => {
+const EditNickname = ({ users, room, updateRoom }) => {
 
   const [dataMember, setDataMember] = useState([{}]);
   const [refreshing, setRefreshing] = useState(false);
@@ -131,12 +184,13 @@ const EditNickname = ({users, room}) => {
         nickName: "",
         typeButton: "edit"
       }
-      // if (room.member[i] in room.memberNickname) {
-      //   tmpMember.nickName = room.memberNickname[room.member[i]];
-      // }
+      if ('memberNickname' in room) {
+        if (room.member[i] in room.memberNickname) {
+          tmpMember.nickName = room.memberNickname[room.member[i]];
+        }
+      }
       tmpDataMember.push(tmpMember);
     }
-    console.log(tmpDataMember)
     setDataMember(tmpDataMember);
   }, [])
 
@@ -155,7 +209,7 @@ const EditNickname = ({users, room}) => {
 
   const handleEditNickname = async (data) => {
     setRefreshing(true);
-    if (data.typeButton === "edit") { 
+    if (data.typeButton === "edit") {
       setDataMember((preData) => {
         let indexMember = preData.findIndex(item => item.id === data.id);
         if (indexMember == -1) return preData;
@@ -164,14 +218,24 @@ const EditNickname = ({users, room}) => {
       })
     }
     else if (data.typeButton === "check") {
+      const keys = await getAllIdUserLocal();
+      const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
+      const dto = new ValidateMemberRoomDto(data.id, room.id, data.nickName, []);
+      let dataRe = await validateNicknameMemberRoomchatAsync(dto, dataLocal.accessToken);
+      if ("errors" in dataRe) {
+        let dataUpdate = await updateAccessTokenAsync(dataLocal.id, dataLocal.refreshToken);
+        dataRe = await validateNicknameMemberRoomchatAsync(dto, dataLocal.accessToken);
+      }
+      if ("errors" in dataRe) return
+      let newData = { ...room }
+      newData.memberNickname[data.id] = data.nickName
+      updateRoom(newData)
       setDataMember((preData) => {
         let indexMember = preData.findIndex(item => item.id === data.id);
         if (indexMember == -1) return preData;
         preData[indexMember].typeButton = "edit";
         return [...preData];
       })
-      const dto = new ValidateMemberRoomDto(data.id, room.id, data.nickName, [])
-      console.log(dto)
     }
 
     setRefreshing(false);
@@ -179,58 +243,58 @@ const EditNickname = ({users, room}) => {
 
   const renderItem = ({ item }) => {
     return (
-    <View style={settingChat.nicknameItem}>
-      {users[item.id] && users[item.id].detail.avatarUrl ? (
-      <Image style={settingChat.avtCustom} source={{uri: users[item.id].detail.avatarUrl}} />
-      ) : (
-      <Image style={settingChat.avtCustom} />
-      )}
-      <View style={settingChat.textInputContainer}>
-        <TextInput
-          style={{
-            marginLeft: 10,
-            padding: 10,
-            fontSize: 18,
-            color: "black",
-            borderBottomWidth: 1,
-          }}
-          editable={item.typeButton === "edit" ? false : true}
-          value={item.nickName}
-          placeholder="Nickname"
-          onChangeText={(text) => updateValueNickName(text, item)}
-        />
-        {users[item.id] &&  (
-        <Text
-        style={{
-          fontSize: 18,
-          padding:5,
-          color: "black",
-        }}>
-          {users[item.id].detail.name}
-        </Text>
+      <View style={settingChat.nicknameItem}>
+        {users[item.id] && users[item.id].detail.avatarUrl ? (
+          <Image style={settingChat.avtCustom} source={{ uri: users[item.id].detail.avatarUrl }} />
+        ) : (
+          <Image style={settingChat.avtCustom} />
         )}
+        <View style={settingChat.textInputContainer}>
+          <TextInput
+            style={{
+              marginLeft: 10,
+              padding: 10,
+              fontSize: 18,
+              color: "black",
+              borderBottomWidth: 1,
+            }}
+            editable={item.typeButton === "edit" ? false : true}
+            value={item.nickName}
+            placeholder="Nickname"
+            onChangeText={(text) => updateValueNickName(text, item)}
+          />
+          {users[item.id] && (
+            <Text
+              style={{
+                fontSize: 20,
+                padding: 5,
+                color: "black",
+              }}>
+              {users[item.id].detail.name}
+            </Text>
+          )}
+        </View>
+        <TouchableOpacity
+          style={{ marginTop: 15 }}
+          onPress={async () => await handleEditNickname(item)}
+        >
+          <Text>
+            <FontAwesome name={item.typeButton} size={30} color="#333" />
+          </Text>
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity 
-      style={{ marginTop: 15}}
-      onPress={async () => await handleEditNickname(item)}
-      >
-        <Text>
-          <FontAwesome name={item.typeButton} size={30} color="#333" />
-        </Text>
-      </TouchableOpacity>
-    </View>
     )
   };
 
   return (
-      <View style={settingChat.nicknameContainer}>
-        <FlatList
-          data={dataMember}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-          refreshing={refreshing}
-        />
-      </View>
+    <View style={settingChat.nicknameContainer}>
+      <FlatList
+        data={dataMember}
+        keyExtractor={(item) => item.id}
+        renderItem={renderItem}
+        refreshing={refreshing}
+      />
+    </View>
   );
 };
 export default Edit;

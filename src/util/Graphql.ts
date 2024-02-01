@@ -259,7 +259,7 @@ export async function SignupAsync(dto: SignUpDto) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
     const MUTATION = `
-            mutation SignUp($email: String!, $password: String!, $name: String!, $birthday: DateTime, $phoneNumber: Float, $otpId: String!) {
+            mutation SignUp($email: String!, $password: String!, $name: String!, $birthday: DateTime, $phoneNumber: String, $otpId: String!, $gender: String, $countryCode: String) {
                 SignUp(userDto: {
                     email: $email
                     password: $password
@@ -267,6 +267,8 @@ export async function SignupAsync(dto: SignUpDto) {
                     birthday: $birthday
                     phoneNumber: $phoneNumber
                     otpId: $otpId
+                    gender: $gender
+                    countryCode: $countryCode
                 }) {
                     access_token
                     refresh_token
@@ -289,7 +291,9 @@ export async function SignupAsync(dto: SignUpDto) {
                     name: dto.name,
                     birthday: dto.birthday,
                     phoneNumber: dto.phoneNumber,
-                    otpId: dto.otpId
+                    otpId: dto.otpId,
+                    gender: dto.gender,
+                    countryCode: dto.countryCode
                 },
             },
             { headers: headers }
@@ -443,7 +447,8 @@ export async function getUserDataAsync(userId: string, accessToken: string) {
                     name
                     nickName
                     birthday
-                    age
+                    gender
+                    countryCode
                     description
                     phoneNumber
                     avatarUrl
@@ -484,6 +489,7 @@ export async function getUserDataAsync(userId: string, accessToken: string) {
             },
             { headers: headers }
         );
+        console.log(response.data)
         if ("errors" in response.data) return response.data;
         return response.data.data.getUser
 

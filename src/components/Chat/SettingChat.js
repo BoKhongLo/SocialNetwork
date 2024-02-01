@@ -18,7 +18,10 @@ const SettingChat = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const [receivedData, setReceivedData] = React.useState(route.params?.data);
-  const [dataUser, setDataUser] = React.useState({})
+  const [dataRoom, setDataRoom] = React.useState([]);
+  const [dataUser, setDataUser] = React.useState({});
+  const [dataUserCurrent, setDataUserCurrent] = React.useState({});
+
   useEffect(() => {
     const fetchData = async () => {
       if (receivedData == null) {
@@ -30,12 +33,17 @@ const SettingChat = () => {
         dataUserLocal.id,
         dataUserLocal.refreshToken
       );
+
       let dataRoomchat = await getRoomchatAsync(receivedData.id, dataUpdate.accessToken)
       dataRoomchat.title = receivedData.title;
       dataRoomchat.imgDisplay = receivedData.imgDisplay;
-      setReceivedData(dataRoomchat)
+      setDataRoom(dataRoomchat)
       let tmpDataMember = {}
+      let tmpDataUserCurrent = await getUserDataLiteAsync(dataUserLocal.id, dataUpdate.accessToken);
+      tmpDataMember[tmpDataUserCurrent.id] = tmpDataUserCurrent;
+      setDataUserCurrent(tmpDataUserCurrent);
       for (let i = 0; i < receivedData.member.length; i++) {
+        if (receivedData.member[i] in tmpDataMember) continue;
         let tmpMember = await getUserDataLiteAsync(receivedData.member[i], dataUpdate.accessToken);
         tmpDataMember[tmpMember.id] = tmpMember
       }
@@ -58,7 +66,7 @@ const SettingChat = () => {
     >
       <Header receivedData={receivedData}/>
       <Infor receivedData={receivedData}/>
-      <Edit receivedData={receivedData} users={dataUser}/>
+      <Edit receivedData={dataRoom} users={dataUser} userCurrent={dataUserCurrent}/>
     </View>
   );
 };
