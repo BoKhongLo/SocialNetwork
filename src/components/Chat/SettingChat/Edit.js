@@ -173,6 +173,7 @@ const EditNickname = ({ users, room, updateRoom }) => {
     let tmpDataMember = [];
     console.log(room)
     for (let i = 0; i < room.member.length; i++) {
+      if (tmpDataMember.findIndex(item => item.id === room.member[i]) !== -1) continue;
       let tmpMember = {
         id: room.member[i],
         nickName: "",

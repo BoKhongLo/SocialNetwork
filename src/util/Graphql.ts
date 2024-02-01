@@ -735,7 +735,7 @@ export async function addMemberRoomchatAsync(payload: MemberRoomDto, accessToken
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
     const QUERY = `
-        mutation AddMemberRomchat ($userId: String!, $roomchatId: String!, $member: [String!]) {
+        mutation AddMemberRomchat ($userId: String!, $roomchatId: String!, $member: [String!]!) {
             addMemberRomchat(
                 addMember: { 
                     userId: $userId
@@ -777,6 +777,7 @@ export async function addMemberRoomchatAsync(payload: MemberRoomDto, accessToken
             },
             { headers: headers }
         );
+        console.log(response.data)
         if ("errors" in response.data) return response.data;
         return response.data.data.addMemberRomchat
 
@@ -790,7 +791,7 @@ export async function removeMemberRoomchatAsync(payload: MemberRoomDto, accessTo
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
     const QUERY = `
-        mutation RemoveMemberRoomchat ($userId: String!, $roomchatId: String!, $member: [String!]) {
+        mutation RemoveMemberRoomchat ($userId: String!, $roomchatId: String!, $member: [String!]!) {
             removeMemberRoomchat(
                 removeMember: { 
                     userId: $userId
@@ -1279,10 +1280,12 @@ export async function removeRoomchatAsync(userId: string, roomchatId: string, ac
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
     const GET_USER_QUERY = `
-    mutation RemoveRoomChat ($userId: String!, $roomchatId: String!) {
-        removeRoomChat( removeRoomChat: { 
-            userId: $userId
-            roomchatId: $roomchatId
+    mutation RemoveRoomChat ($roomchatId: String!, $title: String!, $userId: String!) {
+        removeRoomChat(
+            removeRoomChat: { 
+                roomchatId: $roomchatId
+                title: $title
+                userId: $userId
             }
         ) {
             data
@@ -1300,8 +1303,9 @@ export async function removeRoomchatAsync(userId: string, roomchatId: string, ac
             {
                 query: GET_USER_QUERY,
                 variables: {
+                    roomchatId: roomchatId,
+                    title: "",
                     userId: userId,
-                    roomchatId: roomchatId
                 },
             },
             { headers: headers }

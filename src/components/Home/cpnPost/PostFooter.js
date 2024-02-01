@@ -216,10 +216,7 @@ const PostFooter = ({
         >
           <TextInput
             placeholder="Enter your comments"
-            style={{
-              paddingHorizontal: 100,
-              paddingVertical: 10,
-            }}
+            style={{ padding: 10, marginLeft: 5 }}
             value={comment}
             onChangeText={(text) => setComment(text)}
           />

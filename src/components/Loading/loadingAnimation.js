@@ -1,21 +1,15 @@
-import { StyleSheet, Text, View } from "react-native";
 import React from "react";
+import { View, StyleSheet } from "react-native";
 import LottieView from "lottie-react-native";
 
-const loadingAnimation = () => {
+const LoadingAnimation = ({ isVisible }) => {
+  if (!isVisible) return null;
+
   return (
-    <View>
+    <View style={[StyleSheet.absoluteFillObject, styles.overlay, { flex: 1 }]}>
       <LottieView
-        style={[
-          StyleSheet.absoluteFillObject,
-          {
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "rgba(0,0,0,0.3",
-            zIndex: 1,
-          },
-        ]}
-        source={require("../../assets/animation/Animation-Quaytron.json")}
+        style={[{height:150,width:150,alignItems:'center',}]}
+        source={require("../../../assets/animation/Animation_Conmeo.json")}
         autoPlay
         loop
       />
@@ -23,6 +17,13 @@ const loadingAnimation = () => {
   );
 };
 
-export default loadingAnimation;
+const styles = StyleSheet.create({
+  overlay: {
+    zIndex: 1,
+    justifyContent:'center',
+    alignItems:'center',
+    backgroundColor:'rgba(0,0,0,0.2)',
+  },
+});
 
-const styles = StyleSheet.create({});
+export default LoadingAnimation;

@@ -23,7 +23,7 @@ import {
   getSocketIO,
   uploadFile,
   removeMessageAsync,
-  saveDataUserLocal
+  saveDataUserLocal,
 } from "../../util";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -73,7 +73,7 @@ const ChatWindows = ({ user }) => {
           dataUserLocal.id,
           dataUserLocal.refreshToken
         );
-        await saveDataUserLocal(dataUpdate.id, dataUpdate)
+        await saveDataUserLocal(dataUpdate.id, dataUpdate);
         dataUserLocal.accessToken = dataUpdate.accessToken;
         dataRoomchatAsync = await getRoomchatAsync(
           receivedData.id,
@@ -133,9 +133,6 @@ const ChatWindows = ({ user }) => {
       <Header roomProfile={receivedData} userData={userCurrentData} />
       <Divider width={1} orientation="vertical" />
       <Content roomProfile={dataRoomchat} />
-      <View>
-        <Text></Text>
-      </View>
     </View>
   );
 };
@@ -434,7 +431,7 @@ const Content = ({ roomProfile }) => {
 
   const pickDocument = async () => {
     let result = await DocumentPicker.getDocumentAsync({
-      type: ['image/*', 'video/*', 'audio/*'],
+      type: ["image/*", "video/*", "audio/*"],
       multiple: true,
     });
 
@@ -444,19 +441,30 @@ const Content = ({ roomProfile }) => {
 
     const keys = await getAllIdUserLocal();
     const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
-    let dataUpdate = await updateAccessTokenAsync(dataLocal.id, dataLocal.refreshToken);
+    let dataUpdate = await updateAccessTokenAsync(
+      dataLocal.id,
+      dataLocal.refreshToken
+    );
 
     let newUrl = [];
     for (let i = 0; i < result.assets.length; i++) {
-      const dto = new FileUploadDto(dataLocal.id, result.assets[i].uri, result.assets[i].name, result.assets[i].mimeType)
-      let data = await uploadFile(dto, dataUpdate.accessToken)
+      const dto = new FileUploadDto(
+        dataLocal.id,
+        result.assets[i].uri,
+        result.assets[i].name,
+        result.assets[i].mimeType
+      );
+      let data = await uploadFile(dto, dataUpdate.accessToken);
       if (data == null) {
-        dataUpdate = await updateAccessTokenAsync(dataLocal.id, dataLocal.refreshToken);
+        dataUpdate = await updateAccessTokenAsync(
+          dataLocal.id,
+          dataLocal.refreshToken
+        );
       }
       if (data == null) {
         continue;
       }
-      newUrl.push(data.url)
+      newUrl.push(data.url);
     }
 
     socket.emit("sendMessage", {

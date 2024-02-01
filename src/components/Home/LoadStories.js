@@ -75,7 +75,7 @@ const LoadStories = () => {
     }
 
     if ("errors" in dataReturn) return;
-    navigation.replace('main')
+    navigation.replace("main");
   };
 
   const alertDeleteStory = () => {
@@ -91,8 +91,8 @@ const LoadStories = () => {
         paddingBottom: insets.bottom,
         paddingLeft: insets.left,
         paddingRight: insets.right,
-        justifyContent: "space-between",
         flex: 1,
+        backgroundColor: "#111111",
       }}
     >
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
@@ -102,7 +102,7 @@ const LoadStories = () => {
         >
           <Image
             style={styles.iconforAll}
-            source={require("../../../assets/dummyicon/left_line_64.png")}
+            source={require("../../../assets/dummyicon/left_fill.png")}
           />
         </TouchableOpacity>
         <TouchableOpacity
@@ -120,8 +120,6 @@ const LoadStories = () => {
           justifyContent: "center",
           alignItems: "center",
           width: "auto",
-          marginBottom: 50,
-          marginTop: 50,
           flex: 1,
         }}
       >
@@ -251,44 +249,43 @@ const Comments = ({ data, users }) => {
       style={{ flex: 0.1 }}
       keyboardShouldPersistTaps="handled"
     >
-      <View style={{ flex: 1, justifyContent: "center" }}>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-around",
-            alignItems: "center",
-          }}
-        >
-          <View style={{ flex: 8, marginLeft: 10 }}>
+      <View style={{ flex: 1, justifyContent: "center",margin:5}}>
+        
+          <View
+            style={{
+              flex: 7,
+              borderRadius: 20,
+              borderWidth: 1,
+              borderColor: "white",
+              backgroundColor: "white",
+              flexDirection: "row",
+            justifyContent: "space-between",
+            }}
+          >
             <TextInput
               keyboardType="default"
               placeholder="Gửi tin nhắn"
               style={{
-                borderRadius: 20,
-                borderWidth: 1,
-                height: hp("5%"),
                 textAlign: "center",
+                flex:1
               }}
               onChangeText={handleInputChange}
               value={text}
             />
-          </View>
-          <View
-            style={{
-              flex: 3,
-              flexDirection: "row",
-              justifyContent: "space-around",
-            }}
+            <TouchableOpacity
+            onPress={handleSend}
+            style={{justifyContent:'center',padding:10}}
           >
-            <TouchableOpacity onPress={handleSend}>
-              <Image
-                style={styles.iconforAll}
-                source={require("../../../assets/dummyicon/share.png")}
-              />
-            </TouchableOpacity>
+            <Image
+              style={styles.iconforAll}
+              source={require("../../../assets/dummyicon/share.png")}
+            />
+          </TouchableOpacity>
           </View>
+
+          
         </View>
-      </View>
+
     </KeyboardAvoidingView>
   );
 };

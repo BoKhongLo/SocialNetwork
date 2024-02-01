@@ -177,7 +177,7 @@ const Options = ({ data }) => {
           >
             <Text style={[
               profileStyle.textEdit,
-              isFriendAdded ? { backgroundColor: "#1E90FF" } : null,
+              isFriendAdded ? { backgroundColor: "#1E90FF",color:'white',borderRadius:10 } : null,
             ]}>
               {isFriendAdded ? isFriend : "Add Friend"}
             </Text>

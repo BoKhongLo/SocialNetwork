@@ -9,8 +9,9 @@ const forgotPass = StyleSheet.create({
   textInput: {
     borderRadius: 4,
     padding: 15,
-    borderBottomWidth: 0.5,
     marginBottom: 60,
+    borderBottomWidth: 0.5,
+
   },
   buttonNext: {
     backgroundColor: "black",

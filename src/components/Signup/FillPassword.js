@@ -82,7 +82,7 @@ const FillPassword = () => {
         <View style={styles.inputField}>
           <TextInput
             placeholderTextColor="#444"
-            placeholder="Mật khẩu"
+            placeholder="Password"
             autoCapitalize="none"
             autoCorrect={false}
             secureTextEntry={true}
@@ -94,7 +94,7 @@ const FillPassword = () => {
         <View style={styles.inputField}>
           <TextInput
             placeholderTextColor="#444"
-            placeholder="Xác nhận mật khẩu"
+            placeholder="Confirm00376585282 Password"
             autoCapitalize="none"
             autoCorrect={false}
             secureTextEntry={true}

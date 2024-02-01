@@ -1,4 +1,11 @@
-import { View, Text, Image, TextInput, ScrollView, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  TextInput,
+  ScrollView,
+  FlatList,
+} from "react-native";
 import React, { useState, useEffect } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -7,35 +14,40 @@ import { useNavigation } from "@react-navigation/native";
 import postSytles from "./../styles/newpostStyles";
 import { Divider } from "react-native-elements";
 import chat from "../styles/ChatStyles/chatStyles";
+import LoadingAnimation from "../components/Loading/loadingAnimation";
+
 import {
   getUserDataAsync,
   getAllIdUserLocal,
   getDataUserLocal,
   updateAccessTokenAsync,
   uploadFile,
-  createPostAsync
+  createPostAsync,
 } from "../util";
 import * as ImagePicker from "expo-image-picker";
-import * as DocumentPicker from 'expo-document-picker';
+import * as DocumentPicker from "expo-document-picker";
 import { FileUploadDto, PostDto } from "../util/dto";
-import { Video, Audio } from 'expo-av';
+import { Video, Audio } from "expo-av";
 
 const NewStory = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
   const insets = useSafeAreaInsets();
-  const [dataUser, setDataUser] = React.useState(null)
-  const [fileUpload, setFileUpload] = React.useState([])
+  const [dataUser, setDataUser] = React.useState(null);
+  const [fileUpload, setFileUpload] = React.useState([]);
   const [dataPost, setDataPost] = React.useState({
     userId: "",
     content: "",
     fileUrl: [],
-  })
+  });
   const validateDataPost = (newData) => {
-    setDataPost(dataPostPre => {
+    setDataPost((dataPostPre) => {
       return {
-        ...dataPostPre, ...newData
-      }
+        ...dataPostPre,
+        ...newData,
+      };
     });
-  }
+  };
   React.useEffect(() => {
     const fetchData = async () => {
       const keys = await getAllIdUserLocal();
@@ -55,77 +67,88 @@ const NewStory = () => {
           dataUpdate.accessToken
         );
       }
-      console.log(dataUserAsync)
-      setDataUser({ ...dataUserAsync })
-      setDataPost(dataPostPre => {
+      console.log(dataUserAsync);
+      setDataUser({ ...dataUserAsync });
+      setDataPost((dataPostPre) => {
         return {
-          ...dataPostPre, ...{ userId: dataUserLocal.id }
-        }
+          ...dataPostPre,
+          ...{ userId: dataUserLocal.id },
+        };
       });
-    }
-    fetchData()
-  }, [])
+    };
+    fetchData();
+  }, []);
   return (
-    <View
-      style={{
-        paddingTop: insets.top,
-        paddingBottom: insets.bottom,
-        paddingLeft: insets.left + 10,
-        paddingRight: insets.right + 10,
+    <>
+      <View
+        style={{
+          paddingTop: insets.top,
+          paddingBottom: insets.bottom,
+          paddingLeft: insets.left + 10,
+          paddingRight: insets.right + 10,
 
-        flex: 1,
-      }}
-    >
-      <Header postData={dataPost} />
-      <ScrollView>
-        {dataUser != null && (
-          <Caption user={dataUser} onUpdateData={validateDataPost} />
-        )}
+          flex: 1,
+        }}
+      >
+        <Header
+          postData={dataPost}
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
+        />
+        <ScrollView>
+          {dataUser != null && (
+            <Caption user={dataUser} onUpdateData={validateDataPost} />
+          )}
 
-        {fileUpload.length > 0 && (
-          <ReviewImage
-            fileData={fileUpload}
-            setFile={setFileUpload}
+          {fileUpload.length > 0 && (
+            <ReviewImage
+              fileData={fileUpload}
+              setFile={setFileUpload}
+              onUpdateData={validateDataPost}
+              postData={dataPost}
+            />
+          )}
+
+          <ChoseImg
+            upFile={setFileUpload}
             onUpdateData={validateDataPost}
-            postData={dataPost} />
-        )}
-
-        <ChoseImg
-          upFile={setFileUpload}
-          onUpdateData={validateDataPost}
-          postData={dataPost} />
-      </ScrollView>
-    </View>
+            postData={dataPost}
+            isLoading={isLoading}
+            setIsLoading={setIsLoading}
+          />
+        </ScrollView>
+      </View>
+      <LoadingAnimation isVisible={isLoading} />
+    </>
   );
 };
 
-const Header = ({ postData }) => {
+const Header = ({ postData, isLoading, setIsLoading })  => {
   const navigation = useNavigation();
   const handleCreatePost = async () => {
-    const dto = new PostDto(postData.userId, "STORY", postData.content, postData.fileUrl)
+    setIsLoading(true); //////////////////////////////////////
+    const dto = new PostDto(
+      postData.userId,
+      "STORY",
+      postData.content,
+      postData.fileUrl
+    );
     const keys = await getAllIdUserLocal();
     const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
-    let dataReturn = await createPostAsync(
-      dto,
-      dataUserLocal.accessToken
-    );
+    let dataReturn = await createPostAsync(dto, dataUserLocal.accessToken);
 
     if ("errors" in dataReturn) {
       const dataUpdate = await updateAccessTokenAsync(
         dataUserLocal.id,
         dataUserLocal.refreshToken
       );
-      dataReturn = await createPostAsync(
-        dto,
-        dataUpdate.accessToken
-      );
+      dataReturn = await createPostAsync(dto, dataUpdate.accessToken);
     }
     console.log(dataReturn);
     if ("errors" in dataReturn) return;
-
-    navigation.replace('main')
-
-  }
+    setIsLoading(false); //////////////////////////////////////
+    navigation.replace("main");
+  };
   return (
     <View
       style={{
@@ -154,21 +177,23 @@ const Header = ({ postData }) => {
         }}
         onPress={handleCreatePost}
       >
-        <Text style={postSytles.text}>Post</Text>
+        <Text style={[postSytles.text,{color:'#F5F5F5'}]}>Post</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
 const Caption = ({ user, onUpdateData }) => {
-
   return (
     <View>
       <View style={{ flexDirection: "row" }}>
         {user.detail.avatarUrl ? (
           <Image style={chat.avtChat} source={{ uri: user.detail.avatarUrl }} />
         ) : (
-          <Image style={chat.avtChat} source={require('../../assets/img/avt.png')}/>
+          <Image
+            style={chat.avtChat}
+            source={require("../../assets/img/avt.png")}
+          />
         )}
         <View style={chat.nameChatContainer}>
           <Text style={chat.chatUSerName}> {user.detail.name}</Text>
@@ -179,10 +204,17 @@ const Caption = ({ user, onUpdateData }) => {
   );
 };
 
-const ChoseImg = ({ upFile, postData, onUpdateData }) => {
+const ChoseImg = ({
+  upFile,
+  postData,
+  onUpdateData,
+  isLoading,
+  setIsLoading,
+}) => {
   const handleCamera = async () => {
-    const cameraPermission =
-      await ImagePicker.requestCameraPermissionsAsync();
+    setIsLoading(true); //////////////////////////////////////
+
+    const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
     if (cameraPermission.granted === false) {
       return;
     }
@@ -192,12 +224,19 @@ const ChoseImg = ({ upFile, postData, onUpdateData }) => {
       allowsEditing: true,
       quality: 1,
     });
+
     if (result.canceled) return;
 
     const keys = await getAllIdUserLocal();
     const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
-    const dto = new FileUploadDto(dataLocal.id, result.assets[0].uri, `${new Date().toISOString}${dataLocal.id}.jpg`, "image/jpeg");
+    const dto = new FileUploadDto(
+      dataLocal.id,
+      result.assets[0].uri,
+      `${new Date().toISOString}${dataLocal.id}.jpg`,
+      "image/jpeg"
+    );
     let data = await uploadFile(dto, dataLocal.accessToken);
+    setIsLoading(false); //////////////////////////////////////
     if (data == null) {
       const dataUpdate = await updateAccessTokenAsync(
         dataLocal.id,
@@ -205,39 +244,58 @@ const ChoseImg = ({ upFile, postData, onUpdateData }) => {
       );
       data = await uploadFile(dto, dataUpdate.accessToken);
     }
-    let newFile = { id: data.id, source: { uri: data.url } }
-    upFile(preFile => [...preFile, newFile]);
+    let newFile = { id: data.id, source: { uri: data.url } };
+    upFile((preFile) => [...preFile, newFile]);
     let newPostData = { ...postData };
     newPostData.fileUrl.push(data.url);
     onUpdateData({ fileUrl: newPostData.fileUrl });
-  }
+    setIsLoading(false); //////////////////////////////////////
+  };
   const handleGallery = async () => {
+    setIsLoading(true); //////////////////////////////////////
+
     let result = await DocumentPicker.getDocumentAsync({
-      type: ['image/*', 'video/*', 'audio/*'],
+      type: ["image/*", "video/*", "audio/*"],
       multiple: true,
     });
 
-    if (result.canceled) return;
+    if (result.canceled) {
+      return setIsLoading(false);
+    }
     const keys = await getAllIdUserLocal();
     const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
-    let dataUpdate = await updateAccessTokenAsync(dataLocal.id, dataLocal.refreshToken);
+    let dataUpdate = await updateAccessTokenAsync(
+      dataLocal.id,
+      dataLocal.refreshToken
+    );
 
     let newPostData = { ...postData };
+
     for (let i = 0; i < result.assets.length; i++) {
-      const dto = new FileUploadDto(dataLocal.id, result.assets[i].uri, result.assets[i].name, result.assets[i].mimeType)
-      let data = await uploadFile(dto, dataUpdate.accessToken)
+      const dto = new FileUploadDto(
+        dataLocal.id,
+        result.assets[i].uri,
+        result.assets[i].name,
+        result.assets[i].mimeType
+      );
+
+      let data = await uploadFile(dto, dataUpdate.accessToken);
+      setIsLoading(false); //////////////////////////////////
       if (data == null) {
-        dataUpdate = await updateAccessTokenAsync(dataLocal.id, dataLocal.refreshToken);
+        dataUpdate = await updateAccessTokenAsync(
+          dataLocal.id,
+          dataLocal.refreshToken
+        );
       }
       if (data == null) {
         continue;
       }
-      let newFile = { id: data.id, source: { uri: data.url } }
-      upFile(preFile => [...preFile, newFile])
+      let newFile = { id: data.id, source: { uri: data.url } };
+      upFile((preFile) => [...preFile, newFile]);
       newPostData.fileUrl.push(data.url);
     }
     onUpdateData({ fileUrl: newPostData.fileUrl });
-  }
+  };
 
   return (
     <View style={{ marginTop: 20 }}>
@@ -253,11 +311,10 @@ const ChoseImg = ({ upFile, postData, onUpdateData }) => {
           style={{ alignItems: "center", flexDirection: "row", marginTop: 10 }}
         >
           <Image
-            style={[postSytles.button,]}
+            style={[postSytles.button]}
             source={require("../../assets/dummyicon/camera_2_line.png")}
           />
           <Text style={postSytles.text}>Camera</Text>
-
         </TouchableOpacity>
         <TouchableOpacity
           onPress={handleGallery}
@@ -268,7 +325,6 @@ const ChoseImg = ({ upFile, postData, onUpdateData }) => {
             source={require("../../assets/dummyicon/file_upload.png")}
           />
           <Text style={postSytles.text}>Gallery</Text>
-
         </TouchableOpacity>
       </View>
     </View>
@@ -282,7 +338,7 @@ const ReviewImage = ({ fileData, setFile, postData, onUpdateData }) => {
 
   useEffect(() => {
     setImageList(fileData);
-  }, [fileData])
+  }, [fileData]);
 
   const renderItem = ({ item }) => {
     const isSelected = selectedImages.includes(item.id);
@@ -291,48 +347,53 @@ const ReviewImage = ({ fileData, setFile, postData, onUpdateData }) => {
       if (!setFile) return;
 
       const newSelectedImages = selectedImages.filter((id) => id !== item.id);
-      setImageList(file => file.filter((data) => data.id !== item.id));
-      setImageList(file => file.filter((data) => data.id !== item.id));
-      let newDataPost = { ...postData }
-      newDataPost.fileUrl = newDataPost.fileUrl.filter((data) => data !== item.source.uri);
-      onUpdateData({ fileUrl: newDataPost.fileUrl })
+      setImageList((file) => file.filter((data) => data.id !== item.id));
+      setImageList((file) => file.filter((data) => data.id !== item.id));
+      let newDataPost = { ...postData };
+      newDataPost.fileUrl = newDataPost.fileUrl.filter(
+        (data) => data !== item.source.uri
+      );
+      onUpdateData({ fileUrl: newDataPost.fileUrl });
       setFile(imageList);
       setSelectedImages(newSelectedImages);
     };
-    
+
     const validateFile = (file) => {
-      const imgExt = ["jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp", "raf"];
+      const imgExt = [
+        "jpg",
+        "jpeg",
+        "png",
+        "gif",
+        "bmp",
+        "tiff",
+        "webp",
+        "raf",
+      ];
       const videoExt = ["mp4", "avi", "mkv", "mov", "wmv", "flv", "webm"];
       const audioExt = ["mp3", "ogg", "wav", "flac", "aac", "wma", "m4a"];
       const lastElement = file.split("/").pop();
-      const fileExt = lastElement
-        .split("?")[0]
-        .split(".")
-        .pop()
-        .toLowerCase();
+      const fileExt = lastElement.split("?")[0].split(".").pop().toLowerCase();
 
       if (imgExt.includes(fileExt)) {
-        return "IMAGE"
+        return "IMAGE";
       } else if (audioExt.includes(fileExt)) {
-        return "AUDIO"
+        return "AUDIO";
       } else if (videoExt.includes(fileExt)) {
-        return "VIDEO"
+        return "VIDEO";
       }
-    }
+    };
 
     return (
       <View style={{ marginRight: 10, marginBottom: 10 }}>
-        <TouchableOpacity
-          onPress={() => toggleImageSelection(item.id)}
-
-        >
+        <TouchableOpacity onPress={() => toggleImageSelection(item.id)}>
           {validateFile(item.source.uri) === "IMAGE" ? (
             <Image
               source={{ uri: item.source.uri }}
               style={[
                 postSytles.image,
                 {
-                  backgroundColor: isSelected ? 'gray' : 'lightgrey', width: 90,
+                  backgroundColor: isSelected ? "gray" : "lightgrey",
+                  width: 90,
                   height: 90,
                 },
               ]}
@@ -342,7 +403,8 @@ const ReviewImage = ({ fileData, setFile, postData, onUpdateData }) => {
               style={[
                 postSytles.image,
                 {
-                  backgroundColor: isSelected ? 'gray' : 'lightgrey', width: 90,
+                  backgroundColor: isSelected ? "gray" : "lightgrey",
+                  width: 90,
                   height: 90,
                 },
               ]}
@@ -355,7 +417,8 @@ const ReviewImage = ({ fileData, setFile, postData, onUpdateData }) => {
               style={[
                 postSytles.image,
                 {
-                  backgroundColor: isSelected ? 'gray' : 'lightgrey', width: 90,
+                  backgroundColor: isSelected ? "gray" : "lightgrey",
+                  width: 90,
                   height: 90,
                 },
               ]}
@@ -371,15 +434,17 @@ const ReviewImage = ({ fileData, setFile, postData, onUpdateData }) => {
                 textAlign: "center",
               }}
             >
-              <Text style={{
-                color: 'red',
-                fontSize: 32,
-                borderColor: "black",
-                borderWidth: 2,
-                textAlign: "center",
-                alignItems: "center",
-                justifyContent: 'center',
-              }}>
+              <Text
+                style={{
+                  color: "red",
+                  fontSize: 32,
+                  borderColor: "black",
+                  borderWidth: 2,
+                  textAlign: "center",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
                 X
               </Text>
             </TouchableOpacity>
