@@ -1329,9 +1329,9 @@ export async function findFriendAsync(content: string, accessToken: string) {
                 name
                 nickName
                 birthday
-                age
                 description
                 phoneNumber
+                countryCode
                 avatarUrl
             }
         }

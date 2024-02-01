@@ -41,7 +41,7 @@ const Edit = ({ receivedData, users, userCurrent }) => {
 
   useEffect(() => {
     setDataReturn(receivedData);
-    console.log(receivedData)
+    console.log(receivedData.isBlock)
   }, [receivedData])
 
   const showEditAvatarModal = () => {
@@ -69,12 +69,13 @@ const Edit = ({ receivedData, users, userCurrent }) => {
         return tmpData;
       })
     }
-    if (state === userId) {
+    else if (state === userId) {
       let dataRe = await unblockRoomchatAsync(userId, roomId, dataLocal.accessToken);
       if ("errors" in dataRe) {
         let dataUpdate = await updateAccessTokenAsync(dataLocal.id, dataLocal.refreshToken);
         dataRe = await unblockRoomchatAsync(userId, roomId, dataLocal.accessToken);
       }
+      console.log(dataRe)
       if ("errors" in dataRe) return
       setDataReturn((dataPre) => {
         let tmpData = { ...dataPre }
@@ -150,7 +151,7 @@ const Edit = ({ receivedData, users, userCurrent }) => {
         </View>
         <View>
           <Text style={settingChat.title}>Privacy</Text>
-          {dataReturn.isBlock == null | dataReturn.isBlock == userCurrent.id && (
+          {dataReturn.isBlock == null || dataReturn.isBlock == userCurrent.id && (
             <TouchableOpacity style={settingChat.editItemContainer}
               onPress={() => handleBlockUser(dataReturn.id, userCurrent.id, dataReturn.isBlock)}
 

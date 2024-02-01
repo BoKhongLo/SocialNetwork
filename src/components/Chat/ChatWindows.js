@@ -50,6 +50,7 @@ const ChatWindows = ({ user }) => {
     data: [],
     imgMembers: {},
     nameMembers: {},
+    isBlock: "-1",
   });
   const [userCurrentData, setUserCurrentData] = useState({});
 
@@ -107,6 +108,7 @@ const ChatWindows = ({ user }) => {
       newRoomchat.id = dataRoomchatAsync.id;
       newRoomchat.data = dataRoomchatAsync.data;
       newRoomchat.isSingle = dataRoomchatAsync.isSingle;
+      newRoomchat.isBlock = dataRoomchatAsync.isBlock;
       if (dataRoomchatAsync.ownerUserId)
         newRoomchat.ownerUserId = dataRoomchatAsync.ownerUserId;
       if (dataRoomchatAsync.description)
@@ -164,10 +166,10 @@ const Header = ({ roomProfile, userData }) => {
       <TouchableOpacity
         onPress={() => {
           if (roomProfile.isSingle === true) {
-            navigation.replace("settingChat", {data: roomProfile})
+            navigation.replace("settingChat", { data: roomProfile })
           }
           else {
-            navigation.replace("settingGroupChat", {data: roomProfile})
+            navigation.replace("settingGroupChat", { data: roomProfile })
           }
         }}
         style={{ padding: 10 }}
@@ -491,26 +493,30 @@ const Content = ({ roomProfile }) => {
   const renderSend = (props) => {
     return (
       <View style={{ flexDirection: "row" }}>
-        <TouchableOpacity onPress={pickDocument}>
+        {roomProfile.isBlock == null && (
           <View>
-            <FontAwesome
-              name="file"
-              style={{ marginRight: 5, marginTop: 5 }}
-              size={30}
-              color="#2e64e5"
-            />
+            <TouchableOpacity onPress={pickDocument}>
+              <View>
+                <FontAwesome
+                  name="file"
+                  style={{ marginRight: 5, marginTop: 5 }}
+                  size={30}
+                  color="#2e64e5"
+                />
+              </View>
+            </TouchableOpacity>
+            <Send {...props}>
+              <View>
+                <MaterialCommunityIcons
+                  name="send-circle"
+                  style={{ marginBottom: 5, marginRight: 5 }}
+                  size={32}
+                  color="#2e64e5"
+                />
+              </View>
+            </Send>
           </View>
-        </TouchableOpacity>
-        <Send {...props}>
-          <View>
-            <MaterialCommunityIcons
-              name="send-circle"
-              style={{ marginBottom: 5, marginRight: 5 }}
-              size={32}
-              color="#2e64e5"
-            />
-          </View>
-        </Send>
+        )}
       </View>
     );
   };
