@@ -1,16 +1,27 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { View, Image, TouchableOpacity, Modal as RNModal, StyleSheet, FlatList } from "react-native";
+import {
+  View,
+  Image,
+  TouchableOpacity,
+  Modal as RNModal,
+  StyleSheet,
+  FlatList,
+} from "react-native";
 import Swiper from "react-native-swiper";
 import headerPostStyles from "./../../../styles/postHeaderStyles";
-import { Video, Audio } from 'expo-av';
+import { Video, Audio } from "expo-av";
+import { Dimensions } from "react-native";
+
+
+const { height: screenHeight } = Dimensions.get("window");
+const { width: screenWidth } = Dimensions.get("window");
+
 
 
 const PostImage = ({ post, users }) => {
-
   const [isModalVisible, setModalVisible] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [ratio, setRatio] = useState(0);
-
 
   const validateFile = (file) => {
     if (!file || file == "") return "Null";
@@ -18,21 +29,18 @@ const PostImage = ({ post, users }) => {
     const videoExt = ["mp4", "avi", "mkv", "mov", "wmv", "flv", "webm"];
     const audioExt = ["mp3", "ogg", "wav", "flac", "aac", "wma", "m4a"];
     const lastElement = file.split("/").pop();
-    const fileExt = lastElement
-      .split("?")[0]
-      .split(".")
-      .pop()
-      .toLowerCase();
+    const fileExt = lastElement.split("?")[0].split(".").pop().toLowerCase();
 
     if (imgExt.includes(fileExt)) {
-      return "IMAGE"
+      return "IMAGE";
     } else if (audioExt.includes(fileExt)) {
-      return "AUDIO"
+      return "AUDIO";
     } else if (videoExt.includes(fileExt)) {
-      return "VIDEO"
+      return "VIDEO";
+    } else {
+      return "UNKNOWN";
     }
-  }
-
+  };
 
   const handleImagePress = (index) => {
     setCurrentImageIndex(index);
@@ -42,17 +50,21 @@ const PostImage = ({ post, users }) => {
   const closeModal = () => {
     setModalVisible(false);
   };
+  const defaultAspectRatio = 1; // Set a default aspect ratio
 
   const renderItem = ({ item, index }) => {
-    // if (validateFile(item) === "IMAGE") {
-    //   try {
-    //     Image.getSize(item, (width, height) => {setRatio(width / height)});
-    //   }
-    //   catch (err) {
+    let aspectRatio = defaultAspectRatio; // Default aspect ratio
 
-    //   }
-    // }
-    return(
+    if (validateFile(item) === "IMAGE") {
+      try {
+        Image.getSize(item, (width, height) => {
+          aspectRatio = width / height;
+        });
+      } catch (err) {
+        // Handle errors, log, or ignore as needed
+      }
+    }
+    return (
       <TouchableOpacity
         onPress={() => handleImagePress(index)}
         style={styles.gridItem}
@@ -60,32 +72,33 @@ const PostImage = ({ post, users }) => {
         {validateFile(item) === "IMAGE" ? (
           <Image
             source={{ uri: item }}
-            // style={[styles.image, { aspectRatio: ratio}]}
-            style={[styles.image]}
-            resizeMode="contain"
+            style={[styles.image, { aspectRatio }, styles.commonStyle]}
           />
         ) : validateFile(item) === "VIDEO" ? (
           <Video
-            onReadyForDisplay={res => {
-              setRatio(res.naturalSize.width / res.naturalSize.height)
+            onReadyForDisplay={(res) => {
+              aspectRatio = res.naturalSize.width / res.naturalSize.height;
             }}
-            style={[styles.image, {
-              aspectRatio: ratio ? ratio : 1
-            }]}
+            style={{
+              width: screenWidth,
+              height: screenHeight - 250,
+              resizeMode: "cover",
+            }}
             source={{ uri: item }}
-            useNativeControls = {true}
-            resizeMode="contain"
+            useNativeControls={true}
+            resizeMode="cover"
           />
         ) : (
           <Video
-            style={styles.image}
+            style={[styles.image, styles.commonStyle]}
             source={{ uri: item }}
-            useNativeControls = {true}
+            useNativeControls={true}
             resizeMode="contain"
           />
         )}
       </TouchableOpacity>
-  )};
+    );
+  };
 
   return (
     <View>
@@ -109,7 +122,7 @@ const PostImage = ({ post, users }) => {
             loop={false}
             index={currentImageIndex}
             onIndexChanged={(index) => setCurrentImageIndex(index)}
-            activeDotStyle={{ backgroundColor: 'white', width: 8, height: 8 }}
+            activeDotStyle={{ backgroundColor: "white", width: 8, height: 8 }}
           >
             {post.fileUrl.map((image, index) => (
               <View key={index}>
@@ -120,7 +133,7 @@ const PostImage = ({ post, users }) => {
                       width: "100%",
                       height: "100%",
                       resizeMode: "contain",
-                      backgroundColor: 'rgba(0,0,0,0.5)',
+                      backgroundColor: "rgba(0,0,0,0.5)",
                     }}
                   />
                 ) : validateFile(image) === "VIDEO" ? (
@@ -128,8 +141,8 @@ const PostImage = ({ post, users }) => {
                     style={{
                       width: "100%",
                       height: "100%",
-                      resizeMode: "contain",
-                      backgroundColor: 'rgba(0,0,0,0.5)',
+                      // resizeMode: "contain",
+                      backgroundColor: "rgba(0,0,0,0.5)",
                     }}
                     source={{ uri: image }}
                     useNativeControls
@@ -140,8 +153,8 @@ const PostImage = ({ post, users }) => {
                     style={{
                       width: "100%",
                       height: "100%",
-                      resizeMode: "contain",
-                      backgroundColor: 'rgba(0,0,0,0.5)',
+                      // resizeMode: "contain",
+                      backgroundColor: "rgba(0,0,0,0.5)",
                     }}
                     source={{ uri: image }}
                     useNativeControls
@@ -170,21 +183,30 @@ const PostImage = ({ post, users }) => {
 const styles = StyleSheet.create({
   gridContainer: {
     padding: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
-  gridItem: { 
+  gridItem: {
     flex: 1,
     borderWidth: 0.2,
-    borderColor: 'lightgrey',
-    height: 'auto'
+    borderColor: "lightgrey",
   },
   image: {
     flex: 1,
     aspectRatio: 1,
-    height: 100,
-    width: 100,
-    resizeMode: 'contain',
+    height: "100%",
+    width: "100%",
+    resizeMode: "contain",
+  },
+  commonStyle: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "contain",
+  },
+  video: {
+    width: screenWidth,
+    height: screenHeight*0.7,
+    resizeMode: "cover",
   },
 });
 export default PostImage;

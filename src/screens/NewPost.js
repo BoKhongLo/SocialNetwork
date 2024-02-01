@@ -358,6 +358,7 @@ const ChoseImg = ({
       newPostData.fileUrl.push(data.url);
     }
     onUpdateData({ fileUrl: newPostData.fileUrl });
+    setIsLoading(false); //////////////////////////////////
   };
 
   return (
