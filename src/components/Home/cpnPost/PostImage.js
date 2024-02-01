@@ -12,11 +12,8 @@ import headerPostStyles from "./../../../styles/postHeaderStyles";
 import { Video, Audio } from "expo-av";
 import { Dimensions } from "react-native";
 
-
 const { height: screenHeight } = Dimensions.get("window");
 const { width: screenWidth } = Dimensions.get("window");
-
-
 
 const PostImage = ({ post, users }) => {
   const [isModalVisible, setModalVisible] = useState(false);
@@ -64,6 +61,7 @@ const PostImage = ({ post, users }) => {
         // Handle errors, log, or ignore as needed
       }
     }
+
     return (
       <TouchableOpacity
         onPress={() => handleImagePress(index)}
@@ -72,22 +70,18 @@ const PostImage = ({ post, users }) => {
         {validateFile(item) === "IMAGE" ? (
           <Image
             source={{ uri: item }}
-            style={[styles.image, { aspectRatio }, styles.commonStyle]}
+            style={[styles.image, { aspectRatio }]}
           />
         ) : validateFile(item) === "VIDEO" ? (
           <Video
-            onReadyForDisplay={(res) => {
-              aspectRatio = res.naturalSize.width / res.naturalSize.height;
-            }}
-            style={{
-              width: screenWidth,
-              height: screenHeight - 250,
-              resizeMode: "cover",
-            }}
-            source={{ uri: item }}
-            useNativeControls={true}
-            resizeMode="cover"
-          />
+          onReadyForDisplay={(res) => {
+            aspectRatio = res.naturalSize.width / res.naturalSize.height;
+          }}
+          style={[styles.video, { aspectRatio }]}
+          source={{ uri: item }}
+          useNativeControls={true}
+          resizeMode="cover"
+        />
         ) : (
           <Video
             style={[styles.image, styles.commonStyle]}
@@ -133,7 +127,7 @@ const PostImage = ({ post, users }) => {
                       width: "100%",
                       height: "100%",
                       resizeMode: "contain",
-                      backgroundColor: "rgba(0,0,0,0.5)",
+                      backgroundColor: "#111111",
                     }}
                   />
                 ) : validateFile(image) === "VIDEO" ? (
@@ -141,8 +135,7 @@ const PostImage = ({ post, users }) => {
                     style={{
                       width: "100%",
                       height: "100%",
-                      // resizeMode: "contain",
-                      backgroundColor: "rgba(0,0,0,0.5)",
+                      backgroundColor: "#111111",
                     }}
                     source={{ uri: image }}
                     useNativeControls
@@ -153,8 +146,7 @@ const PostImage = ({ post, users }) => {
                     style={{
                       width: "100%",
                       height: "100%",
-                      // resizeMode: "contain",
-                      backgroundColor: "rgba(0,0,0,0.5)",
+                      backgroundColor: "#111111",
                     }}
                     source={{ uri: image }}
                     useNativeControls
@@ -190,6 +182,7 @@ const styles = StyleSheet.create({
     flex: 1,
     borderWidth: 0.2,
     borderColor: "lightgrey",
+    width: "50%", // Set to 50% to make two items in a row
   },
   image: {
     flex: 1,
@@ -199,14 +192,12 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   commonStyle: {
-    width: "100%",
-    height: "100%",
     resizeMode: "contain",
   },
   video: {
-    width: screenWidth,
-    height: screenHeight*0.7,
-    resizeMode: "cover",
+    width: "100%",
+    aspectRatio: 1, // Default aspect ratio
+    backgroundColor: "#111111",
   },
 });
 export default PostImage;
