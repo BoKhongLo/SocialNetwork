@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Platform,
   Pressable,
+  ScrollView
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import styles from "../../styles/styles";
@@ -20,6 +21,8 @@ import { SignUpDto } from "../../util/dto";
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Toast } from 'toastify-react-native'
+import RNPickerSelect from 'react-native-picker-select';
+import CountryCodeDropdownPicker from 'react-native-dropdown-country-picker'
 
 const SignupForm = ({receivedData}) => {
   const [name, setName] = useState("");
@@ -28,7 +31,32 @@ const SignupForm = ({receivedData}) => {
   const [showPicker, setShowPicker] = useState(false);
   const [dateOfBirth, setDateOfBirth] = useState("");
   const navigation = useNavigation();
+  const [selectedGender, setSelectedGender] = useState("other");
+  const [selected, setSelected] = React.useState('+84');
+  const [country, setCountry] = React.useState('');
+  const [phone, setPhone] = React.useState('');
 
+  const handleSetPhone = (text) => {
+    if (text == "") {
+      setPhone("");
+      return;
+    }
+    if (text.startsWith("0")) {
+      return;
+    }
+    const numberRegex = /^[0-9]+$/;
+    if (numberRegex.test(text)) {
+      setPhone(text);
+    } else {
+      return;
+    }
+  }
+
+  const genderOptions = [
+    { label: '🚹male', value: 'male' },
+    { label: '🚺female', value: 'female' },
+    { label: '🏳️‍🌈other', value: 'other' },
+  ];
 
 
   const toggleDatePicker = () => {
@@ -73,9 +101,19 @@ const SignupForm = ({receivedData}) => {
       return;
     }
     dto.name = name;
-    dto.phoneNumber = parseFloat(phoneNumber.replace(/\D/g, ''));
+    if (phone === "") {
+      dto.phoneNumber = null;
+      dto.countryCode = null;
+    }
+    else {
+      dto.phoneNumber = phone;
+      dto.countryCode = selected;
+    }
+
     dto.birthday = dateOfBirth;
     dto.otpId = receivedData.otpId;
+    dto.gender = selectedGender;
+
     try {
       const dataSignUp = await SignupAsync(dto);
       if ("errors" in dataSignUp) {
@@ -92,6 +130,7 @@ const SignupForm = ({receivedData}) => {
 
   return (
     <View style={styles.wrapper}>
+      <ScrollView>
       <View style={styles.inputField}>
         <TextInput
           placeholderTextColor="#444"
@@ -146,9 +185,26 @@ const SignupForm = ({receivedData}) => {
         )}
       </View>
       <View style={styles.inputField}>
+          <RNPickerSelect 
+            onValueChange={(value) => setSelectedGender(value)}
+            items={genderOptions}
+            value={selectedGender}
+          />
+      </View>
+      <View style={styles.inputField}>
+        <CountryCodeDropdownPicker 
+          selected={selected} 
+          setSelected={setSelected}
+          setCountryDetails={setCountry} 
+          phone={phone} 
+          setPhone={handleSetPhone} 
+          countryCodeTextStyles={{fontSize: 13}}
+        />
+      </View>
+      {/* <View style={styles.inputField}>
         <TextInput
           placeholderTextColor="#444"
-          placeholder="Số điện thoại"
+          placeholder="phone number"
           autoCapitalize="none"
           keyboardType="number-pad"
           textContentType="telephoneNumber"
@@ -156,7 +212,7 @@ const SignupForm = ({receivedData}) => {
           value={phoneNumber}
           onChangeText={(text) => setPhoneNumber(text)}
         />
-      </View>
+      </View> */}
       <TouchableOpacity
         titleSize={20}
         style={styles.buttonLogin}
@@ -164,6 +220,7 @@ const SignupForm = ({receivedData}) => {
       >
         <Text style={styles.buttonLoginText}> Submit </Text>
       </TouchableOpacity>
+      </ScrollView>
     </View>
   );
 };
