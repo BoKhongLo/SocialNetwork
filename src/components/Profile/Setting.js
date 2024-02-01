@@ -17,7 +17,7 @@ const Setting = () => {
 
   const [userProfile, setUserProfile] = useState({
     username: "",
-    avatarUrl: require('../../../assets/img/avt.png'),
+    avatarUrl: require("../../../assets/img/avt.png"),
     nickName: "",
     phoneNumber: -1,
     description: "",
@@ -77,7 +77,6 @@ const Setting = () => {
   }, []);
 
   const logoutFunction = async () => {
-    
     const keys = await getAllIdUserLocal();
     const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
     // unregisterIndieDevice(dataUserLocal.id, 18604, '8sbEFbNYoDaZJKMDeIAWoc');
@@ -91,11 +90,11 @@ const Setting = () => {
   };
 
   const LogoutAlert = () => {
-    Alert.alert('', 'Log out of your account ?',[
-      {text: 'Cancel', onPress: () => null},
-      {text: 'Ok', onPress: () => logoutFunction()},
-    ])
-  }
+    Alert.alert("", "Log out of your account ?", [
+      { text: "Cancel", onPress: () => null },
+      { text: "Ok", onPress: () => logoutFunction() },
+    ]);
+  };
 
   return (
     <View
@@ -110,7 +109,7 @@ const Setting = () => {
       <Header />
       <View
         style={{
-          height: 300,
+          height: 350,
           backgroundColor: "#E0E0E0",
           borderRadius: 10,
           elevation: 8,
@@ -173,7 +172,7 @@ const General = ({ userProfile }) => {
       </Text>
       <View style={{ marginLeft: 15, marginTop: 20 }}>
         <TouchableOpacity
-          style={{ padding: 10, borderBottomWidth: 0.5, marginVertical:10 }}
+          style={{ padding: 10, borderBottomWidth: 0.5, marginVertical: 10 }}
           onPress={() =>
             navigation.navigate("editField", { data: userProfile })
           }
@@ -188,9 +187,30 @@ const General = ({ userProfile }) => {
             />
           </View>
         </TouchableOpacity>
+
+
         <TouchableOpacity
-        onPress={()=>navigation.navigate('buyPremium')}
-         style={{ padding: 10 ,borderBottomWidth:0.5 ,marginVertical:10}}>
+          style={{ padding: 10, borderBottomWidth: 0.5, marginVertical: 10 }}
+          onPress={() =>
+            navigation.navigate("genderAndPhone", { data: userProfile })
+          }
+        >
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <Text style={{ fontSize: 18 }}>Gender and phone number</Text>
+            <Image
+              style={{ height: 30, width: 30 }}
+              source={require("../../../assets/dummyicon/right_line.png")}
+            />
+          </View>
+        </TouchableOpacity>
+
+
+        <TouchableOpacity
+          onPress={() => navigation.navigate("buyPremium")}
+          style={{ padding: 10, borderBottomWidth: 0.5, marginVertical: 10 }}
+        >
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
@@ -201,7 +221,9 @@ const General = ({ userProfile }) => {
             />
           </View>
         </TouchableOpacity>
-        <TouchableOpacity style={{ padding: 10 ,borderBottomWidth:0.5 ,marginVertical:10}}>
+        <TouchableOpacity
+          style={{ padding: 10, borderBottomWidth: 0.5, marginVertical: 10 }}
+        >
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
