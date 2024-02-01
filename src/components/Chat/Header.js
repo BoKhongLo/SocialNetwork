@@ -18,7 +18,7 @@ import newGroup from "../../styles/ChatStyles/newGroupStyles";
 import Item from "./cpnGroupChat/Item";
 
 import {
-  getUserDataAsync,
+  getUserDataLiteAsync,
   getAllIdUserLocal,
   getDataUserLocal,
   updateAccessTokenAsync,
@@ -42,7 +42,7 @@ const Header = ({ user }) => {
       const tmpDataFriends = [];
       console.log(user)
       for (let i = 0; i < user.friends.length; i++) {
-        let dataReturn = await getUserDataAsync(
+        let dataReturn = await getUserDataLiteAsync(
           user.friends[i],
           dataUserLocal.accessToken
         );
@@ -53,7 +53,7 @@ const Header = ({ user }) => {
             dataUserLocal.refreshToken
           );
           dataUserLocal.accessToken = dataUpdate.accessToken;
-          dataReturn = await getUserDataAsync(
+          dataReturn = await getUserDataLiteAsync(
             user.friends[i],
             dataUpdate.accessToken
           );

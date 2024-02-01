@@ -500,15 +500,15 @@ const Content = ({ roomProfile }) => {
   // Render send button
   const renderSend = (props) => {
     return (
-      <View style={{ flexDirection: "row" }}>
+      <View >
         {roomProfile.isBlock == null && (
-          <View>
+          <View style={{ flexDirection: "row" }}>
             <TouchableOpacity onPress={pickDocument}>
               <View>
                 <FontAwesome
                   name="file"
                   style={{ marginRight: 5, marginTop: 5 }}
-                  size={30}
+                  size={28}
                   color="#2e64e5"
                 />
               </View>
@@ -518,7 +518,7 @@ const Content = ({ roomProfile }) => {
                 <MaterialCommunityIcons
                   name="send-circle"
                   style={{ marginBottom: 5, marginRight: 5 }}
-                  size={32}
+                  size={34}
                   color="#2e64e5"
                 />
               </View>

@@ -37,21 +37,20 @@ const Edit = ({ receivedData, users, userCurrent }) => {
   const [isProfileModalVisible, setProfileModalVisible] = useState(false);
   const [isNicknameModalVisible, setNicknameModalVisible] = useState(false);
   const [dataReturn, setDataReturn] = useState(receivedData);
-  const [blockState, setBlockState] = useState("Block User");
+
 
   useEffect(() => {
     setDataReturn(receivedData);
     console.log(receivedData.isBlock)
   }, [receivedData])
 
-  const showEditAvatarModal = () => {
-    setEditAvatarModalVisible(true);
-  };
+
   const updateDataReturn = (data) => {
     setDataReturn(data);
   }
 
   const handleBlockUser = async (roomId, userId, state) => {
+    console.log(state, userId)
     if (state === undefined) return;
     const keys = await getAllIdUserLocal();
     const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
@@ -63,13 +62,14 @@ const Edit = ({ receivedData, users, userCurrent }) => {
       }
       console.log(dataRe)
       if ("errors" in dataRe) return
+      
       setDataReturn((dataPre) => {
         let tmpData = { ...dataPre }
         tmpData.isBlock = userId;
         return tmpData;
       })
     }
-    else if (state === userId) {
+    else if (state == userId) {
       let dataRe = await unblockRoomchatAsync(userId, roomId, dataLocal.accessToken);
       if ("errors" in dataRe) {
         let dataUpdate = await updateAccessTokenAsync(dataLocal.id, dataLocal.refreshToken);
@@ -84,17 +84,6 @@ const Edit = ({ receivedData, users, userCurrent }) => {
       })
     }
 
-  };
-  const hideEditAvatarModal = () => {
-    setEditAvatarModalVisible(false);
-  };
-
-  const showProfileModal = () => {
-    setProfileModalVisible(true);
-  };
-
-  const hideProfileModal = () => {
-    setProfileModalVisible(false);
   };
 
   const showNicknameModal = () => {
@@ -151,16 +140,20 @@ const Edit = ({ receivedData, users, userCurrent }) => {
         </View>
         <View>
           <Text style={settingChat.title}>Privacy</Text>
-          {dataReturn.isBlock == null || dataReturn.isBlock == userCurrent.id && (
+          {dataReturn.isBlock === null ? (
             <TouchableOpacity style={settingChat.editItemContainer}
               onPress={() => handleBlockUser(dataReturn.id, userCurrent.id, dataReturn.isBlock)}
 
             >
-              <Text style={settingChat.editItem}>{
-                dataReturn.isBlock == null ? "Block User" :
-                  dataReturn.isBlock == userCurrent.id && "Unblock User"}
-              </Text>
+              <Text style={settingChat.editItem}>{"Block User"}</Text>
             </TouchableOpacity>
+          ) : dataReturn.isBlock === userCurrent.id && (
+            <TouchableOpacity style={settingChat.editItemContainer}
+            onPress={() => handleBlockUser(dataReturn.id, userCurrent.id, dataReturn.isBlock)}
+
+          >
+            <Text style={settingChat.editItem}>{"Unblock User"}</Text>
+          </TouchableOpacity>
           )}
 
           {/* <TouchableOpacity style={settingChat.editItemContainer}>
