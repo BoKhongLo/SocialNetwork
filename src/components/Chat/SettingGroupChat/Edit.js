@@ -86,7 +86,7 @@ const Edit = ({ receivedData, users, userCurrent }) => {
     if ("errors" in dataRe) return
     validateAddMembersModal(false)
     setDataReturn((preData) => {
-      let newData = {...preData};
+      let newData = { ...preData };
       newData.member = [...newData.member, ...groupMember]
       return newData;
     })
@@ -107,8 +107,6 @@ const Edit = ({ receivedData, users, userCurrent }) => {
     if ("errors" in dataRe) return
     navigation.navigate("main")
   }
-
-
 
   // delete room logic
   const deleteRoom = async () => {
@@ -148,26 +146,10 @@ const Edit = ({ receivedData, users, userCurrent }) => {
               />
             </TouchableOpacity>
             <View style={{ margin: 10, flex: 1 }}>
-              <View>
-                {/** renderAdminGroup */}
-                <View>
-                  <Text style={{ fontSize: 15, color: "#A9A9A9" }}>
-                    Admins & moderators
-                  </Text>
-                  {/** ITEM LA MAY CAI THANG MEMBER DAY M SUA LAI KIEU GI THI SUA T CHIU!!! */}
-                  <Item />
-                </View>
-                {/** renderMembers */}
-                <View>
-                  <Text style={{ fontSize: 15, color: "#A9A9A9" }}>
-                    Members
-                  </Text>
-                  {/** ITEM LA MAY CAI THANG MEMBER DAY M SUA LAI KIEU GI THI SUA T CHIU!!! */}
-                  <Item />
-                </View>
-              </View>
+                <ViewMember users={users} room={dataReturn} userCurrent={userCurrent}/>
             </View>
           </Modal>
+
 
           {/** Add members Button */}
           <TouchableOpacity
@@ -210,14 +192,16 @@ const Edit = ({ receivedData, users, userCurrent }) => {
                   <Text style={settingChat.editItem}>Save</Text>
                 </TouchableOpacity>
               </View>
-              <AddMember 
-                room={dataReturn} 
-                userCurrent={userCurrent} 
+              <AddMember
+                room={dataReturn}
+                userCurrent={userCurrent}
                 updateMember={updateMember}
                 removeMember={removeMember}
+                updateRoom={updateDataReturn} 
               />
             </View>
           </Modal>
+
 
           {/** Modal Nick name */}
           <TouchableOpacity
@@ -243,18 +227,21 @@ const Edit = ({ receivedData, users, userCurrent }) => {
 
         <View>
           <Text style={settingChat.title}>Privacy</Text>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={settingChat.editItemContainer}
-            onPress={async () =>  await leaveRoom()}
+            onPress={async () => await leaveRoom()}
           >
             <Text style={settingChat.editItem}>Leave Chat</Text>
           </TouchableOpacity>
-          <TouchableOpacity 
-            style={settingChat.editItemContainer}
-            onPress={async () =>  await deleteRoom()}
-          >
-            <Text style={settingChat.editItem}>Delete Group</Text>
-          </TouchableOpacity>
+          {dataReturn.ownerUserId == userCurrent.id && (
+            <TouchableOpacity
+              style={settingChat.editItemContainer}
+              onPress={async () => await deleteRoom()}
+            >
+              <Text style={settingChat.editItem}>Delete Group</Text>
+            </TouchableOpacity>
+          )}
+
         </View>
       </View>
     </View>
@@ -397,7 +384,7 @@ const AddMember = ({ room, userCurrent, updateMember, removeMember }) => {
   const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation();
 
-  const [dataFriends, setDataFriends] = useState([]);
+  const [dataRetr, setDataRetr] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -433,7 +420,7 @@ const AddMember = ({ room, userCurrent, updateMember, removeMember }) => {
 
   const renderItem = ({ item }) => {
     return (
-      <Item user={item} onAdd={updateMember} onRemove={removeMember} />
+      <Item user={item} onAdd={updateMember} onRemove={removeMember} typeItem={"ADDMEMBER"} />
     )
   };
 
@@ -446,6 +433,134 @@ const AddMember = ({ room, userCurrent, updateMember, removeMember }) => {
         refreshing={refreshing}
       />
     </View>
+  );
+};
+
+
+const ViewMember = ({ users, room, userCurrent,updateRoom }) => {
+  const [refreshing, setRefreshing] = useState(false);
+  const navigation = useNavigation();
+  const [dataAdmin, setDataAdmin] = useState([]);
+  const [dataUser, setDataUser] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!("role" in room)) return
+      const tmpDataAdmin = [];
+      const tmpDataUser = [];
+      let typeUser = "User";
+      if (room.role.ADMIN.findIndex(item => item.memberId == userCurrent.id) !== -1) {
+        typeUser = "Admin"
+      }
+      else if (room.role.MOD.findIndex(item => item.memberId == userCurrent.id) !== -1){
+        typeUser = "Mod"
+      }
+
+      for (let i = 0; i < room.member.length; i++) {
+        if (typeUser == "Admin") {
+          if (room.member[i] === userCurrent.id) {
+            tmpDataAdmin.push({...users[room.member[i]], ...{isMod : "isUser"}})
+          }
+          else if (room.role.ADMIN.findIndex(item => item.memberId == room.member[i]) !== -1) {
+            tmpDataAdmin.push({...users[room.member[i]], ...{isMod : "Admin"}})
+          }
+          else if (room.role.MOD.findIndex(item => item.memberId == room.member[i]) !== -1) {
+            tmpDataAdmin.push({...users[room.member[i]], ...{isMod : "Remove Mod"}})
+          }
+          else {
+            tmpDataUser.push({...users[room.member[i]], ...{isMod : "Add Mod"}})
+          }
+        }
+        else if (typeUser == "Mod") {
+          if (room.member[i] === userCurrent.id) {
+            tmpDataAdmin.push({...users[room.member[i]], ...{isMod : "isUser"}})
+          }
+          else if (room.role.ADMIN.findIndex(item => item.memberId == room.member[i]) !== -1) {
+            tmpDataAdmin.push({...users[room.member[i]], ...{isMod : "Admin"}})
+          }
+          else if (room.role.MOD.findIndex(item => item.memberId == room.member[i]) !== -1) {
+            tmpDataAdmin.push({...users[room.member[i]], ...{isMod : "Admin"}})
+          }
+          else {
+            tmpDataUser.push({...users[room.member[i]], ...{isMod : "Mod"}})
+          }
+        }
+        else {
+          if (room.member[i] === userCurrent.id) {
+            tmpDataAdmin.push({...users[room.member[i]], ...{isMod : "isUser"}})
+          }
+          else if (room.role.ADMIN.findIndex(item => item.memberId == room.member[i]) !== -1) {
+            tmpDataAdmin.push({...users[room.member[i]], ...{isMod : "Admin"}})
+          }
+          else if (room.role.MOD.findIndex(item => item.memberId == room.member[i]) !== -1) {
+            tmpDataAdmin.push({...users[room.member[i]], ...{isMod : "Admin"}})
+          }
+          else {
+            tmpDataUser.push({...users[room.member[i]], ...{isMod : "Admin"}})
+          }
+        }
+
+      }
+      setDataAdmin(tmpDataAdmin);
+      setDataUser(tmpDataUser);
+    }
+    fetchData()
+  }, [users, room])
+
+  const updateMember = (userId, typeCommand) => {
+    setRefreshing(true);
+    console.log(userId, typeCommand)
+    // updateRoom(newData)
+    setRefreshing(false);
+  }
+  const removeMember = (userId, typeCommand) => {
+    setRefreshing(true);
+    console.log(userId, typeCommand)
+    // updateRoom(newData)
+    setRefreshing(false);
+  }
+
+  const renderItem = ({ item }) => {
+    return (
+      <Item 
+        user={item} 
+        onAdd={updateMember} 
+        onRemove={removeMember} 
+        typeItem={"VIEWMEMBER"}
+        isMod={item.isMod} 
+      />
+    )
+  };
+
+  return (
+    <View>
+    {/** renderAdminGroup */}
+    <View>
+      <Text style={{ fontSize: 15, color: "#A9A9A9" }}>
+        Admins & moderators
+      </Text>
+      {/** ITEM LA MAY CAI THANG MEMBER DAY M SUA LAI KIEU GI THI SUA T CHIU!!! */}
+      <FlatList
+        data={dataAdmin}
+        keyExtractor={(item) => item.id}
+        renderItem={renderItem}
+        refreshing={refreshing}
+      />
+    </View>
+    {/** renderMembers */}
+    <View>
+      <Text style={{ fontSize: 15, color: "#A9A9A9" }}>
+        Members
+      </Text>
+      {/** ITEM LA MAY CAI THANG MEMBER DAY M SUA LAI KIEU GI THI SUA T CHIU!!! */}
+      <FlatList
+        data={dataUser}
+        keyExtractor={(item) => item.id}
+        renderItem={renderItem}
+        refreshing={refreshing}
+      />
+    </View>
+  </View>
   );
 };
 export default Edit;

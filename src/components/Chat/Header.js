@@ -153,7 +153,7 @@ const Header = ({ user }) => {
           <View>
             <ScrollView>
                 {dataFriends.map((friend, index) => (
-                  <Item key={friend.id} user={friend} onAdd={updateMember} onRemove={removeMember} />
+                  <Item key={friend.id} user={friend} onAdd={updateMember} onRemove={removeMember} typeItem={"ADDMEMBER"}/>
                 ))}
             </ScrollView>
           </View>
