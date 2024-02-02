@@ -117,6 +117,7 @@ const HomeScreen = () => {
       tmpPost.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
       setDataUser(tmpUserData);
       setDataPost(tmpPost);
+      console.log(tmpPost);
       setDataStory(tmpStory);
       let dataUserCurrent = await getUserDataAsync(dataUserLocal.id, dataUserLocal.accessToken);
       setDataUserCurrent(dataUserCurrent)
