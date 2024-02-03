@@ -8,14 +8,14 @@ import {
 } from "react-native-responsive-screen";
 
 const Chats = ({ dataRoomchat }) => {
-  
+  console.log(dataRoomchat)
   return (
     <View
      
      style={{ flex: 1, height: hp("100%") }}>
       <View>
         <HeaderChats />
-        {dataRoomchat.map((roomchat, index) => (
+        {dataRoomchat != undefined && dataRoomchat.map((roomchat, index) => (
           <ListOfChat key={index} roomchat={roomchat} />
         ))}
       </View>

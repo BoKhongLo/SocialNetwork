@@ -20,7 +20,7 @@ const Infor = ({ receivedData }) => {
           source={require("../../../assets/img/avt.png")}
         />
       ) : (
-        <TouchableOpacity
+        <View
           style={{
             flexDirection: "row",
             marginBottom: 10,
@@ -30,28 +30,38 @@ const Infor = ({ receivedData }) => {
             style={[settingChat.avt]}
             source={require("../../../assets/img/avt.png")}
           />
-          <FontAwesome
-            name="edit"
-            size={20}
-            color="black"
-            style={{ textAlignVertical: "bottom" }}
-          />
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+
+            }}
+          >
+            <FontAwesome
+              name="edit"
+              size={20}
+              color="black"
+              style={{ textAlignVertical: "bottom", marginLeft: 2 }}
+            />
+          </TouchableOpacity>
+
+        </View>
       )}
-      <TouchableOpacity
+      <View
         style={{
           flexDirection: "row",
           marginBottom: 20,
         }}
       >
         <Text style={settingChat.name}>{receivedData.title}</Text>
-        <FontAwesome
-          name="edit"
-          size={15}
-          color="black"
-          style={{ textAlignVertical: "bottom" }}
-        />
-      </TouchableOpacity>
+        <TouchableOpacity>
+          <FontAwesome
+            name="edit"
+            size={17}
+            color="black"
+            style={{ textAlignVertical: "bottom", marginBottom: 2 }}
+          />
+        </TouchableOpacity>
+
+      </View>
     </View>
   );
 };
