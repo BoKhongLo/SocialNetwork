@@ -385,7 +385,7 @@ const AddMember = ({ room, userCurrent, updateMember, removeMember }) => {
   const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation();
 
-  const [dataRetr, setDataRetr] = useState([]);
+  const [dataFriends, setDataFriends] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -460,7 +460,15 @@ const ViewMember = ({ users, room, userCurrent,updateRoom }) => {
       for (let i = 0; i < room.member.length; i++) {
         if (typeUser == "Admin") {
           if (room.member[i] === userCurrent.id) {
-            tmpDataAdmin.push({...users[room.member[i]], ...{isMod : "isUser"}})
+            if (room.role.ADMIN.findIndex(item => item.memberId == room.member[i]) !== -1) {
+              tmpDataAdmin.push({...users[room.member[i]], ...{isMod : "isUser"}})
+            }
+            else if (room.role.MOD.findIndex(item => item.memberId == room.member[i]) !== -1) { 
+              tmpDataAdmin.push({...users[room.member[i]], ...{isMod : "isUser"}})
+            }
+            else {
+              tmpDataUser.push({...users[room.member[i]], ...{isMod : "isUser"}})
+            }
           }
           else if (room.role.ADMIN.findIndex(item => item.memberId == room.member[i]) !== -1) {
             tmpDataAdmin.push({...users[room.member[i]], ...{isMod : "Admin"}})
@@ -474,7 +482,15 @@ const ViewMember = ({ users, room, userCurrent,updateRoom }) => {
         }
         else if (typeUser == "Mod") {
           if (room.member[i] === userCurrent.id) {
-            tmpDataAdmin.push({...users[room.member[i]], ...{isMod : "isUser"}})
+            if (room.role.ADMIN.findIndex(item => item.memberId == room.member[i]) !== -1) {
+              tmpDataAdmin.push({...users[room.member[i]], ...{isMod : "isUser"}})
+            }
+            else if (room.role.MOD.findIndex(item => item.memberId == room.member[i]) !== -1) { 
+              tmpDataAdmin.push({...users[room.member[i]], ...{isMod : "isUser"}})
+            }
+            else {
+              tmpDataUser.push({...users[room.member[i]], ...{isMod : "isUser"}})
+            }
           }
           else if (room.role.ADMIN.findIndex(item => item.memberId == room.member[i]) !== -1) {
             tmpDataAdmin.push({...users[room.member[i]], ...{isMod : "Admin"}})
@@ -488,7 +504,15 @@ const ViewMember = ({ users, room, userCurrent,updateRoom }) => {
         }
         else {
           if (room.member[i] === userCurrent.id) {
-            tmpDataAdmin.push({...users[room.member[i]], ...{isMod : "isUser"}})
+            if (room.role.ADMIN.findIndex(item => item.memberId == room.member[i]) !== -1) {
+              tmpDataAdmin.push({...users[room.member[i]], ...{isMod : "isUser"}})
+            }
+            else if (room.role.MOD.findIndex(item => item.memberId == room.member[i]) !== -1) { 
+              tmpDataAdmin.push({...users[room.member[i]], ...{isMod : "isUser"}})
+            }
+            else {
+              tmpDataUser.push({...users[room.member[i]], ...{isMod : "isUser"}})
+            }
           }
           else if (room.role.ADMIN.findIndex(item => item.memberId == room.member[i]) !== -1) {
             tmpDataAdmin.push({...users[room.member[i]], ...{isMod : "Admin"}})
