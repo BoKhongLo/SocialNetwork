@@ -7,6 +7,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 import styles from "../styles/styles";
 import Invite from '../components/Notification/Invite';
+import Notify from "../components/Notification/Notify";
 
 const NotiScreen = () => {
   const insets = useSafeAreaInsets();
@@ -24,8 +25,8 @@ const NotiScreen = () => {
     >
       <Header />
       <Divider width={1} orientation="vertical" />
-
       <Invite />
+      <Notify/>
     </View>
   );
 };

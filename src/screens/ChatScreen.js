@@ -23,7 +23,7 @@ const ChatScreen = ({}) => {
   const insets = useSafeAreaInsets();
   const [userProfile, setUserProfile] = useState({
     username: "",
-    avatarUrl: require("../../assets/img/avt.png"),
+    avatarUrl: {uri: "https://firebasestorage.googleapis.com/v0/b/testgame-d8af2.appspot.com/o/avt.png?alt=media&token=b8108af6-1f90-4512-91f5-45091ca7351f"},
     friends: [],
     nickName: "",
   });

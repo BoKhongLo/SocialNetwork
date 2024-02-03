@@ -53,22 +53,22 @@ const Invite = () => {
       const tmpDataUser = {};
       for (let item of dataRequest) {
         if (item.createdUserId in tmpDataUser) continue;
-        let tmpData = await getUserDataAsync(item.createdUserId, dataUserLocal.accessToken);
+        let tmpData = await getUserDataLiteAsync(item.createdUserId, dataUserLocal.accessToken);
         tmpDataUser[tmpData.id] = tmpData;
         if (item.receiveUserId in tmpDataUser) continue;
-        tmpData = await getUserDataAsync(item.receiveUserId, dataUserLocal.accessToken);
+        tmpData = await getUserDataLiteAsync(item.receiveUserId, dataUserLocal.accessToken);
         tmpDataUser[tmpData.id] = tmpData;
       }
       setDataUser(tmpDataUser)
-      console.log(dataRequest)
       setDataInvite(dataRequest)
-      console.log(dataRequest)
     }
     fetchData()
   }, [])
   return (
     <View style={cpnNotiStyles.container}>
-      <Text style={cpnNotiStyles.title}>Friend invite</Text>
+      {dataInvite.length !== 0 && (
+        <Text style={cpnNotiStyles.title}>Friend invite</Text>
+      )}
       <FlatList
         data={dataInvite}
         keyExtractor={(item) => item.id}

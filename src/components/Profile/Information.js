@@ -22,7 +22,7 @@ const Information = ({ data, isUser }) => {
       >
         <Pressable onPress={() => {
           if (!isUser) return;
-          navigation.replace("listFriend", {data: {userId: data.id}})
+          navigation.replace("listFriend", {data: {userId: data.id, dto: "Profile"}})
           }}>
           <View style={profileStyle.numInfor}>
             {data.friends ? (
