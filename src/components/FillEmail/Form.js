@@ -1,11 +1,19 @@
-import { View, Text, Image, TouchableOpacity, TextInput, Alert } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  TextInput,
+  Alert,
+  Keyboard
+} from "react-native";
 import React, { useState } from "react";
 import forgotPass from "../../styles/forgotPassStyles";
 import { useNavigation } from "@react-navigation/native";
 import { CreateOtpCodeAsync } from "../../util";
-import { Toast } from 'toastify-react-native'
+import { Toast } from "toastify-react-native";
 
-const Form = ({receivedData}) => {
+const Form = ({ receivedData, isLoading, setIsLoading }) => {
   const navigation = useNavigation();
 
   const [email, setEmail] = useState("");
@@ -15,17 +23,22 @@ const Form = ({receivedData}) => {
   };
 
   const handleSubmit = async () => {
-    console.log("data: " ,email)
+    
+    Keyboard.dismiss();
+    console.log("data: ", email);
     if (email == "") return;
     if (!email.includes("@")) {
-      Toast.error("This is a not email!");
+      Toast.error("Please check your email");
       return;
-    };
+    }
     if (!receivedData) {
       return;
     }
-    const data = { ...receivedData }
-    const dataRe = await CreateOtpCodeAsync(email, data.type)
+    setIsLoading(true); //////////////////////////////////////
+
+    const data = { ...receivedData };
+    const dataRe = await CreateOtpCodeAsync(email, data.type);
+
     if ("errors" in dataRe) {
       Alert.alert(dataRe.errors[0].message);
       return;
@@ -35,7 +48,7 @@ const Form = ({receivedData}) => {
       return;
     }
     data.email = email;
-    navigation.replace('verify', {data: data});
+    navigation.replace("verify", { data: data });
   };
 
   return (
@@ -43,7 +56,7 @@ const Form = ({receivedData}) => {
       <Text style={forgotPass.text}>Enter Email Address.</Text>
       <View style={forgotPass.textInput}>
         <TextInput
-        style={{fontSize:18}}
+          style={{ fontSize: 18 }}
           placeholder="example@gmail.com"
           keyboardType="email-address"
           autoCapitalize="none"
@@ -52,8 +65,9 @@ const Form = ({receivedData}) => {
         />
       </View>
       <TouchableOpacity
-      onPress={handleSubmit}
-      style={forgotPass.buttonNext}>
+        onPress={ () => [ handleSubmit(),]}
+        style={forgotPass.buttonNext}
+      >
         <Text style={forgotPass.buttonText}>Next</Text>
       </TouchableOpacity>
     </View>

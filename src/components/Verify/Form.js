@@ -50,7 +50,8 @@ const Form = ({receivedData}) => {
         
       </View>
       <View style={{ flexDirection: "row", justifyContent: "center" }}>
-        <Text style={{borderBottomWidth:1}}>Check the spam folder in your email  Or </Text>
+        <Text style={{borderBottomWidth:1}}>Check your spam folder</Text>
+        <Text>  or  </Text>
         <TouchableOpacity>
           <Text style={{color:'#FF0000'}}>Resend</Text>
         </TouchableOpacity>
