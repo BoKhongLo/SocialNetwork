@@ -8,7 +8,7 @@ import {
   onPress,
   TouchableOpacity,
   StyleSheet,
-  Image
+  Image,
 } from "react-native";
 import React, { useState, useRef } from "react";
 import styles from "../../styles/styles";
@@ -32,7 +32,6 @@ const LoginForm = ({ isLoading, setIsLoading }) => {
   };
 
   const handleLogin = async () => {
-
     if (email === "" || password === "") return;
 
     if (!email.includes("@")) {
@@ -84,7 +83,12 @@ const LoginForm = ({ isLoading, setIsLoading }) => {
             />
           </View>
 
-          <View style={[styles.inputField,{flexDirection:'row',justifyContent:'space-between'}]}>
+          <View
+            style={[
+              styles.inputField,
+              { flexDirection: "row", justifyContent: "space-between" },
+            ]}
+          >
             <TextInput
               placeholderTextColor="#444"
               placeholder="Password"
@@ -95,18 +99,24 @@ const LoginForm = ({ isLoading, setIsLoading }) => {
               onChangeText={(text) => setPassword(text)}
             />
             <TouchableOpacity
-        style={{flexDirection:'row',paddingHorizontal:20,marginRight:-20}} onPress={toggleShowPassword}>
-            <Image
-              source={
-                showPassword
-                  ? require("../../../assets/dummyicon/icons8-visible-100.png")
-                  : require("../../../assets/dummyicon/icons8-invisible-96.png")
-              }
-              style={{ width: 20, height: 20, marginTop: 10 }}
-            />
-          </TouchableOpacity>
+              style={{
+                flexDirection: "row",
+                paddingHorizontal: 20,
+                marginRight: -20,
+              }}
+              onPress={toggleShowPassword}
+            >
+              <Image
+                source={
+                  showPassword
+                    ? require("../../../assets/dummyicon/icons8-visible-100.png")
+                    : require("../../../assets/dummyicon/icons8-invisible-96.png")
+                }
+                style={{ width: 20, height: 20, marginTop: 10 }}
+              />
+            </TouchableOpacity>
           </View>
-          
+
           <TouchableOpacity
             titleSize={20}
             style={styles.buttonLogin}
