@@ -23,6 +23,8 @@ import {
   addMemberRoomchatAsync,
   removeMemberRoomchatAsync,
   removeRoomchatAsync,
+  removeModRoomchatAsync,
+  addModRoomchatAsync,
 
 } from "../../../util";
 import {
@@ -41,7 +43,6 @@ const Edit = ({ receivedData, users, userCurrent }) => {
 
   useEffect(() => {
     setDataReturn(receivedData);
-    console.log(receivedData.isBlock)
   }, [receivedData])
 
 
@@ -146,7 +147,11 @@ const Edit = ({ receivedData, users, userCurrent }) => {
               />
             </TouchableOpacity>
             <View style={{ margin: 10, flex: 1 }}>
-                <ViewMember users={users} room={dataReturn} userCurrent={userCurrent}/>
+                <ViewMember 
+                users={users} 
+                room={dataReturn} 
+                userCurrent={userCurrent}
+                updateRoom={updateDataReturn}/>
             </View>
           </Modal>
 
@@ -197,7 +202,7 @@ const Edit = ({ receivedData, users, userCurrent }) => {
                 userCurrent={userCurrent}
                 updateMember={updateMember}
                 removeMember={removeMember}
-                updateRoom={updateDataReturn} 
+                updateRoom={updateDataReturn}
               />
             </View>
             {/* Add the rest of your modal content here */}
@@ -438,7 +443,7 @@ const AddMember = ({ room, userCurrent, updateMember, removeMember }) => {
 };
 
 
-const ViewMember = ({ users, room, userCurrent,updateRoom }) => {
+const ViewMember = ({ users, room, userCurrent, updateRoom }) => {
   const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation();
   const [dataAdmin, setDataAdmin] = useState([]);
@@ -458,6 +463,8 @@ const ViewMember = ({ users, room, userCurrent,updateRoom }) => {
       }
 
       for (let i = 0; i < room.member.length; i++) {
+        if(tmpDataAdmin.findIndex(item => item.id === room.member[i]) !== -1) continue;
+        if(tmpDataUser.findIndex(item => item.id === room.member[i]) !== -1) continue;
         if (typeUser == "Admin") {
           if (room.member[i] === userCurrent.id) {
             if (room.role.ADMIN.findIndex(item => item.memberId == room.member[i]) !== -1) {
@@ -532,16 +539,85 @@ const ViewMember = ({ users, room, userCurrent,updateRoom }) => {
     fetchData()
   }, [users, room])
 
-  const updateMember = (userId, typeCommand) => {
+  const updateMember = async (userId, typeCommand) => {
+    if (!userCurrent) return
+    if (!room) return
+    if (!users) return
     setRefreshing(true);
-    console.log(userId, typeCommand)
-    // updateRoom(newData)
+    const keys = await getAllIdUserLocal();
+    const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
+    if (typeCommand === "Add Mod") {
+      const dto = new MemberRoomDto(userCurrent.id, room.id, [userId]);
+      let dataRe = await addModRoomchatAsync(dto, dataLocal.accessToken);
+      if ("errors" in dataRe) {
+        let dataUpdate = await updateAccessTokenAsync(dataLocal.id, dataLocal.refreshToken);
+        dataRe = await addModRoomchatAsync(dto, dataUpdate.accessToken);
+      }
+      console.log(dataRe)
+      if ("errors" in dataRe) return
+
+      setDataUser((preData) => {
+        let dataRe = preData.filter(item => item.id !== userId);
+        return dataRe;
+      })
+      setDataAdmin((preData) => {
+        let dataRe = [...preData, {...users[userId], ...{isMod : "Remove Mod"}}];
+        return dataRe;
+      })
+      let dataSave = {...room};
+      dataSave.role = dataRe.role;
+      updateRoom(dataSave)
+    }
     setRefreshing(false);
   }
-  const removeMember = (userId, typeCommand) => {
+  const removeMember = async (userId, typeCommand) => {
+    if (!userCurrent) return
+    if (!room) return
+    if (!users) return
     setRefreshing(true);
-    console.log(userId, typeCommand)
-    // updateRoom(newData)
+    const keys = await getAllIdUserLocal();
+    const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
+    if (typeCommand === "Remove") {
+      const dto = new MemberRoomDto(userCurrent.id, room.id, [userId]);
+      let dataRe = await removeMemberRoomchatAsync(dto, dataLocal.accessToken);
+      if ("errors" in dataRe) {
+        let dataUpdate = await updateAccessTokenAsync(dataLocal.id, dataLocal.refreshToken);
+        dataRe = await removeMemberRoomchatAsync(dto, dataUpdate.accessToken);
+      }
+      if ("errors" in dataRe) return
+      setDataUser((preData) => {
+        let dataRe = preData.filter(item => item.id !== userId);
+        return dataRe;
+      })
+      setDataAdmin((preData) => {
+        let dataRe = preData.filter(item => item.id !== userId);
+        return dataRe;
+      })
+      let dataSave = {...room};
+      dataSave.member = dataSave.member.filter(item => item !== userId);
+      updateRoom(dataSave)
+    }
+    else if (typeCommand === "Remove Mod"){
+      const dto = new MemberRoomDto(userCurrent.id, room.id, [userId]);
+      let dataRe = await removeModRoomchatAsync(dto, dataLocal.accessToken);
+      if ("errors" in dataRe) {
+        let dataUpdate = await updateAccessTokenAsync(dataLocal.id, dataLocal.refreshToken);
+        dataRe = await removeModRoomchatAsync(dto, dataUpdate.accessToken);
+      }
+      if ("errors" in dataRe) return
+      setDataAdmin((preData) => {
+        let dataEdit = preData.filter(item => item.id !== userId);
+        return dataEdit;
+      })
+      setDataUser((preData) => {
+        let dataEdit = [...preData, {...users[userId], ...{isMod : "Admin"}}];
+        return dataEdit;
+      })
+
+      let dataSave = {...room};
+      dataSave.role = dataRe.role;
+      updateRoom(dataSave)
+    }
     setRefreshing(false);
   }
 

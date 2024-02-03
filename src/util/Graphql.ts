@@ -489,7 +489,6 @@ export async function getUserDataAsync(userId: string, accessToken: string) {
             },
             { headers: headers }
         );
-        console.log(response.data)
         if ("errors" in response.data) return response.data;
         return response.data.data.getUser
 
@@ -772,12 +771,11 @@ export async function addMemberRoomchatAsync(payload: MemberRoomDto, accessToken
                 variables: {
                     userId: payload.userId,
                     roomchatId: payload.roomId,
-                    member: payload.member
+                    member: [...payload.member]
                 },
             },
             { headers: headers }
         );
-        console.log(response.data)
         if ("errors" in response.data) return response.data;
         return response.data.data.addMemberRomchat
 
@@ -945,7 +943,7 @@ export async function addModRoomchatAsync(payload: MemberRoomDto, accessToken: s
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
     const QUERY = `
-        mutation AddModRoomchat ($userId: String!, $roomchatId: String!, $member: [String!]){
+        mutation AddModRoomchat ($userId: String!, $roomchatId: String!, $member: [String!]!){
             addModRoomchat(
                 addMod: { 
                     userId: $userId
@@ -987,6 +985,7 @@ export async function addModRoomchatAsync(payload: MemberRoomDto, accessToken: s
             },
             { headers: headers }
         );
+        console.log(response.data);
         if ("errors" in response.data) return response.data;
         return response.data.data.addModRoomchat
 
@@ -1000,7 +999,7 @@ export async function removeModRoomchatAsync(payload: MemberRoomDto, accessToken
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
     const QUERY = `
-        mutation RemoveModRoomchat ($userId: String!, $roomchatId: String!, $member: [String!]){
+        mutation RemoveModRoomchat ($userId: String!, $roomchatId: String!, $member: [String!]!){
             removeModRoomchat(
                 removeMod: { 
                     userId: $userId

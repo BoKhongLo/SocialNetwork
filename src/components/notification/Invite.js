@@ -60,6 +60,7 @@ const Invite = () => {
         tmpDataUser[tmpData.id] = tmpData;
       }
       setDataUser(tmpDataUser)
+      console.log(dataRequest)
       setDataInvite(dataRequest)
       console.log(dataRequest)
     }
