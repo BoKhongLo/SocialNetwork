@@ -41,6 +41,7 @@ const Edit = ({ receivedData, users, userCurrent }) => {
   const [isNicknameModalVisible, setNicknameModalVisible] = useState(false);
   const [dataReturn, setDataReturn] = useState(receivedData);
 
+  
   useEffect(() => {
     setDataReturn(receivedData);
   }, [receivedData])
@@ -108,6 +109,7 @@ const Edit = ({ receivedData, users, userCurrent }) => {
     if ("errors" in dataRe) return
     navigation.navigate("main")
   }
+
 
   // delete room logic
   const deleteRoom = async () => {

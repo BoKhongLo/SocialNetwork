@@ -40,13 +40,7 @@ const ListOfChat = ({ roomchat }) => {
     hour: "numeric",
     minute: "numeric",
   };
-  const alertDeleteChat = () => {
-    Alert.alert('','Delete this chats ?' ,([
-      {text: 'Cancel', onPress: () => null },
-      {text: 'OK', onPress: () => null},
-
-    ]))
-  }
+  
   return (
     <View>
       <View style={chat.KhungChat}>
