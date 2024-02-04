@@ -11,9 +11,9 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 const Infor = ({ receivedData }) => {
   return (
-    <View style={settingChat.avtContainer}>
+    <View style={[settingChat.avtContainer]}>
       {receivedData && receivedData.imgDisplay ? (
-        <Image style={settingChat.avt} source={receivedData.imgDisplay} />
+        <Image style={[settingChat.avt]} source={receivedData.imgDisplay} />
       ) : receivedData && receivedData.isSingle == true ? (
         <Image
           style={settingChat.avt}
@@ -24,6 +24,7 @@ const Infor = ({ receivedData }) => {
           style={{
             flexDirection: "row",
             marginBottom: 10,
+            alignItems:'flex-end'
           }}
         >
           <Image
@@ -31,15 +32,13 @@ const Infor = ({ receivedData }) => {
             source={require("../../../assets/img/avt.png")}
           />
           <TouchableOpacity
-            style={{
-
-            }}
+            style={{}}
           >
             <FontAwesome
               name="edit"
               size={20}
               color="black"
-              style={{ textAlignVertical: "bottom", marginLeft: 2 }}
+              style={{marginLeft: 2 }}
             />
           </TouchableOpacity>
 
@@ -49,6 +48,7 @@ const Infor = ({ receivedData }) => {
         style={{
           flexDirection: "row",
           marginBottom: 20,
+          alignItems:'flex-end',
         }}
       >
         <Text style={settingChat.name}>{receivedData.title}</Text>
@@ -57,7 +57,7 @@ const Infor = ({ receivedData }) => {
             name="edit"
             size={17}
             color="black"
-            style={{ textAlignVertical: "bottom", marginBottom: 2 }}
+            style={{ marginBottom: 2 }}
           />
         </TouchableOpacity>
 

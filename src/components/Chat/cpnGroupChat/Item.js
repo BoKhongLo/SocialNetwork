@@ -8,41 +8,47 @@ const Item = ({ user, onAdd, onRemove, typeItem, isMod }) => {
   const handleUpdate = (id, event) => {
     if (typeItem === "ADDMEMBER") {
       if (event === "Add") {
-        onAdd(id)
+        onAdd(id);
         setIsAdd("Added");
-      }
-      else if (event === "Added") {
-        onRemove(id)
+      } else if (event === "Added") {
+        onRemove(id);
         setIsAdd("Add");
       }
-    }
-    else if (typeItem === "VIEWMEMBER") {
+    } else if (typeItem === "VIEWMEMBER") {
       if (event === "Remove") {
         onRemove(id, "Remove");
-      }
-      else if (event === "Add Mod") {
+      } else if (event === "Add Mod") {
         onAdd(id, "Add Mod");
-      }
-      else if (event === "Remove Mod") {
+      } else if (event === "Remove Mod") {
         onRemove(id, "Remove Mod");
       }
     }
-
-
-  }
+  };
 
   return (
-    <View style={{ marginVertical: 10, flexDirection: "row", alignItems: 'center' }}>
+    <View
+      style={{
+        marginVertical: 3,
+        flexDirection: "row",
+        alignItems: "center",
+        // backgroundColor: "lightgrey",
+        borderRadius: 10,
+      }}
+    >
       {user && user.detail.avatarUrl ? (
         <Image
-          style={newGroup.itemAvt}
+          style={[newGroup.itemAvt, {marginLeft:3,marginVertical:3}]}
           source={{ uri: user.detail.avatarUrl }}
         />
       ) : (
-        <Image style={newGroup.itemAvt} source={require("../../../../assets/img/avt.png")} />
+        <Image
+        style={[newGroup.itemAvt, {marginLeft:3,marginVertical:3}]}
+
+          source={require("../../../../assets/img/avt.png")}
+        />
       )}
       <View style={{ flex: 1, marginHorizontal: 10 }}>
-        <Text style={newGroup.text}>{user && (user.detail.name)}</Text>
+        <Text style={newGroup.text}>{user && user.detail.name}</Text>
       </View>
       {typeItem == "ADDMEMBER" ? (
         <TouchableOpacity
@@ -51,26 +57,32 @@ const Item = ({ user, onAdd, onRemove, typeItem, isMod }) => {
         >
           <Text style={newGroup.text}>{isAdd}</Text>
         </TouchableOpacity>
-      ) : typeItem == "VIEWMEMBER" && isMod !== "Admin" && isMod !== "isUser" && (
-        <View>
-
-          <TouchableOpacity
-            style={newGroup.addButton}
-            onPress={() => handleUpdate(user.id, "Remove")}
-          >
-            <Text style={newGroup.text}>Remove</Text>
-          </TouchableOpacity>
-          {isMod !== "Mod" && (
+      ) : (
+        typeItem == "VIEWMEMBER" &&
+        isMod !== "Admin" &&
+        isMod !== "isUser" && (
+          <View style={{flexDirection:'column'}} >
             <TouchableOpacity
               style={newGroup.addButton}
-              onPress={() => handleUpdate(user.id, isMod)}
+              onPress={() => handleUpdate(user.id, "Remove")}
             >
-              <Text style={[newGroup.text,{textAlign:'center'}]}>{isMod}</Text>
+              <Text style={[newGroup.text, { textAlign: "center",}]}>
+                Remove
+              </Text>
             </TouchableOpacity>
-          )}
-        </View>
+            {isMod !== "Mod" && (
+              <TouchableOpacity
+                style={newGroup.addButton}
+                onPress={() => handleUpdate(user.id, isMod)}
+              >
+                <Text style={[newGroup.text, { textAlign: "center" }]}>
+                  {isMod}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        )
       )}
-
     </View>
   );
 };

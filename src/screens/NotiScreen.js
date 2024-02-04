@@ -6,8 +6,8 @@ import notistyles from "../styles/notiStyles";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 import styles from "../styles/styles";
-import Notify from "../components/Notification/Notify";
 import Invite from './../components/notification/Invite';
+import Notify from './../components/notification/Notify';
 
 const NotiScreen = () => {
   const insets = useSafeAreaInsets();
