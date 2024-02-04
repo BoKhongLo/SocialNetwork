@@ -93,7 +93,7 @@ const LoadStories = () => {
     >
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <TouchableOpacity
-          onPress={() => navigation.goBack()}
+          onPress={() => navigation.navigate('main')}
           style={{ marginLeft: 10 }}
         >
           <Image
