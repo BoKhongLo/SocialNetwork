@@ -26,6 +26,7 @@ const ListPost = () => {
   const [dataPost, setDataPost] = useState([]);
   const [dataUser, setDataUser] = useState({});
   const [dataUserCurrent, setDataUserCurrent] = useState({});
+  
 
   useEffect(() => {
     if (!receivedData) {
@@ -43,6 +44,7 @@ const ListPost = () => {
   
   useEffect(() => {
     const fetchData = async () => {
+      if (!("userId" in receivedData)) return;
       const keys = await getAllIdUserLocal();
       const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
       const dataUserLocal = { ...dataLocal }
@@ -99,6 +101,61 @@ const ListPost = () => {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const fetchPost = async () => {
+      if (!("postId" in receivedData)) return;
+      const keys = await getAllIdUserLocal();
+      const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
+      const dataUserLocal = { ...dataLocal }
+
+      let dataReturn = await getPostAsync(
+        receivedData.postId,
+        dataUserLocal.accessToken
+      );
+
+      if ("errors" in dataReturn) {
+        const dataUpdate = await updateAccessTokenAsync(
+          dataUserLocal.id,
+          dataUserLocal.refreshToken
+        );
+        await saveDataUserLocal(dataUpdate.id, dataUpdate)
+        dataUserLocal.accessToken = dataUpdate.accessToken;
+        dataReturn = await getPostAsync(
+          receivedData.postId,
+          dataUpdate.accessToken,
+        );
+      }
+      let tmpPost = [];
+      let tmpUserData = {}
+      if (dataReturn.isDisplay == false) return;
+      if (dataReturn.type === "POST") {
+        let dataUserOwner = await getUserDataLiteAsync(dataReturn.ownerUserId, dataUserLocal.accessToken)
+        tmpUserData[dataUserOwner.id] = dataUserOwner;
+        for (let comment of dataReturn.comment) {
+          if (comment.userId in tmpUserData) continue;
+          let dataUserComment = await getUserDataLiteAsync(comment.userId, dataUserLocal.accessToken)
+          tmpUserData[dataUserComment.id] = dataUserComment;
+        }
+        for (let interaction of dataReturn.interaction) {
+          if (interaction.userId in tmpUserData) continue;
+          let dataUserInteraction = await getUserDataLiteAsync(interaction.userId, dataUserLocal.accessToken)
+          tmpUserData[dataUserInteraction.id] = dataUserInteraction;
+        }
+        if (dataReturn.interaction) {
+          dataReturn.interaction = dataReturn.interaction.filter(item => item.isDisplay !== false)
+        }
+        tmpPost.push(dataReturn);
+      }
+      console.log(tmpPost);
+      setDataUser(tmpUserData);
+      setDataPost(tmpPost);
+      let dataUserCurrent = await getUserDataAsync(dataUserLocal.id, dataUserLocal.accessToken);
+      setDataUserCurrent(dataUserCurrent)
+    };
+
+    fetchPost();
+  }, []);
   
 
   const VirtualizedView = (props) => {
@@ -124,7 +181,7 @@ const ListPost = () => {
         flex: 1,
       }}
     >
-      <Header userId={receivedData.userId} />
+      <Header userId={receivedData.userId} dto={receivedData.dto}/>
       <Divider width={1} orientation="vertical" />
       <VirtualizedView style={{ flex: 1 }}>
         {dataPost.map((item, index) => (
@@ -141,14 +198,14 @@ const ListPost = () => {
   );
 };
 
-const Header = ({ userId }) => {
+const Header = ({ userId, dto }) => {
   const navigation = useNavigation();
   const handleReBack = async () => {
-    const keys = await getAllIdUserLocal();
-    const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
-    let dataReBack = { ...dataLocal }
-    dataReBack.id = userId;
-    navigation.replace("Profile", { data: dataReBack });
+      const keys = await getAllIdUserLocal();
+      const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
+      let dataReBack = { ...dataLocal }
+      dataReBack.id = userId;
+      navigation.replace(dto, { data: dataReBack });
   }
   return (
     <View

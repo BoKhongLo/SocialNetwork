@@ -9,7 +9,7 @@ const Stories = React.memo(({ post, users }) => {
   const navigation = useNavigation();
 
   const handleStoryPress = (item) => {
-    navigation.navigate("loadStory", { data: { post: item, users: users } });
+    navigation.replace("loadStory", { data: { post: item, users: users } });
   };
 
   const renderItem = ({ item }) => (
@@ -44,7 +44,7 @@ const Stories = React.memo(({ post, users }) => {
       <FlatList
         data={post}
         renderItem={renderItem}
-        keyExtractor={(item, index) => `${item.id}-${index}`}
+        keyExtractor={(item, index) => item.id}
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{

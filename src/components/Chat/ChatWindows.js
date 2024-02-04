@@ -89,7 +89,13 @@ const ChatWindows = ({ user }) => {
           member,
           dataUserLocal.accessToken
         );
-        newRoomchat.imgMembers[member] = dataUserAsync.detail.avatarUrl;
+   
+        if (dataUserAsync.detail.avatarUrl !== null) {
+          newRoomchat.imgMembers[member] = dataUserAsync.detail.avatarUrl;
+        }
+        else {
+          newRoomchat.imgMembers[member] = "https://firebasestorage.googleapis.com/v0/b/testgame-d8af2.appspot.com/o/avt.png?alt=media&token=b8108af6-1f90-4512-91f5-45091ca7351f"
+        }
         newRoomchat.nameMembers[member] = dataUserAsync.detail.name;
       }
       for (let member of dataRoomchatAsync.memberOut) {
@@ -97,7 +103,12 @@ const ChatWindows = ({ user }) => {
           member,
           dataUserLocal.accessToken
         );
-        newRoomchat.imgMembers[member] = dataUserAsync.detail.avatarUrl;
+        if (dataUserAsync.detail.avatarUrl !== null) {
+          newRoomchat.imgMembers[member] = dataUserAsync.detail.avatarUrl;
+        }
+        else {
+          newRoomchat.imgMembers[member] = "https://firebasestorage.googleapis.com/v0/b/testgame-d8af2.appspot.com/o/avt.png?alt=media&token=b8108af6-1f90-4512-91f5-45091ca7351f"
+        }
         newRoomchat.nameMembers[member] = dataUserAsync.detail.name;
       }
       newRoomchat.currentUserId = dataUserLocal.id;
@@ -501,7 +512,7 @@ const Content = ({ roomProfile }) => {
   const renderSend = (props) => {
     return (
       <View >
-        {roomProfile.isBlock == null && (
+        {roomProfile.isBlock == null  ? (
           <View style={{ flexDirection: "row" }}>
             <TouchableOpacity onPress={pickDocument}>
               <View>
@@ -524,6 +535,29 @@ const Content = ({ roomProfile }) => {
               </View>
             </Send>
           </View>
+        ) :  roomProfile.isSingle == false && (
+          <View style={{ flexDirection: "row" }}>
+          <TouchableOpacity onPress={pickDocument}>
+            <View>
+              <FontAwesome
+                name="file"
+                style={{ marginRight: 5, marginTop: 5 }}
+                size={28}
+                color="#2e64e5"
+              />
+            </View>
+          </TouchableOpacity>
+          <Send {...props}>
+            <View>
+              <MaterialCommunityIcons
+                name="send-circle"
+                style={{ marginBottom: 5, marginRight: 5 }}
+                size={34}
+                color="#2e64e5"
+              />
+            </View>
+          </Send>
+        </View>
         )}
       </View>
     );
