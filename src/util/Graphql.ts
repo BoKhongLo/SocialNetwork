@@ -12,7 +12,9 @@ import {
     ForgetPasswordDto,
     PaymentDto,
     ValidateMemberRoomDto,
-    MemberRoomDto
+    MemberRoomDto,
+    ValidateRoomchatDto,
+    ValidatePrivacyUserDto
 } from './dto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from "jwt-decode";
@@ -76,17 +78,16 @@ export async function deleteDataUserLocal(userId: string): Promise<void> {
 export async function LoginAsync(dto: LoginDto) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
-    const QUERY = `
-      query Login($email: String!, $password: String!) {
-        Login(userDto: {
-          email: $email
-          password: $password
-        }) {
-          access_token
-          refresh_token
-        }
-      }
-    `;
+    const QUERY =       
+        `query Login ($email: String!, $password: String!) {
+            Login(userDto: { 
+                email: $email
+                password: $password
+                }) {
+                access_token
+                refresh_token
+            }
+        }`;
 
     const headers = {
         'Content-Type': 'application/json',
@@ -345,10 +346,11 @@ export async function validateUserDataAsync(dto: ValidateUserDto, accessToken: s
                     name
                     nickName
                     birthday
-                    age
                     description
                     phoneNumber
                     avatarUrl
+                    gender
+                    countryCode
                 }
             }
         }`;
@@ -549,6 +551,9 @@ export async function getAllRoomchatAsync(userId: string, accessToken: string) {
     query GetAllRomchatByUserId ($userId: String!) {
         getAllRomchatByUserId(id: $userId) {
             isDisplay
+            role
+            memberNickname
+            isBlock
             isSingle
             ownerUserId
             description
@@ -832,27 +837,27 @@ export async function blockRoomchatAsync(userId: string, roomId: string, accessT
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
     const QUERY = `
-        mutation BlockRoomchat ($userId: String!, $title: String!, $roomchatId: String!){
+        mutation BlockRoomchat ($userId: String!, $title: String!, $roomchatId: String!)  {
             blockRoomchat(
                 blockRoomchat: { 
                     userId: $userId
                     title: $title
                     roomchatId: $roomchatId
-                }
-            ) {
-                id
-                title
-                isDisplay
-                isSingle
-                isBlock
-                ownerUserId
-                description
-                imgDisplay
-                member
-                memberNickname
-                role
-                created_at
-                updated_at
+                    }
+                ) {
+                    id
+                    title
+                    isDisplay
+                    isSingle
+                    isBlock
+                    ownerUserId
+                    description
+                    imgDisplay
+                    member
+                    memberNickname
+                    role
+                    created_at
+                    updated_at
             }
         }`;
 
@@ -868,7 +873,7 @@ export async function blockRoomchatAsync(userId: string, roomId: string, accessT
                 query: QUERY,
                 variables: {
                     userId: userId,
-                    title: "",
+                    title: "-1",
                     roomchatId: roomId
                 },
             },
@@ -923,7 +928,7 @@ export async function unblockRoomchatAsync(userId: string, roomId: string, acces
                 query: QUERY,
                 variables: {
                     userId: userId,
-                    title: "",
+                    title: "-1",
                     roomchatId: roomId
      
                 },
@@ -1230,6 +1235,9 @@ export async function createRoomchatAsync(dto: RoomchatDto, accessToken: string)
             description
             imgDisplay
             isDisplay
+            role
+            memberNickname
+            isBlock
             isSingle
             title
             data {
@@ -1275,6 +1283,65 @@ export async function createRoomchatAsync(dto: RoomchatDto, accessToken: string)
 }
 
 
+export async function validateRoomchatAsync(dto: ValidateRoomchatDto, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+    
+    const GET_USER_QUERY = `
+        mutation ValidateRomchat ($userId: String!, $roomchatId: String!, $title: String!, $description: String, $imgDisplay: String){
+            validateRomchat(
+                validateRoom: {
+                    roomchatId: $roomchatId
+                    title: $title
+                    userId: $userId
+                    imgDisplay: $imgDisplay
+                    description: $description
+                }
+            ) {
+                id
+                title
+                isDisplay
+                isSingle
+                isBlock
+                ownerUserId
+                description
+                imgDisplay
+                member
+                memberNickname
+                role
+                created_at
+                updated_at
+            }
+        }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: GET_USER_QUERY,
+                variables: {
+                    userId: dto.userId,
+                    roomchatId: dto.roomId,
+                    title: dto.title,
+                    description: dto.description,
+                    imgDisplay: dto.imgDisplay,
+                },
+            },
+            { headers: headers }
+        );
+        if ("errors" in response.data) return response.data;
+        return response.data.data.validateRomchat
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
 export async function removeRoomchatAsync(userId: string, roomchatId: string, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
@@ -1303,7 +1370,7 @@ export async function removeRoomchatAsync(userId: string, roomchatId: string, ac
                 query: GET_USER_QUERY,
                 variables: {
                     roomchatId: roomchatId,
-                    title: "",
+                    title: "-1",
                     userId: userId,
                 },
             },
@@ -2513,6 +2580,77 @@ export async function removeNotificationAsync(userId: string, notiId: string, ac
         console.log(response.data);
         if ("errors" in response.data) return response.data;
         return response.data.data.removeNotificationUser
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+
+export async function validatePrivacyUserAsync(dto: ValidatePrivacyUserDto, accessToken: string) {
+    const endpoint = 'http://103.144.87.14:3434/graphql';
+
+    const QUERY = `
+        mutation ValidatePrivacyUser ($userId: String!, $name: String!, $nickName: String!, $description: String!, $gender: String, $phoneNumber: String, $countryCode: String){
+            validatePrivacyUser(
+                validateUser: {
+                    userId: $userId
+                    phoneNumber: $phoneNumber
+                    gender: $gender
+                    countryCode: $countryCode
+                    name: $name
+                    nickName: $nickName
+                    description: $description
+                }
+            ) {
+                id
+                email
+                role
+                isOnline
+                friends
+                detail {
+                    name
+                    nickName
+                    birthday
+                    description
+                    phoneNumber
+                    gender
+                    countryCode
+                    avatarUrl
+                }
+                bookMarks
+                created_at
+                updated_at
+            }
+        }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: QUERY,
+                variables: {
+                    userId: dto.userId,
+                    name: dto.name,
+                    nickName: dto.nickName,
+                    description: dto.description,
+                    gender: dto.gender,
+                    phoneNumber: dto.phoneNumber,
+                    countryCode: dto.countryCode,
+                    
+                },
+            },
+            { headers: headers }
+        );
+        console.log(response.data);
+        if ("errors" in response.data) return response.data;
+        return response.data.data.validatePrivacyUser
 
     } catch (error) {
         console.error('Error:', error);

@@ -1,5 +1,5 @@
 import { View, Text } from "react-native";
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Header from "./SettingChat/Header";
 import Edit from "./SettingGroupChat/Edit";
@@ -13,6 +13,8 @@ import {
   getSocketIO,
   getRoomchatAsync,
 } from "../../util";
+import LoadingAnimation from "../Loading/loadingAnimation";
+
 const SettingGroupChat = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
@@ -21,11 +23,14 @@ const SettingGroupChat = () => {
   const [dataRoom, setDataRoom] = React.useState([]);
   const [dataUser, setDataUser] = React.useState({});
   const [dataUserCurrent, setDataUserCurrent] = React.useState({});
+  const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       if (receivedData == null) {
         navigation.navigate('main');
       }
+      setIsLoading(true);
       const keys = await getAllIdUserLocal();
       const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
       const dataUpdate = await updateAccessTokenAsync(
@@ -47,9 +52,14 @@ const SettingGroupChat = () => {
         tmpDataMember[tmpMember.id] = tmpMember
       }
       setDataUser(tmpDataMember)
+      setIsLoading(false);
     };
     fetchData();
   }, []);
+
+  const onEdit = (value) => {
+    setIsLoading(value);
+  }
 
   return (
     <View
@@ -63,8 +73,9 @@ const SettingGroupChat = () => {
       }}
     >
       <Header receivedData={receivedData}/>
-      <Infor receivedData={receivedData}/>
+      <Infor receivedData={receivedData}  userCurrent={dataUserCurrent} onEdit={onEdit}/>
       <Edit receivedData={dataRoom} users={dataUser} userCurrent={dataUserCurrent}/>
+      <LoadingAnimation isVisible={isLoading} />
     </View>
   );
 };

@@ -1,10 +1,10 @@
-import { View, Text, Image,TouchableOpacity } from "react-native";
+import { View, Text, Image, TouchableOpacity } from "react-native";
 import React from "react";
 import settingChat from "../../../styles/ChatStyles/settingStyle";
 import { useNavigation, useRoute } from "@react-navigation/native";
 
-const Header = ({receivedData}) => {
-    const navigation = useNavigation();
+const Header = ({ receivedData }) => {
+  const navigation = useNavigation();
 
   return (
     <View style={settingChat.headerContainer}>

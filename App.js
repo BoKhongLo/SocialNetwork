@@ -30,6 +30,8 @@ import SettingGroupChat from "./src/components/Chat/SettingGroup";
 
 import registerNNPushToken from 'native-notify';
 import BuyPremium from "./src/screens/BuyPremium";
+import GenderAndPhone from "./src/components/Profile/GenderAndPhone";
+import ContactUs from "./src/components/Profile/ContactUs";
 
 const Stack = createStackNavigator();
 
@@ -105,6 +107,8 @@ export default function App() {
             <Stack.Screen key="listFriend" options={{headerShown: false}}  name="listFriend" component={ListFriend} />
             <Stack.Screen key="listPost" options={{headerShown: false}}  name="listPost" component={ListPost} />
             <Stack.Screen key="buyPremium" options={{headerShown: false}}  name="buyPremium" component={BuyPremium} />
+            <Stack.Screen key="genderAndPhone" options={{headerShown: false}}  name="genderAndPhone" component={GenderAndPhone} />
+            <Stack.Screen key="contactUs" options={{headerShown: false}}  name="contactUs" component={ContactUs} />
 
       </Stack.Navigator>
     </NavigationContainer>

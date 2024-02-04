@@ -198,14 +198,12 @@ const ListPost = () => {
   );
 };
 
-const Header = ({ userId, dto }) => {
+const Header = ({ dto }) => {
   const navigation = useNavigation();
   const handleReBack = async () => {
       const keys = await getAllIdUserLocal();
       const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
-      let dataReBack = { ...dataLocal }
-      dataReBack.id = userId;
-      navigation.replace(dto, { data: dataReBack });
+      navigation.replace(dto, { data: dataLocal });
   }
   return (
     <View

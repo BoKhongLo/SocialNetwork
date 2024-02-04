@@ -11,10 +11,6 @@ import {
   Alert,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
 import styles from "../../styles/styles";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Video, Audio } from "expo-av";

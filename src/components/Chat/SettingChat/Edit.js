@@ -32,9 +32,6 @@ import Item from './../cpnGroupChat/Item';
 
 const Edit = ({ receivedData, users, userCurrent }) => {
   const navigation = useNavigation();
-
-  const [isEditAvatarModalVisible, setEditAvatarModalVisible] = useState(false);
-  const [isProfileModalVisible, setProfileModalVisible] = useState(false);
   const [isNicknameModalVisible, setNicknameModalVisible] = useState(false);
   const [dataReturn, setDataReturn] = useState(receivedData);
 
@@ -58,9 +55,8 @@ const Edit = ({ receivedData, users, userCurrent }) => {
       let dataRe = await blockRoomchatAsync(userId, roomId, dataLocal.accessToken);
       if ("errors" in dataRe) {
         let dataUpdate = await updateAccessTokenAsync(dataLocal.id, dataLocal.refreshToken);
-        dataRe = await blockRoomchatAsync(userId, roomId, dataLocal.accessToken);
+        dataRe = await blockRoomchatAsync(userId, roomId, dataUpdate.accessToken);
       }
-      console.log(dataRe)
       if ("errors" in dataRe) return
       
       setDataReturn((dataPre) => {
@@ -73,9 +69,8 @@ const Edit = ({ receivedData, users, userCurrent }) => {
       let dataRe = await unblockRoomchatAsync(userId, roomId, dataLocal.accessToken);
       if ("errors" in dataRe) {
         let dataUpdate = await updateAccessTokenAsync(dataLocal.id, dataLocal.refreshToken);
-        dataRe = await unblockRoomchatAsync(userId, roomId, dataLocal.accessToken);
+        dataRe = await unblockRoomchatAsync(userId, roomId, dataUpdate.accessToken);
       }
-      console.log(dataRe)
       if ("errors" in dataRe) return
       setDataReturn((dataPre) => {
         let tmpData = { ...dataPre }
@@ -237,6 +232,7 @@ const EditNickname = ({ users, room, updateRoom }) => {
   }
 
   const renderItem = ({ item }) => {
+    if (item == undefined) return (<View></View>);
     return (
       <View style={settingChat.nicknameItem}>
         {users[item.id] && users[item.id].detail.avatarUrl ? (

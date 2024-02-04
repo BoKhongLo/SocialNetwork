@@ -13,7 +13,9 @@ import {
   getFriendRequestAsync,
   createRoomchatAsync,
 } from "../../util";
-const UserItem = ({ user, onPress, userCurrent, friendRequest, friendReceive }) => {
+import { RoomchatDto } from "../../util/dto";
+
+const UserItem = ({ user, onPress, userCurrent, friendRequest, friendReceive, updateData }) => {
   const [isUser, setIsUser] = useState(true);
   const [isFriendAdded, setFriendAdded] = useState(false);
   const [isFriend, setIsFriend] = useState("Cancel request");
@@ -50,17 +52,21 @@ const UserItem = ({ user, onPress, userCurrent, friendRequest, friendReceive }) 
       dataUserLocal.refreshToken
     );
     if (isFriend === "Friend" && isFriendAdded) {
-      await removeFriendAsync(
+      const dataRe = await removeFriendAsync(
         dataUserLocal.id,
         friendId,
         dataUpdate.accessToken
       );
+      if ("errors" in dataRe) return;
+      updateData(friendId, "REMOVEFRIEND")
     } else if (isFriend === "Accept" && isFriendAdded) {
-      await acceptFriendAsync(
+      const dataRe = await acceptFriendAsync(
         dataUserLocal.id,
         friendId,
         dataUpdate.accessToken
       );
+      if ("errors" in dataRe) return;
+      updateData(friendId, "ACCEPTFRIEND")
       const dto = new RoomchatDto(
         dataUserLocal.id,
         [friendId],
@@ -72,7 +78,9 @@ const UserItem = ({ user, onPress, userCurrent, friendRequest, friendReceive }) 
       setPending(false);
       return;
     } else {
-      await addFriendAsync(dataUserLocal.id, data.id, dataUpdate.accessToken);
+      const dataRe = await addFriendAsync(dataUserLocal.id, friendId, dataUpdate.accessToken);
+      if ("errors" in dataRe) return;
+      updateData(dataRe, "ADDFRIEND")
     }
     setFriendAdded(!isFriendAdded);
   };
@@ -84,7 +92,9 @@ const UserItem = ({ user, onPress, userCurrent, friendRequest, friendReceive }) 
       dataUserLocal.id,
       dataUserLocal.refreshToken
     );
-    await removeFriendAsync(dataUserLocal.id, friendId, dataUpdate.accessToken);
+    const dataRe = await removeFriendAsync(dataUserLocal.id, friendId, dataUpdate.accessToken);
+    if ("errors" in dataRe) return;
+    updateData(friendId, "REMOVEFRIEND")
     setFriendAdded(!isFriendAdded);
     setPending(false);
   };

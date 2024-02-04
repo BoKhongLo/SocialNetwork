@@ -25,12 +25,13 @@ const newGroup = StyleSheet.create({
   addButton:{
     paddingHorizontal: 15,
     paddingVertical: 10,
-    backgroundColor:'lightgrey',
-    borderRadius:15
+    // backgroundColor:'lightgrey',
+    borderRadius:15,
+    marginVertical:100
   },
   textInputContainer:{
     padding:13,
-    backgroundColor:'lightgrey',
+    // backgroundColor:'lightgrey',
     borderRadius:20
   }
 });

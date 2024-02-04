@@ -27,7 +27,7 @@ import {
 
 import { RoomchatDto } from "../../util/dto"
 
-const Header = ({ user }) => {
+const Header = ({ user, updateRoom }) => {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
   const [groupName, setGroupName] = useState("");
@@ -40,7 +40,6 @@ const Header = ({ user }) => {
       const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
       const dataUserLocal = { ...dataLocal }
       const tmpDataFriends = [];
-      console.log(user)
       for (let i = 0; i < user.friends.length; i++) {
         let dataReturn = await getUserDataLiteAsync(
           user.friends[i],
@@ -95,6 +94,8 @@ const Header = ({ user }) => {
       groupName,
       false)
     let dataReturn = await createRoomchatAsync(dto, dataUpdate.accessToken);
+    console.log(dataReturn)
+    updateRoom(dataReturn);
     if ("errors" in dataReturn) {
       console.log(dataReturn.errors)
       return;

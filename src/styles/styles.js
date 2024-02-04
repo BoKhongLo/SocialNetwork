@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
   inputField: {
     borderRadius: 4,
     padding: 15,
-    marginBottom: 10,
+    marginBottom: 8,
     borderBottomWidth: 0.5,
     marginTop: 10,
   },
@@ -142,8 +142,6 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 50,
-    borderWidth: 3,
-    // borderColor: "#ff8501",
   },
 
   iconforAll: {

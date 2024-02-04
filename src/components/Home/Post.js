@@ -120,6 +120,9 @@ const Post = React.memo(({ post, users, userCurrent, onRemovePost }) => {
           }}>
             <PostHeader post={dataPost} users={dataUsers} userCurrent={dataUserCurrent} headerColor='white' />
           </View>
+          <View style={{ marginLeft: 14 }}>
+            <Caption post={dataPost} users={dataUsers} />
+          </View>
           <PostImage post={dataPost} users={dataUsers} />
           <View>
             <PostFooter post={dataPost} users={dataUsers} userCurrent={dataUserCurrent} />
@@ -127,13 +130,14 @@ const Post = React.memo(({ post, users, userCurrent, onRemovePost }) => {
               <Likes post={dataPost} users={dataUsers} likes={countLike} />
             </View>
           </View>
-          <View style={{ marginLeft: 14 }}>
-            <Caption post={dataPost} users={dataUsers} />
-          </View>
+
         </View>)}
       {fileType == "IMAGE" && (
         <View style={{marginBottom: 5}}>
           <PostHeader post={dataPost} users={dataUsers} userCurrent={dataUserCurrent} />
+          <View style={{ marginLeft: 14 }}>
+            <Caption post={dataPost} users={dataUsers} />
+          </View>
           <PostImage post={dataPost} users={dataUsers} />
           <View>
             <PostFooter post={dataPost} users={dataUsers} userCurrent={dataUserCurrent}  />
@@ -141,9 +145,7 @@ const Post = React.memo(({ post, users, userCurrent, onRemovePost }) => {
               <Likes post={dataPost} users={dataUsers}  likes={countLike} />
             </View>
           </View>
-          <View style={{ marginLeft: 14 }}>
-            <Caption post={dataPost} users={dataUsers} />
-          </View>
+
         </View>)}
       {fileType == 'Null' && (
       <View style={{marginBottom: 5}}>
@@ -277,9 +279,9 @@ function capitalizeFirstLetter(str) {
 const Caption = ({ post, users }) => {
   return (
     <View style={[headerPostStyles.ItemFooterContainer]}>
-      {users[post.ownerUserId] && post.fileUrl.length != 0 && (
+      {/* {users[post.ownerUserId] && post.fileUrl.length != 0 && (
         <Text style={{ fontWeight: "600" }}>{users[post.ownerUserId].detail.name}</Text>
-      )}
+      )} */}
       <Text style={headerPostStyles.caption}> {post.content}</Text>
     </View>
   );

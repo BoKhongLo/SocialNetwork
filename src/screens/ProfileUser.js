@@ -16,7 +16,7 @@ import {
   getUserDataLiteAsync
 } from "../util";
 import { useNavigation, useRoute } from "@react-navigation/native";
-
+import LoadingAnimation from "../components/Loading/loadingAnimation";
 const ProfileUser = () => {
   const route = useRoute();
   const navigation = useNavigation();
@@ -33,10 +33,13 @@ const ProfileUser = () => {
     description: "",
     birthday: "0-0-0",
     age: -1,
+    gender: "other",
+    countryCode: "+84"
   });
   const [dataPost, setDataPost] = useState([]);
   const [dataUser, setDataUser] = useState({});
   const [dataUserCurrent, setDataUserCurrent] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,6 +47,7 @@ const ProfileUser = () => {
         navigation.navigate("main");
         return;
       }
+      setIsLoading(true)
       const dataUserLocal = { ...receivedData };
 
       const keys = await getAllIdUserLocal();
@@ -85,10 +89,13 @@ const ProfileUser = () => {
         else newProfile.description = "...";
         if (detail.phoneNumber) newProfile.phoneNumber = detail.phoneNumber;
         if (detail.birthday) newProfile.birthday = detail.birthday;
+        if (detail.gender) newProfile.gender = detail.gender;
+        if (detail.countryCode) newProfile.countryCode = detail.countryCode;
         
       }
       setUserProfile(newProfile);
       if (dataUserLocal.id !== dataLocal.id) setIsUser(false);
+      setIsLoading(false)
     };
 
     fetchData();
@@ -183,8 +190,6 @@ const ProfileUser = () => {
         paddingLeft: insets.left,
         paddingRight: insets.right,
         flex: 1,
-        marginLeft: 10,
-        marginRight: 10,
       }}
     >
       <Header user={userProfile} />
@@ -210,6 +215,9 @@ const ProfileUser = () => {
           ))}
         </VirtualizedView>
       </View>
+      {isLoading  == true && (
+        <LoadingAnimation isVisible={isLoading} />
+      )}
       <BottomTabs />
     </View>
   );

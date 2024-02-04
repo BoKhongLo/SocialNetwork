@@ -59,7 +59,6 @@ const ChatWindows = ({ user }) => {
       if (receivedData == null) {
         navigation.navigate("main");
       }
-
       const keys = await getAllIdUserLocal();
       const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
       setUserCurrentData({ ...dataUserLocal });
@@ -89,27 +88,38 @@ const ChatWindows = ({ user }) => {
           member,
           dataUserLocal.accessToken
         );
-   
-        if (dataUserAsync.detail.avatarUrl !== null) {
+        
+        if (dataUserAsync && dataUserAsync.detail.avatarUrl != undefined && dataUserAsync.detail.avatarUrl != null) {
           newRoomchat.imgMembers[member] = dataUserAsync.detail.avatarUrl;
         }
         else {
           newRoomchat.imgMembers[member] = "https://firebasestorage.googleapis.com/v0/b/testgame-d8af2.appspot.com/o/avt.png?alt=media&token=b8108af6-1f90-4512-91f5-45091ca7351f"
         }
-        newRoomchat.nameMembers[member] = dataUserAsync.detail.name;
+        if (member in dataRoomchatAsync.memberNickname) {
+          newRoomchat.nameMembers[member] = dataRoomchat.memberNickname[member]
+        }
+        else {
+          newRoomchat.nameMembers[member] = dataUserAsync.detail.name;
+        }
+
       }
       for (let member of dataRoomchatAsync.memberOut) {
         let dataUserAsync = await getUserDataAsync(
           member,
           dataUserLocal.accessToken
         );
-        if (dataUserAsync.detail.avatarUrl !== null) {
+        if (dataUserAsync && dataUserAsync.detail.avatarUrl != undefined && dataUserAsync.detail.avatarUrl != null) {
           newRoomchat.imgMembers[member] = dataUserAsync.detail.avatarUrl;
         }
         else {
           newRoomchat.imgMembers[member] = "https://firebasestorage.googleapis.com/v0/b/testgame-d8af2.appspot.com/o/avt.png?alt=media&token=b8108af6-1f90-4512-91f5-45091ca7351f"
         }
-        newRoomchat.nameMembers[member] = dataUserAsync.detail.name;
+        if (member in dataRoomchatAsync.memberNickname) {
+          newRoomchat.nameMembers[member] = dataRoomchat.memberNickname[member]
+        }
+        else {
+          newRoomchat.nameMembers[member] = dataUserAsync.detail.name;
+        }
       }
       newRoomchat.currentUserId = dataUserLocal.id;
       newRoomchat.title = receivedData.title;
@@ -196,6 +206,7 @@ const Content = ({ roomProfile }) => {
   const [socket, setSocket] = useState(undefined);
   const [fileAtt, setFileAtt] = useState(null);
   const navigation = useNavigation();
+  const [contentRoom , setContentRoom] = useState({});
 
   useEffect(() => {
     let DataRoomInit = [];
@@ -264,7 +275,7 @@ const Content = ({ roomProfile }) => {
       setSocket(newSocket);
     };
     fetchData();
-
+    setContentRoom(roomProfile)
     if (roomProfile.id === "") return;
     if (socket == undefined) return;
     socket.on("newMessage", async (message) => {
@@ -328,6 +339,38 @@ const Content = ({ roomProfile }) => {
           (messages) => messages._id !== message.messageId
         );
       });
+    });
+
+    socket.on("blockRoomchat", async (payload) => {
+     setContentRoom((preData) => {
+      let newData = {...preData}
+      newData.isBlock = payload.userId;
+      return newData;
+     })
+    });
+
+    socket.on("unblockRoomchat", async (payload) => {
+      setContentRoom((preData) => {
+        let newData = {...preData}
+        newData.isBlock = null;
+        return newData;
+       })
+    });
+
+    socket.on("validateNicknameMember", async (payload) => {
+     
+    });
+
+    socket.on("removeMember", async (payload) => {
+      try {
+        if (payload.member.includes(roomProfile.currentUserId)) {
+          navigation.navigate("main")
+        }
+      }
+      catch (err) {
+        console.log(err);
+      }
+
     });
   }, [roomProfile]);
 
@@ -408,7 +451,14 @@ const Content = ({ roomProfile }) => {
       );
     }
   };
-
+  const renderUsername = (props) => {
+    console.log(props)
+    return (
+      <View>
+        <Text>props</Text>
+      </View>
+    )
+  }
   const renderMessageVideo = (props) => {
     const { currentMessage } = props;
     return (
@@ -509,10 +559,10 @@ const Content = ({ roomProfile }) => {
   };
 
   // Render send button
-  const renderSend = (props) => {
+  const renderSend = useCallback((props) => {
     return (
       <View >
-        {roomProfile.isBlock == null  ? (
+        {contentRoom.isBlock == null  ? (
           <View style={{ flexDirection: "row" }}>
             <TouchableOpacity onPress={pickDocument}>
               <View>
@@ -535,7 +585,7 @@ const Content = ({ roomProfile }) => {
               </View>
             </Send>
           </View>
-        ) :  roomProfile.isSingle == false && (
+        ) :  contentRoom.isSingle == false && (
           <View style={{ flexDirection: "row" }}>
           <TouchableOpacity onPress={pickDocument}>
             <View>
@@ -561,7 +611,7 @@ const Content = ({ roomProfile }) => {
         )}
       </View>
     );
-  };
+  }, [contentRoom]);
 
   return (
     <GiftedChat
@@ -580,6 +630,8 @@ const Content = ({ roomProfile }) => {
       showUserAvatar={true}
       renderMessageVideo={renderMessageVideo}
       onLongPress={onLongPress}
+      renderUsernameOnMessage={true}
+      renderUsername={renderUsername}
     />
   );
 };

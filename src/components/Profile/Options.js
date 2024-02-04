@@ -26,7 +26,7 @@ const Options = ({ data }) => {
   const [isFriend, setIsFriend] = useState("Cancel request");
   const [isPending, setPending] = useState(false);
   const [isFetching, setFetching] = useState(false);
-
+  const [dataUser, setDataUser] = useState({});
   useEffect(() => {
     const fetchData = async () => {
       const keys = await getAllIdUserLocal();
@@ -152,7 +152,7 @@ const Options = ({ data }) => {
       dataUpdate.accessToken
     );
     dataRoomchatAsync.imgDisplay = data.avatarUrl;
-    dataRoomchatAsync.title = data.name;
+    dataRoomchatAsync.title = data.username;
     navigation.replace("chatwindow", { data: dataRoomchatAsync });
   };
   return (

@@ -62,7 +62,6 @@ const Item = ({ data }) => {
 
   const handlePress = async (postId) => {
     navigation.replace("listPost", {data: {postId: postId, dto: "noti"}})
-    navigation.replace("loadStory", { data: { post: item, users: users } });
   };
 
   return (
