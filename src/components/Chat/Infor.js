@@ -185,9 +185,9 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
 
   return (
     <View style={settingChat.avtContainer}>
-      {dataRoom && dataRoom.imgDisplay ? (
-        <Image style={settingChat.avt} source={{uri: dataRoom.imgDisplay}} />
-      ) : dataRoom.isSingle == true ? (
+      {receivedData && receivedData.imgDisplay ? (
+        <Image style={settingChat.avt} source={receivedData.imgDisplay} />
+      ) : receivedData && receivedData.isSingle == true ? (
         <Image
           style={settingChat.avt}
           source={require("../../../assets/img/avt.png")}
@@ -197,6 +197,7 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
           style={{
             flexDirection: "row",
             marginBottom: 10,
+            alignItems:'flex-end'
           }}
         >
           <Image
@@ -205,15 +206,14 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
           />
           <TouchableOpacity
             style={{
-              alignSelf: "flex-end"
+
             }}
-            onPress={pressModalChangeAvatar}
           >
             <FontAwesome
               name="edit"
               size={20}
               color="black"
-              style={{ textAlignVertical: "bottom", marginLeft: 2 }}
+              style={{marginLeft: 2 }}
             />
           </TouchableOpacity>
 
@@ -279,79 +279,19 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
         style={{
           flexDirection: "row",
           marginBottom: 20,
+          alignItems:'flex-end',
         }}
       >
-        <Text style={settingChat.name}>{dataRoom.title}</Text>
-        {dataRoom.isSingle == false && isMod && (
-          <TouchableOpacity
-            style={{
-              alignSelf: "flex-end"
-            }}
-            onPress={pressModalChangeTitle}
-          >
-            <FontAwesome
-              name="edit"
-              size={17}
-              color="black"
-              style={{ textAlignVertical: "bottom", marginBottom: 2 }}
-            />
-          </TouchableOpacity>
-        )}
-      </View>
-      <View>
-        <Modal
-          animationType="fade"
-          visible={modalChangeTitle}
-          transparent={true}
-          onRequestClose={pressModalChangeTitle}
-        >
-          <TouchableOpacity
-            style={{
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: "rgba(0,0,0,0.5)",
-            }}
-            onPress={pressModalChangeTitle}
-          >
-            <View
-              style={{
-                backgroundColor: "white",
-                height: 100,
-                width: 350,
-                borderRadius: 10,
-              }}
-            >
-              <View style={settingChat.nicknameItem}>
-                <View style={settingChat.textInputContainer}>
-                  <TextInput
-                    style={{
-                      marginLeft: 10,
-                      padding: 10,
-                      fontSize: 18,
-                      color: "black",
-                      borderBottomWidth: 1,
-                    }}
-                    editable={typeButton === "edit" ? false : true}
-                    value={newTitle}
-                    placeholder={receivedData.title}
-                    onChangeText={(text) => setNewTitle(text)}
-                  />
-                </View>
-                <TouchableOpacity
-                  style={{ marginTop: 15 }}
-                  onPress={async () => await handleChangeTitle()}
-                >
-                  <Text>
-                    <FontAwesome name={typeButton} size={30} color="#333" />
-                  </Text>
-                </TouchableOpacity>
-              </View>
+        <Text style={settingChat.name}>{receivedData.title}</Text>
+        <TouchableOpacity>
+          <FontAwesome
+            name="edit"
+            size={17}
+            color="black"
+            style={{ textAlignVertical: "bottom", marginBottom: 2 }}
+          />
+        </TouchableOpacity>
 
-            </View>
-          </TouchableOpacity>
-
-        </Modal>
       </View>
     </View>
   );

@@ -650,7 +650,7 @@ const ViewMember = ({ users, room, userCurrent, updateRoom }) => {
     <View>
     {/** renderAdminGroup */}
     <View>
-      <Text style={{ fontSize: 15, color: "#A9A9A9" }}>
+      <Text style={{ fontSize: 15, color: "#A9A9A9", marginBottom:10 }}>
         Admins & moderators
       </Text>
 
@@ -663,7 +663,7 @@ const ViewMember = ({ users, room, userCurrent, updateRoom }) => {
     </View>
     {/** renderMembers */}
     <View>
-      <Text style={{ fontSize: 15, color: "#A9A9A9" }}>
+      <Text style={{ fontSize: 15, color: "#A9A9A9",marginVertical:10 }}>
         Members
       </Text>
       {/** ITEM LA MAY CAI THANG MEMBER DAY M SUA LAI KIEU GI THI SUA T CHIU!!! */}

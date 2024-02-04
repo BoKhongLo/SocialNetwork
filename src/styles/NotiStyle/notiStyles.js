@@ -5,7 +5,8 @@ const cpnNotiStyles = StyleSheet.create({
     marginVertical: 10,
   },
   name: {
-    fontWeight: "700",
+    fontWeight: "600",
+    fontSize:17
   },
   nickname: {
     color: "#A9A9A9",
@@ -19,7 +20,8 @@ const cpnNotiStyles = StyleSheet.create({
   itemContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 5
+    marginBottom: 5,
+    marginLeft:5
   },
   button: {
     flex: 1,
