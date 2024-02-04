@@ -65,7 +65,7 @@ const Item = ({ user, onAdd, onRemove, typeItem, isMod }) => {
               style={newGroup.addButton}
               onPress={() => handleUpdate(user.id, isMod)}
             >
-              <Text style={newGroup.text}>{isMod}</Text>
+              <Text style={[newGroup.text,{textAlign:'center'}]}>{isMod}</Text>
             </TouchableOpacity>
           )}
         </View>

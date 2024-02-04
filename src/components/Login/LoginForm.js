@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
+  Keyboard
 } from "react-native";
 import React, { useState, useRef } from "react";
 import styles from "../../styles/styles";
@@ -77,7 +78,7 @@ const LoginForm = ({ isLoading, setIsLoading }) => {
               autoCapitalize="none"
               keyboardType="email-address"
               textContentType="emailAddress"
-              // autoFocus={true}
+              autoFocus={true}
               value={email}
               onChangeText={(text) => setEmail(text)}
             />
@@ -86,7 +87,7 @@ const LoginForm = ({ isLoading, setIsLoading }) => {
           <View
             style={[
               styles.inputField,
-              { flexDirection: "row", justifyContent: "space-between" },
+              { flexDirection: "row", justifyContent: "space-between",alignItems:'center', },
             ]}
           >
             <TextInput
@@ -97,6 +98,7 @@ const LoginForm = ({ isLoading, setIsLoading }) => {
               secureTextEntry={!showPassword}
               value={password}
               onChangeText={(text) => setPassword(text)}
+              style={{flex:1}}
             />
             <TouchableOpacity
               style={{
@@ -120,7 +122,7 @@ const LoginForm = ({ isLoading, setIsLoading }) => {
           <TouchableOpacity
             titleSize={20}
             style={styles.buttonLogin}
-            onPress={() => handleLogin()}
+            onPress={() => [handleLogin(), Keyboard.dismiss()]}
           >
             <Text style={styles.buttonLoginText}>Log in</Text>
           </TouchableOpacity>
