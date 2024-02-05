@@ -1,5 +1,4 @@
 import { StyleSheet, Text, View } from "react-native";
-import { NativeBaseProvider } from "native-base";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useEffect, useState } from "react";
