@@ -26,11 +26,15 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
   const [typeButton, setTypeButton] = useState("edit");
   const [newTitle, setNewTitle] = useState(receivedData.title)
   const [dataRoom, setDataRoom] = useState(receivedData)
+  const [dataUser, setDataUser] = useState(userCurrent)
   const [isMod, setIsMod] = useState(false)
 
   useEffect(() => {
     setDataRoom(receivedData)
     setNewTitle(receivedData.title)
+    setDataUser(userCurrent)
+    if (!receivedData) return;
+    if (!userCurrent) return;
     if (receivedData.role.ADMIN.findIndex(item => item.memberId === userCurrent.id) !== -1) setIsMod(true)
     if (receivedData.role.MOD.findIndex(item => item.memberId === userCurrent.id) !== -1) setIsMod(true)
 
@@ -41,6 +45,8 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
   };
 
   const pressModalChangeTitle = () => {
+    if (!dataRoom) return;
+    if (!dataUser) return;
     setModalChangeTitle(!modalChangeTitle);
     if (modalChangeTitle == false) {
       setTypeButton("edit");
@@ -49,12 +55,14 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
   };
 
   const handleChangeTitle = async () => {
+    if (!dataRoom) return;
+    if (!dataUser) return;
     if (typeButton == "edit") {
       setTypeButton("check");
       return;
     }
     else if (typeButton == "check") {
-      const dto = new ValidateRoomchatDto(userCurrent.id, dataRoom.id, newTitle, dataRoom.description, dataRoom.imgDisplay)
+      const dto = new ValidateRoomchatDto(dataRoom.id, dataRoom.id, newTitle, dataRoom.description, dataRoom.imgDisplay)
       const keys = await getAllIdUserLocal();
       const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
       const dataRe = await validateRoomchatAsync(dto, dataLocal.accessToken)
@@ -68,7 +76,7 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
       if ("errors" in dataRe) return;
       console.log(dataRe);
       setDataRoom((preData) => {
-        let newData = {...preData};
+        let newData = { ...preData };
         newData.title = newTitle;
         return newData;
       })
@@ -77,6 +85,8 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
   }
 
   const handleChangeImgDisplay = async (validate) => {
+    if (!dataRoom) return;
+    if (!dataUser) return;
     if (validate === "Camera") {
       onEdit(true);
       const cameraPermission =
@@ -96,9 +106,9 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
       if (!result.canceled) {
         onEdit(true);
         const keys = await getAllIdUserLocal();
-        const dto = new FileUploadDto(receivedData.id, result.assets[0].uri, `avatarGroup${dataRoom.id}.jpg`, "image/jpeg");
+        const dto = new FileUploadDto(dataUser.id, result.assets[0].uri, `avatarGroup${dataRoom.id}.jpg`, "image/jpeg");
         const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
-        const dataUserLocal = {...dataLocal};
+        const dataUserLocal = { ...dataLocal };
         let data = await uploadFile(dto, dataUserLocal.accessToken);
         if (data == null) {
           let dataUpdate = await updateAccessTokenAsync(
@@ -110,7 +120,7 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
         }
         onEdit(false)
         if (data == null) return;
-        const dtoValidate = new ValidateRoomchatDto(userCurrent.id, dataRoom.id, dataRoom.title, dataRoom.description, data.url)
+        const dtoValidate = new ValidateRoomchatDto(dataUser.id, dataRoom.id, dataRoom.title, dataRoom.description, data.url)
         const dataRe = await validateRoomchatAsync(dtoValidate, dataUserLocal.accessToken)
         if ("errors" in dataRe) {
           dataUpdate = await updateAccessTokenAsync(
@@ -122,7 +132,7 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
         }
         if ("errors" in dataRe) return;
         setDataRoom((preData) => {
-          let newData = {...preData};
+          let newData = { ...preData };
           newData.imgDisplay = data.url;
           return newData;
         })
@@ -146,9 +156,9 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
       if (!result.canceled) {
         onEdit(true);
         const keys = await getAllIdUserLocal();
-        const dto = new FileUploadDto(receivedData.id, result.assets[0].uri, `avatarGroup${dataRoom.id}.jpg`, "image/jpeg");
+        const dto = new FileUploadDto(dataUser.id, result.assets[0].uri, `avatarGroup${dataRoom.id}.jpg`, "image/jpeg");
         const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
-        const dataUserLocal = {...dataLocal};
+        const dataUserLocal = { ...dataLocal };
         let data = await uploadFile(dto, dataUserLocal.accessToken);
         if (data == null) {
           let dataUpdate = await updateAccessTokenAsync(
@@ -161,7 +171,7 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
         console.log(data)
         onEdit(false)
         if (data == null) return
-        const dtoValidate = new ValidateRoomchatDto(userCurrent.id, dataRoom.id, dataRoom.title, dataRoom.description, data.url)
+        const dtoValidate = new ValidateRoomchatDto(dataUser.id, dataRoom.id, dataRoom.title, dataRoom.description, data.url)
         const dataRe = await validateRoomchatAsync(dtoValidate, dataUserLocal.accessToken)
         if ("errors" in dataRe) {
           dataUpdate = await updateAccessTokenAsync(
@@ -174,7 +184,7 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
         console.log(dataRe)
         if ("errors" in dataRe) return;
         setDataRoom((preData) => {
-          let newData = {...preData};
+          let newData = { ...preData };
           newData.imgDisplay = data.url;
           return newData;
         })
@@ -185,25 +195,23 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
 
   return (
     <View style={settingChat.avtContainer}>
-      {receivedData && receivedData.imgDisplay ? (
-        <Image style={settingChat.avt} source={receivedData.imgDisplay} />
-      ) : receivedData && receivedData.isSingle == true ? (
-        <Image
-          style={settingChat.avt}
-          source={require("../../../assets/img/avt.png")}
-        />
-      ) : dataRoom.isSingle == false && isMod &&(
-        <View
-          style={{
-            flexDirection: "row",
-            marginBottom: 10,
-            alignItems:'flex-end'
-          }}
-        >
+
+
+      <View
+        style={{
+          flexDirection: "row",
+          marginBottom: 10,
+          alignItems: 'flex-end'
+        }}
+      >
+        {dataRoom && dataRoom.imgDisplay ? (
+          <Image style={settingChat.avt} source={{ uri: dataRoom.imgDisplay }} />
+        ) : (
           <Image
-            style={[settingChat.avt]}
+            style={settingChat.avt}
             source={require("../../../assets/img/avt.png")}
-          />
+          />)}
+        {dataRoom.isSingle == false && isMod && (
           <TouchableOpacity
             style={{
 
@@ -213,12 +221,14 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
               name="edit"
               size={20}
               color="black"
-              style={{marginLeft: 2 }}
+              style={{ marginLeft: 2 }}
             />
           </TouchableOpacity>
+        )}
 
-        </View>
-      )}
+
+      </View>
+
       <View>
         <Modal
           animationType="fade"
@@ -247,7 +257,7 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
                   paddingVertical: 20,
                   flexDirection: "row",
                 }}
-                onPress={async() => await handleChangeImgDisplay("Camera")}
+                onPress={async () => await handleChangeImgDisplay("Camera")}
               >
                 <Text style={{ fontSize: 20 }}>{"Camera"}</Text>
                 <Image
@@ -261,7 +271,7 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
                   paddingVertical: 20,
                   flexDirection: "row",
                 }}
-                onPress={async() => await handleChangeImgDisplay("Gallery")}
+                onPress={async () => await handleChangeImgDisplay("Gallery")}
               >
                 <Text style={{ fontSize: 20 }}>
                   {"Gallery"}
@@ -279,19 +289,79 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
         style={{
           flexDirection: "row",
           marginBottom: 20,
-          alignItems:'flex-end',
+          alignItems: 'flex-end',
         }}
       >
-        <Text style={settingChat.name}>{receivedData.title}</Text>
-        <TouchableOpacity>
-          <FontAwesome
-            name="edit"
-            size={17}
-            color="black"
-            style={{ textAlignVertical: "bottom", marginBottom: 2 }}
-          />
-        </TouchableOpacity>
+        <Text style={settingChat.name}>{dataRoom.title}</Text>
+        {dataRoom.isSingle == false && isMod && (
+          <TouchableOpacity
+            style={{
+              alignSelf: "flex-end"
+            }}
+            onPress={pressModalChangeTitle}
+          >
+            <FontAwesome
+              name="edit"
+              size={17}
+              color="black"
+              style={{ textAlignVertical: "bottom", marginBottom: 2 }}
+            />
+          </TouchableOpacity>
+        )}
+      </View>
+      <View>
+        <Modal
+          animationType="fade"
+          visible={modalChangeTitle}
+          transparent={true}
+          onRequestClose={pressModalChangeTitle}
+        >
+          <TouchableOpacity
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "rgba(0,0,0,0.5)",
+            }}
+            onPress={pressModalChangeTitle}
+          >
+            <View
+              style={{
+                backgroundColor: "white",
+                height: 100,
+                width: 350,
+                borderRadius: 10,
+              }}
+            >
+              <View style={settingChat.nicknameItem}>
+                <View style={settingChat.textInputContainer}>
+                  <TextInput
+                    style={{
+                      marginLeft: 10,
+                      padding: 10,
+                      fontSize: 18,
+                      color: "black",
+                      borderBottomWidth: 1,
+                    }}
+                    editable={typeButton === "edit" ? false : true}
+                    value={newTitle}
+                    placeholder={dataRoom.title}
+                    onChangeText={(text) => setNewTitle(text)}
+                  />
+                </View>
+                <TouchableOpacity
+                  style={{ marginTop: 15 }}
+                  onPress={async () => await handleChangeTitle()}
+                >
+                  <Text>
+                    <FontAwesome name={typeButton} size={30} color="#333" />
+                  </Text>
+                </TouchableOpacity>
+              </View>
 
+            </View>
+          </TouchableOpacity>
+        </Modal>
       </View>
     </View>
   );

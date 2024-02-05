@@ -6,7 +6,8 @@ import {
   TouchableOpacity,
   Platform,
   Pressable,
-  ScrollView
+  ScrollView,
+  Alert
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import styles from "../../styles/styles";
@@ -24,7 +25,7 @@ import { Toast } from 'toastify-react-native'
 import RNPickerSelect from 'react-native-picker-select';
 import CountryCodeDropdownPicker from 'react-native-dropdown-country-picker'
 
-const SignupForm = ({receivedData}) => {
+const SignupForm = ({receivedData, isLoading, setIsLoading}) => {
   const [name, setName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [date, setDate] = useState(new Date());
@@ -92,13 +93,15 @@ const SignupForm = ({receivedData}) => {
   };
 
   const handleSignUp = async () => {
+    setIsLoading(true); 
     console.log("SignUp clicked");
     const dto = new SignUpDto();
     dto.email = receivedData.email;
     dto.password = receivedData.password;
     if (name === "" ) {
       Toast.error("Name must not be empty!")
-      return;
+      setIsLoading(false);
+      return 
     }
     dto.name = name;
     if (phone === "") {
@@ -117,10 +120,11 @@ const SignupForm = ({receivedData}) => {
     try {
       const dataSignUp = await SignupAsync(dto);
       if ("errors" in dataSignUp) {
-        console.log(dataSignUp.errors[0]);
-        console.log(dto)
+        Alert.alert(dataRe.errors[0].message);
+        setIsLoading(false);
         return;
       }
+      setIsLoading(false);
       navigation.navigate("main", { data: dataSignUp });
     } catch (err) {
       console.log(err);

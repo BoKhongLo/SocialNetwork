@@ -504,18 +504,20 @@ export async function getUserDataLiteAsync(userId: string, accessToken: string) 
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
     const QUERY = `
-        query GetUser($userId: String!) {
-            getUser(id: $userId) {
+        query GetUser ($id: String!) {
+            getUser(id: $id) {
                 id
-                email
-                detail {
-                    name
-                    nickName
-                    avatarUrl
-                }
+                role
+                isOnline
                 friends
                 created_at
                 updated_at
+                detail {
+                    name
+                    nickName
+                    gender
+                    avatarUrl
+                }
             }
         }`;
 
@@ -530,7 +532,7 @@ export async function getUserDataLiteAsync(userId: string, accessToken: string) 
             {
                 query: QUERY,
                 variables: {
-                    userId: userId
+                    id: userId
                 },
             },
             { headers: headers }
@@ -1532,21 +1534,15 @@ export async function removeFriendAsync(userId: string, friendId: string, access
     const endpoint = 'http://103.144.87.14:3434/graphql';
 
     const GET_USER_QUERY = `
-    mutation RemoveFriendUser ($userId: String!, $friendId: String!) {
-        removeFriendUser(removeFriend: {
-            userId: $userId
-            friendId: $friendId
+        mutation RemoveFriendUser ($userId: String!, $friendId: String!) {
+            removeFriendUser(removeFriend: {
+                userId: $userId
+                friendId: $friendId
+                }
+            ) {
+                data
             }
-        ) {
-            id
-            createdUserId
-            receiveUserId
-            value
-            isDisplay
-            created_at
-            updated_at
-        }
-    }`;
+        }`;
 
     const headers = {
         'Content-Type': 'application/json',
@@ -2158,16 +2154,16 @@ export async function addCommentPostAsync(dto: ValidateMessagesDto, accessToken:
 
 export async function removeCommentPostAsync(dto: ValidateMessagesDto, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
-
+    
     const QUERY = `
         mutation RemoveComment ($userId: String!, $postId: String!, $commentId: String, $content: String!, $fileUrl: [String!]!){
             removeComment(
                 removeComment: {
+                    fileUrl: $fileUrl
+                    content: $content
                     userId: $userId
                     postId: $postId
                     commentId: $commentId
-                    content: $content
-                    fileUrl: $fileUrl
                 }
             ) {
                 data

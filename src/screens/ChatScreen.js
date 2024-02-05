@@ -87,8 +87,12 @@ const ChatScreen = ({}) => {
                 user,
                 dataUserLocal.accessToken
               );
-              dataRoomchatAsync[item].title = dataFriend.detail.name;
-
+              if (dataFriend.id in dataRoomchatAsync[item].memberNickname) {
+                dataRoomchatAsync[item].title = dataRoomchatAsync[item].memberNickname[dataFriend.id];
+              }
+              else {
+                dataRoomchatAsync[item].title = dataFriend.detail.name;
+              }
               if (!dataFriend.detail.avatarUrl)
                 dataRoomchatAsync[item].imgDisplay = "https://firebasestorage.googleapis.com/v0/b/testgame-d8af2.appspot.com/o/avt.png?alt=media&token=b8108af6-1f90-4512-91f5-45091ca7351f"
               else

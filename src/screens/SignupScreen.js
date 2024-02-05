@@ -1,12 +1,14 @@
 import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import styles from "../styles/styles";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import SignupForm from "../components/Signup/SignupForm";
 import ToastManager from 'toastify-react-native'
+import LoadingAnimation from "../components/Loading/loadingAnimation";
 
 const SignupScreen = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const route = useRoute();
@@ -43,8 +45,9 @@ const SignupScreen = () => {
         </Text>
       </View>
       <ScrollView>
-        <SignupForm  receivedData={receivedData}/>
+        <SignupForm  receivedData={receivedData} isLoading={isLoading} setIsLoading={setIsLoading}/>
       </ScrollView>
+      <LoadingAnimation isVisible={isLoading}/>
     </View>
   );
 };

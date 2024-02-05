@@ -16,6 +16,7 @@ import { Divider } from "react-native-elements";
 import chat from "../../styles/ChatStyles/chatStyles";
 import {
   getUserDataAsync,
+  getUserDataLiteAsync,
   getRoomchatAsync,
   getAllIdUserLocal,
   getDataUserLocal,
@@ -56,9 +57,10 @@ const ChatWindows = ({ user }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (receivedData == null) {
+      if (!receivedData) {
         navigation.navigate("main");
       }
+
       const keys = await getAllIdUserLocal();
       const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
       setUserCurrentData({ ...dataUserLocal });
@@ -68,10 +70,11 @@ const ChatWindows = ({ user }) => {
         dataUserLocal.accessToken
       );
       if ("errors" in dataRoomchatAsync) {
-        const dataUpdate = await updateAccessTokenAsync(
+        let dataUpdate = await updateAccessTokenAsync(
           dataUserLocal.id,
           dataUserLocal.refreshToken
         );
+        
         await saveDataUserLocal(dataUpdate.id, dataUpdate);
         dataUserLocal.accessToken = dataUpdate.accessToken;
         dataRoomchatAsync = await getRoomchatAsync(
@@ -82,45 +85,49 @@ const ChatWindows = ({ user }) => {
       if ("errors" in dataRoomchatAsync) {
         return;
       }
-      const newRoomchat = { ...dataRoomchat };
-      for (let member of dataRoomchatAsync.member) {
-        let dataUserAsync = await getUserDataAsync(
-          member,
+
+      let newRoomchat = { ...dataRoomchat };
+
+      for (let i = 0; i < dataRoomchatAsync.member.length; i++) {
+        let dataUserAsync = await getUserDataLiteAsync(
+          dataRoomchatAsync.member[i],
           dataUserLocal.accessToken
         );
-        
-        if (dataUserAsync && dataUserAsync.detail.avatarUrl != undefined && dataUserAsync.detail.avatarUrl != null) {
-          newRoomchat.imgMembers[member] = dataUserAsync.detail.avatarUrl;
+        if (dataUserAsync.detail.avatarUrl != undefined && dataUserAsync.detail.avatarUrl != null) {
+          newRoomchat.imgMembers[dataRoomchatAsync.member[i]] = dataUserAsync.detail.avatarUrl;
         }
         else {
-          newRoomchat.imgMembers[member] = "https://firebasestorage.googleapis.com/v0/b/testgame-d8af2.appspot.com/o/avt.png?alt=media&token=b8108af6-1f90-4512-91f5-45091ca7351f"
+          newRoomchat.imgMembers[dataRoomchatAsync.member[i]] = "https://firebasestorage.googleapis.com/v0/b/testgame-d8af2.appspot.com/o/avt.png?alt=media&token=b8108af6-1f90-4512-91f5-45091ca7351f"
         }
-        if (member in dataRoomchatAsync.memberNickname) {
-          newRoomchat.nameMembers[member] = dataRoomchat.memberNickname[member]
+
+        if (dataRoomchatAsync.member[i] in dataRoomchatAsync.memberNickname) {
+          newRoomchat.nameMembers[dataRoomchatAsync.member[i]] = dataRoomchatAsync.memberNickname[dataRoomchatAsync.member[i]]
         }
         else {
-          newRoomchat.nameMembers[member] = dataUserAsync.detail.name;
+          newRoomchat.nameMembers[dataRoomchatAsync.member[i]] = dataUserAsync.detail.name;
         }
 
       }
+
       for (let member of dataRoomchatAsync.memberOut) {
         let dataUserAsync = await getUserDataAsync(
-          member,
+          member.memberId,
           dataUserLocal.accessToken
         );
         if (dataUserAsync && dataUserAsync.detail.avatarUrl != undefined && dataUserAsync.detail.avatarUrl != null) {
-          newRoomchat.imgMembers[member] = dataUserAsync.detail.avatarUrl;
+          newRoomchat.imgMembers[member.memberId] = dataUserAsync.detail.avatarUrl;
         }
         else {
-          newRoomchat.imgMembers[member] = "https://firebasestorage.googleapis.com/v0/b/testgame-d8af2.appspot.com/o/avt.png?alt=media&token=b8108af6-1f90-4512-91f5-45091ca7351f"
+          newRoomchat.imgMembers[member.memberId] = "https://firebasestorage.googleapis.com/v0/b/testgame-d8af2.appspot.com/o/avt.png?alt=media&token=b8108af6-1f90-4512-91f5-45091ca7351f"
         }
         if (member in dataRoomchatAsync.memberNickname) {
-          newRoomchat.nameMembers[member] = dataRoomchat.memberNickname[member]
+          newRoomchat.nameMembers[member.memberId] = dataRoomchatAsync.memberNickname[member.memberId]
         }
         else {
-          newRoomchat.nameMembers[member] = dataUserAsync.detail.name;
+          newRoomchat.nameMembers[member.memberId] = dataUserAsync.detail.name;
         }
       }
+
       newRoomchat.currentUserId = dataUserLocal.id;
       newRoomchat.title = receivedData.title;
       newRoomchat.member = dataRoomchatAsync.member;
@@ -157,9 +164,17 @@ const ChatWindows = ({ user }) => {
     </View>
   );
 };
-//justificontent:'space-between'
+
 const Header = ({ roomProfile, userData }) => {
   const navigation = useNavigation();
+  const [dataUser, setDataUser] = useState({});
+  const [dataRoomchat, setDataRoomchat] = useState({})
+
+  useEffect(() => {
+    setDataUser(userData);
+    setDataRoomchat(roomProfile)
+  }, [roomProfile, userData])
+
   return (
     <View
       style={{
@@ -170,7 +185,7 @@ const Header = ({ roomProfile, userData }) => {
       }}
     >
       <TouchableOpacity
-        onPress={() => navigation.navigate("chat", { data: userData })}
+        onPress={() => navigation.navigate("chat", { data: dataUser })}
         style={{ padding: 10 }}
       >
         <Image
@@ -179,15 +194,15 @@ const Header = ({ roomProfile, userData }) => {
         />
       </TouchableOpacity>
       <Text style={{ fontSize: 20, fontWeight: "500" }}>
-        {roomProfile.title}
+        {dataRoomchat.title}
       </Text>
       <TouchableOpacity
         onPress={() => {
-          if (roomProfile.isSingle === true) {
-            navigation.replace("settingChat", { data: roomProfile })
+          if ("isSingle" in dataRoomchat && dataRoomchat.isSingle === true) {
+            navigation.replace("settingChat", { data: dataRoomchat })
           }
           else {
-            navigation.replace("settingGroupChat", { data: roomProfile })
+            navigation.replace("settingGroupChat", { data: dataRoomchat })
           }
         }}
         style={{ padding: 10 }}
@@ -209,11 +224,11 @@ const Content = ({ roomProfile }) => {
   const [contentRoom , setContentRoom] = useState({});
 
   useEffect(() => {
+    if (!roomProfile) return;
     let DataRoomInit = [];
     let count = 0;
     for (let message of roomProfile.data) {
       if (message.isDisplay == false) continue;
-
       let newMessage = {
         _id: message.id,
         text: message.content,
@@ -276,7 +291,7 @@ const Content = ({ roomProfile }) => {
     };
     fetchData();
     setContentRoom(roomProfile)
-    if (roomProfile.id === "") return;
+    if (!("id" in roomProfile)) return;
     if (socket == undefined) return;
     socket.on("newMessage", async (message) => {
       if (message.isDisplay == false) return;
@@ -379,21 +394,21 @@ const Content = ({ roomProfile }) => {
       if (socket == undefined) return;
 
       socket.emit("sendMessage", {
-        userId: roomProfile.currentUserId,
+        userId: contentRoom.currentUserId,
         content: messages[0].text,
         fileUrl: [],
-        roomchatId: roomProfile.id,
+        roomchatId: contentRoom.id,
       });
     },
-    [socket, roomProfile]
+    [socket, contentRoom]
   );
 
   const onDelete = useCallback(
     async (messageIdToDelete) => {
-      if (roomProfile.id === "") return;
+      if (!("id" in contentRoom)) return;
       const dto = new ValidateMessagesDto(
-        roomProfile.currentUserId,
-        roomProfile.id,
+        contentRoom.currentUserId,
+        contentRoom.id,
         messageIdToDelete
       );
       const keys = await getAllIdUserLocal();
@@ -408,13 +423,12 @@ const Content = ({ roomProfile }) => {
         data = await removeMessageAsync(dto, dataUpdate.accessToken);
       }
     },
-    [roomProfile]
+    [contentRoom]
   );
 
   const onLongPress = async (context, message) => {
-    if (roomProfile.id === "") return;
-
-    if (message.user._id === roomProfile.currentUserId) {
+    if (!("id" in contentRoom)) return;
+    if (message.user._id === contentRoom.currentUserId) {
       const options = ["Copy", "Delete Message", "Cancel"];
       const cancelButtonIndex = options.length - 1;
       context.actionSheet().showActionSheetWithOptions(
@@ -452,10 +466,9 @@ const Content = ({ roomProfile }) => {
     }
   };
   const renderUsername = (props) => {
-    console.log(props)
     return (
-      <View>
-        <Text>props</Text>
+      <View style={{marginLeft: 10, marginBottom:5 }}>
+        <Text style={{fontStyle:'italic', color: "gray"}}>{props.name}</Text>
       </View>
     )
   }
@@ -498,7 +511,7 @@ const Content = ({ roomProfile }) => {
 
     if (result.canceled) return;
     if (socket == undefined) return;
-    if (roomProfile.id === "") return;
+    if (contentRoom.id === "") return;
 
     const keys = await getAllIdUserLocal();
     const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
@@ -532,7 +545,7 @@ const Content = ({ roomProfile }) => {
       userId: dataLocal.id,
       content: "",
       fileUrl: newUrl,
-      roomchatId: roomProfile.id,
+      roomchatId: contentRoom.id,
     });
   };
 
@@ -619,7 +632,7 @@ const Content = ({ roomProfile }) => {
       onSend={(messages) => onSend(messages)}
       renderSend={renderSend}
       user={{
-        _id: roomProfile.currentUserId,
+        _id: contentRoom.currentUserId,
       }}
       timeFormat="HH:mm"
       renderBubble={renderBubble}
