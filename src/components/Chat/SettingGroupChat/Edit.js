@@ -322,7 +322,7 @@ const EditNickname = ({ users, room, updateRoom }) => {
       let dataRe = await validateNicknameMemberRoomchatAsync(dto, dataLocal.accessToken);
       if ("errors" in dataRe) {
         let dataUpdate = await updateAccessTokenAsync(dataLocal.id, dataLocal.refreshToken);
-        dataRe = await validateNicknameMemberRoomchatAsync(dto, dataLocal.accessToken);
+        dataRe = await validateNicknameMemberRoomchatAsync(dto, dataUpdate.accessToken);
       }
       if ("errors" in dataRe) return
       let newData = { ...room }

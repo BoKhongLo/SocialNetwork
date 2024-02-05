@@ -57,6 +57,14 @@ const SettingChat = () => {
     fetchData();
   }, []);
 
+  const updateTitle = (data) => {
+    setReceivedData((preData) => {
+      let newData = {...preData}
+      newData.title = data
+      return newData;
+    })
+  }
+  
   return (
     <View
       style={{
@@ -71,7 +79,7 @@ const SettingChat = () => {
     >
       <Header receivedData={receivedData}/>
       <Infor receivedData={receivedData}/>
-      <Edit receivedData={dataRoom} users={dataUser} userCurrent={dataUserCurrent}/>
+      <Edit receivedData={dataRoom} users={dataUser} userCurrent={dataUserCurrent} updateTitle={updateTitle}/>
       <LoadingAnimation isVisible={isLoading} />
     </View>
   );

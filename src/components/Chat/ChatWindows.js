@@ -466,10 +466,9 @@ const Content = ({ roomProfile }) => {
     }
   };
   const renderUsername = (props) => {
-    console.log(props)
     return (
-      <View>
-        <Text>props</Text>
+      <View style={{marginLeft: 10, marginBottom:5 }}>
+        <Text style={{fontStyle:'italic', color: "gray"}}>{props.name}</Text>
       </View>
     )
   }

@@ -121,10 +121,11 @@ const Post = React.memo(({ post, users, userCurrent, onRemovePost }) => {
           }}>
             <PostHeader post={dataPost} users={dataUsers} userCurrent={dataUserCurrent} headerColor='white' />
           </View>
-          <View style={{ marginLeft: 14 }}>
-            <Caption post={dataPost} users={dataUsers} />
-          </View>
+
           <PostImage post={dataPost} users={dataUsers} />
+          <View style={{ alignSelf: "center"}}>
+              <Caption post={dataPost} users={dataUsers} />
+          </View>
           <View>
             <PostFooter post={dataPost} users={dataUsers} userCurrent={dataUserCurrent} />
             <View style={{ marginLeft: 14 }}>
@@ -136,7 +137,7 @@ const Post = React.memo(({ post, users, userCurrent, onRemovePost }) => {
       {fileType == "IMAGE" && (
         <View style={{marginBottom: 5}}>
           <PostHeader post={dataPost} users={dataUsers} userCurrent={dataUserCurrent} />
-          <View style={{ marginLeft: 14 }}>
+          <View style={{ marginLeft: 13 }}>
             <Caption post={dataPost} users={dataUsers} />
           </View>
           <PostImage post={dataPost} users={dataUsers} />
@@ -151,7 +152,7 @@ const Post = React.memo(({ post, users, userCurrent, onRemovePost }) => {
       {fileType == 'Null' && (
       <View style={{marginBottom: 5}}>
         <PostHeader post={dataPost} users={dataUsers} userCurrent={dataUserCurrent} />
-        <View style={{ marginLeft: 14 }}>
+        <View style={{ marginLeft: 13 }}>
           <Caption post={dataPost} users={dataUsers} />
         </View>
         <View>
@@ -303,7 +304,7 @@ const Caption = ({ post, users }) => {
       {/* {users[post.ownerUserId] && post.fileUrl.length != 0 && (
         <Text style={{ fontWeight: "600" }}>{users[post.ownerUserId].detail.name}</Text>
       )} */}
-      <Text style={headerPostStyles.caption}> {post.content}</Text>
+      <Text style={headerPostStyles.caption}>{post.content}</Text>
     </View>
   );
 };
