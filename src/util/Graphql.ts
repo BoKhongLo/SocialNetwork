@@ -2154,16 +2154,16 @@ export async function addCommentPostAsync(dto: ValidateMessagesDto, accessToken:
 
 export async function removeCommentPostAsync(dto: ValidateMessagesDto, accessToken: string) {
     const endpoint = 'http://103.144.87.14:3434/graphql';
-
+    
     const QUERY = `
         mutation RemoveComment ($userId: String!, $postId: String!, $commentId: String, $content: String!, $fileUrl: [String!]!){
             removeComment(
                 removeComment: {
+                    fileUrl: $fileUrl
+                    content: $content
                     userId: $userId
                     postId: $postId
                     commentId: $commentId
-                    content: $content
-                    fileUrl: $fileUrl
                 }
             ) {
                 data

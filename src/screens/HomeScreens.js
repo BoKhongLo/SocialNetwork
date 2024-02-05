@@ -26,8 +26,6 @@ import {
   getUserDataAsync,
   saveDataUserLocal
 } from "../util";
-import { registerIndieID, unregisterIndieDevice } from 'native-notify';
-import NewStory from './NewStory';
 import LoadingAnimation from "../components/Loading/loadingAnimation";
 const HomeScreen = () => {
   const [isLoading, setIsLoading] = useState(false);

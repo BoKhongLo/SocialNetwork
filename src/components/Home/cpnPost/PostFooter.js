@@ -44,7 +44,7 @@ import {
 } from "../../../util/dto";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
-import { isEmptyObj } from "native-base";
+
 const PostFooter = ({
   post,
   onPressComment,
@@ -323,6 +323,7 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
       console.log("Connect socket");
 
       newSocket.on("addComment", async (comments) => {
+        console.log(comments)
         setRefreshing(true);
         if (!(comments.userId in dataUsers)) {
           dataUpdate = await updateAccessTokenAsync(
@@ -490,7 +491,7 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
           dataUserLocal.id,
           dataPost.id,
           comment.id,
-          "",
+          "-1",
           []
         );
         let dataReturn = await removeCommentPostAsync(
@@ -504,6 +505,7 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
           );
           dataReturn = await removeCommentPostAsync(dto, dataUpdate.accessToken);
         }
+        console.log(dataReturn);
         if ("errors" in dataReturn) return;
       }},
     ]);

@@ -28,6 +28,7 @@ import {
   updateAccessTokenAsync,
   findFriendAsync,
   getSocketIO,
+  saveDataUserLocal
 } from "../../util";
 import { useNavigation } from "@react-navigation/native";
 const Post = React.memo(({ post, users, userCurrent, onRemovePost }) => {
@@ -201,6 +202,26 @@ const ItemLike = ({ post, users }) => {
   const navigation = useNavigation();
   const [dataPost, setDataPost] = useState(post);
   const [dataUsers, setDataUsers] = useState(users);
+
+  useEffect(() => {
+    const validateData = async () => {
+      const keys = await getAllIdUserLocal();
+      const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+      let dataRe = await getPostAsync(post.id, dataUserLocal.accessToken)
+      if ("errors" in dataRe) {
+        const dataUpdate = await updateAccessTokenAsync(
+          dataUserLocal.id,
+          dataUserLocal.refreshToken
+        );
+        await saveDataUserLocal(dataUpdate.id, dataUpdate)
+        dataRe = await getPostAsync(post.id, dataUserLocal.accessToken)
+      }
+
+      setDataPost(dataRe);
+    };
+
+    validateData();
+  }, []);
 
   const handlePressAvatar = async (id) => {
     const keys = await getAllIdUserLocal();
