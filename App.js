@@ -13,8 +13,6 @@ import EditField from "./src/components/Profile/EditField";
 import LoadStories from "./src/components/Home/LoadStories";
 import ChatWindows from "./src/components/Chat/ChatWindows";
 import { getAllIdUserLocal, deleteDataUserLocal, updateAccessTokenAsync, getDataUserLocal } from './src/util'
-import FillEmail from "./src/components/Signup/FillEmail";
-import FillPassword from "./src/components/Signup/FillPassword";
 import Setting from "./src/components/Profile/Setting";
 import ChangePassword from "./src/components/Profile/ChangePassword";
 import NewPost from "./src/screens/NewPost";
@@ -28,7 +26,6 @@ import ListFriend from "./src/screens/ListFriend";
 import ListPost from "./src/screens/ListPost";
 import SettingGroupChat from "./src/components/Chat/SettingGroup";
 
-import registerNNPushToken from 'native-notify';
 import BuyPremium from "./src/screens/BuyPremium";
 import GenderAndPhone from "./src/components/Profile/GenderAndPhone";
 import ContactUs from "./src/components/Profile/ContactUs";
@@ -38,14 +35,13 @@ const Stack = createStackNavigator();
 export default function App() {
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  // registerNNPushToken(18604, '8sbEFbNYoDaZJKMDeIAWoc');
+
   
   useEffect(() => {
     // Function to check user login status
     const checkLoginStatus = async () => {
       try {
         const keys = await getAllIdUserLocal();
-        // const keys = []
         if (keys.length ==  0) {
           setIsLoggedIn(false);
           return;

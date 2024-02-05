@@ -83,7 +83,7 @@ const Setting = () => {
   const logoutFunction = async () => {
     const keys = await getAllIdUserLocal();
     const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
-    // unregisterIndieDevice(dataUserLocal.id, 18604, '8sbEFbNYoDaZJKMDeIAWoc');
+
     await deleteDataUserLocal(dataUserLocal.id);
     navigation.dispatch(
       CommonActions.reset({

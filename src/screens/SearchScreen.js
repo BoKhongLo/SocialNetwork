@@ -177,7 +177,6 @@ const SearchScreen = () => {
     if (typeUpdate = "REMOVEFRIEND") {
       setRefreshing(true)
       setDataUserCurrent((preData) => {
-        if (payload.friendId !== preData.id) return preData;
         let newData = {...preData};
         newData.friends = newData.friends.filter(friend => friend !== friendId)
         return newData;

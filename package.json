@@ -30,8 +30,6 @@
     "jwt-decode": "^4.0.0",
     "lottie-react-native": "5.1.4",
     "mysql2": "^3.6.5",
-    "native-base": "^3.4.28",
-    "native-notify": "^3.2.5",
     "react": "18.2.0",
     "react-native": "0.71.14",
     "react-native-animatable": "^1.4.0",
