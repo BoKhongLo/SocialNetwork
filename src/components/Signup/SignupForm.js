@@ -6,25 +6,19 @@ import {
   TouchableOpacity,
   Platform,
   Pressable,
-  ScrollView
+  ScrollView,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import styles from "../../styles/styles";
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
-import { color } from "react-native-elements/dist/helpers";
 import { SignupAsync, getUserDataAsync } from "../../util";
 import { SignUpDto } from "../../util/dto";
 
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Toast } from 'toastify-react-native'
-import RNPickerSelect from 'react-native-picker-select';
-import CountryCodeDropdownPicker from 'react-native-dropdown-country-picker'
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { Toast } from "toastify-react-native";
+import RNPickerSelect from "react-native-picker-select";
+import CountryCodeDropdownPicker from "react-native-dropdown-country-picker";
 
-const SignupForm = ({receivedData}) => {
+const SignupForm = ({ receivedData, isLoading, setIsLoading }) => {
   const [name, setName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [date, setDate] = useState(new Date());
@@ -32,9 +26,9 @@ const SignupForm = ({receivedData}) => {
   const [dateOfBirth, setDateOfBirth] = useState("");
   const navigation = useNavigation();
   const [selectedGender, setSelectedGender] = useState("other");
-  const [selected, setSelected] = React.useState('+84');
-  const [country, setCountry] = React.useState('');
-  const [phone, setPhone] = React.useState('');
+  const [selected, setSelected] = React.useState("+84");
+  const [country, setCountry] = React.useState("");
+  const [phone, setPhone] = React.useState("");
 
   const handleSetPhone = (text) => {
     if (text == "") {
@@ -50,14 +44,13 @@ const SignupForm = ({receivedData}) => {
     } else {
       return;
     }
-  }
+  };
 
   const genderOptions = [
-    { label: '🚹male', value: 'male' },
-    { label: '🚺female', value: 'female' },
-    { label: '🏳️‍🌈other', value: 'other' },
+    { label: "🚹male", value: "male" },
+    { label: "🚺female", value: "female" },
+    { label: "🏳️‍🌈other", value: "other" },
   ];
-
 
   const toggleDatePicker = () => {
     setShowPicker(!showPicker);
@@ -92,20 +85,22 @@ const SignupForm = ({receivedData}) => {
   };
 
   const handleSignUp = async () => {
+    setIsLoading(true); //////////////////////////////////////
     console.log("SignUp clicked");
     const dto = new SignUpDto();
     dto.email = receivedData.email;
     dto.password = receivedData.password;
-    if (name === "" ) {
-      Toast.error("Name must not be empty!")
-      return;
+    if (name === "") {
+      Toast.error("Name must not be empty!");
+      {
+        return setIsLoading(false);
+      }
     }
     dto.name = name;
     if (phone === "") {
       dto.phoneNumber = null;
       dto.countryCode = null;
-    }
-    else {
+    } else {
       dto.phoneNumber = phone;
       dto.countryCode = selected;
     }
@@ -118,8 +113,10 @@ const SignupForm = ({receivedData}) => {
       const dataSignUp = await SignupAsync(dto);
       if ("errors" in dataSignUp) {
         console.log(dataSignUp.errors[0]);
-        console.log(dto)
-        return;
+        console.log(dto);
+        {
+          return setIsLoading(false);
+        }
       }
       navigation.navigate("main", { data: dataSignUp });
     } catch (err) {
@@ -127,81 +124,81 @@ const SignupForm = ({receivedData}) => {
     }
   };
 
-
   return (
-    <View style={styles.wrapper}>
-      <ScrollView>
-      <View style={styles.inputField}>
-        <TextInput
-          placeholderTextColor="#444"
-          placeholder="Name"
-          autoCapitalize="none"
-          autoFocus={true}
-          value={name}
-          onChangeText={(text) => setName(text)}
-        />
-      </View>
-      <View style={styles.inputField}>
-        {showPicker && (
-          <DateTimePicker
-            mode="date"
-            display="spinner"
-            value={date}
-            onChange={setDateTime}
-          />
-        )}
-        {!showPicker && Platform.OS === "ios" && (
-          <View
-            style={{ flexDirection: "Row", justifyContent: "space-around" }}
-          >
-            <TouchableOpacity
-              style={[styles.buttonLogin, { backgroundColor: "#11182711" }]}
-              onPress={toggleDatePicker}
-            >
-              <Text style={[styles.buttonLoginText, { color: "#075985" }]}>
-                Cancel
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.buttonLogin]}
-              onPress={confirmIOSDate}
-            >
-              <Text style={styles.buttonLoginText}>Confirm</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {!showPicker && (
-          <Pressable onPress={toggleDatePicker}>
+    <>
+      <View style={styles.wrapper}>
+        <ScrollView>
+          <View style={styles.inputField}>
             <TextInput
-              placeholder="Month - Date - Year"
-              value={dateOfBirth}
-              editable={false}
-              onChangeText={(text) => setDateOfBirth(text)}
-              onPressIn={toggleDatePicker}
+              placeholderTextColor="#444"
+              placeholder="Name"
+              autoCapitalize="none"
+              autoFocus={true}
+              value={name}
+              onChangeText={(text) => setName(text)}
             />
-          </Pressable>
-        )}
-      </View>
-      <View style={styles.inputField}>
-          <RNPickerSelect 
-            onValueChange={(value) => setSelectedGender(value)}
-            items={genderOptions}
-            value={selectedGender}
-          />
-      </View>
-      <View style={styles.inputField}>
-        <CountryCodeDropdownPicker 
-          selected={selected} 
-          setSelected={setSelected}
-          setCountryDetails={setCountry} 
-          phone={phone} 
-          setPhone={handleSetPhone} 
-          countryCodeTextStyles={{fontSize: 13}}
-        />
-      </View>
-      {/* <View style={styles.inputField}>
+          </View>
+          <View style={styles.inputField}>
+            {showPicker && (
+              <DateTimePicker
+                mode="date"
+                display="spinner"
+                value={date}
+                onChange={setDateTime}
+              />
+            )}
+            {!showPicker && Platform.OS === "ios" && (
+              <View
+                style={{ flexDirection: "Row", justifyContent: "space-around" }}
+              >
+                <TouchableOpacity
+                  style={[styles.buttonLogin, { backgroundColor: "#11182711" }]}
+                  onPress={toggleDatePicker}
+                >
+                  <Text style={[styles.buttonLoginText, { color: "#075985" }]}>
+                    Cancel
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[styles.buttonLogin]}
+                  onPress={confirmIOSDate}
+                >
+                  <Text style={styles.buttonLoginText}>Confirm</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {!showPicker && (
+              <Pressable onPress={toggleDatePicker}>
+                <TextInput
+                  placeholder="Month - Date - Year"
+                  value={dateOfBirth}
+                  editable={false}
+                  onChangeText={(text) => setDateOfBirth(text)}
+                  onPressIn={toggleDatePicker}
+                />
+              </Pressable>
+            )}
+          </View>
+          <View style={styles.inputField}>
+            <RNPickerSelect
+              onValueChange={(value) => setSelectedGender(value)}
+              items={genderOptions}
+              value={selectedGender}
+            />
+          </View>
+          <View style={styles.inputField}>
+            <CountryCodeDropdownPicker
+              selected={selected}
+              setSelected={setSelected}
+              setCountryDetails={setCountry}
+              phone={phone}
+              setPhone={handleSetPhone}
+              countryCodeTextStyles={{ fontSize: 13 }}
+            />
+          </View>
+          {/* <View style={styles.inputField}>
         <TextInput
           placeholderTextColor="#444"
           placeholder="phone number"
@@ -213,15 +210,16 @@ const SignupForm = ({receivedData}) => {
           onChangeText={(text) => setPhoneNumber(text)}
         />
       </View> */}
-      <TouchableOpacity
-        titleSize={20}
-        style={styles.buttonLogin}
-        onPress={handleSignUp}
-      >
-        <Text style={styles.buttonLoginText}> Submit </Text>
-      </TouchableOpacity>
-      </ScrollView>
-    </View>
+          <TouchableOpacity
+            titleSize={20}
+            style={styles.buttonLogin}
+            onPress={() => handleSignUp()}
+          >
+            <Text style={styles.buttonLoginText}> Submit </Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </View>
+    </>
   );
 };
 
