@@ -43,7 +43,7 @@
     },
     "splash": {
       "image": "./assets/splash.png",
-      "backgroundColor": "white"
+      "backgroundColor": "#ffffff"
     },
     "extra": {
       "eas": {
