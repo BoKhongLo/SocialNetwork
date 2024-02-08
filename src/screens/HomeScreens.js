@@ -80,6 +80,10 @@ const HomeScreen = () => {
           dataUpdate.accessToken
         );
       }
+      if ("errors" in dataReturn) {
+        setIsLoading(false);
+        return
+      }
       dataReturn = removeDuplicates(dataReturn, "id");
       // registerIndieID(dataUserLocal.id, 18604, '8sbEFbNYoDaZJKMDeIAWoc');
       let tmpPost = [];

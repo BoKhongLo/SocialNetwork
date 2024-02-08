@@ -34,7 +34,7 @@ const BottomTabs = ({ receivedData }) => {
           paddingVertical: 10,
           paddingHorizontal: 20,
         }}
-        onPress={() => {navigation.navigate("main")}
+        onPress={() => {navigation.replace("main")}
         }
       >
         <Icon
@@ -49,7 +49,7 @@ const BottomTabs = ({ receivedData }) => {
           paddingVertical: 10,
           paddingHorizontal: 20,
         }}
-        onPress={() => {navigation.navigate("search")}}
+        onPress={() => {navigation.replace("search")}}
       >
         <Icon
           name={route.name == 'search' ? "search" : "search-outline"}
@@ -99,7 +99,7 @@ const BottomTabs = ({ receivedData }) => {
           <TouchableOpacity
             onPress={() => {
               closeModal();
-              navigation.navigate("newpost")
+              navigation.replace("newpost")
             }}
             style={[styles.modalItem, { marginLeft: 20 }]}
           >
@@ -112,7 +112,7 @@ const BottomTabs = ({ receivedData }) => {
           <TouchableOpacity
             onPress={() => {
               closeModal();
-              navigation.navigate("newstory");
+              navigation.replace("newstory");
             }}
             style={[styles.modalItem, {}]}
           >

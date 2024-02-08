@@ -73,6 +73,7 @@ const ChatScreen = ({}) => {
       }
 
       if ("errors" in dataUserAsync) {
+        setIsLoading(false);
         navigation.navigate("main");
       }
       setIsLoading(false);
