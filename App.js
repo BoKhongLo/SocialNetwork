@@ -1,4 +1,5 @@
-import {  GestureHandlerRootView, GestureHandlerRootHOC, gestureHandlerRootHOC} from 'react-native-gesture-handler'
+import {  GestureHandlerRootView, gestureHandlerRootHOC} from 'react-native-gesture-handler'
+import 'react-native-gesture-handler';
 import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
