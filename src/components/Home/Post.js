@@ -28,7 +28,8 @@ import {
   updateAccessTokenAsync,
   findFriendAsync,
   getSocketIO,
-  saveDataUserLocal
+  saveDataUserLocal,
+  getPostAsync
 } from "../../util";
 import { useNavigation } from "@react-navigation/native";
 const Post = React.memo(({ post, users, userCurrent, onRemovePost, onBookmark }) => {

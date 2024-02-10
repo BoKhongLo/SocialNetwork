@@ -2531,6 +2531,50 @@ export async function GenerateMomoPaymentAsync(dto: PaymentDto, accessToken: str
     }
 }
 
+export async function GenerateVnpayPaymentAsync(dto: PaymentDto, accessToken: string) {
+    const endpoint = 'http://103.155.161.116:3434/graphql';
+
+    const QUERY = `
+        mutation GenerateVnpayPayment ($userId: String!, $method: String!, $select: String!) {
+            generateVnpayPayment(
+                payment: {
+                    userId: $userId
+                    method: $method
+                    select: $select
+                }
+            ) {
+                status
+                url
+            }
+        }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: QUERY,
+                variables: {
+                    userId: dto.userId,
+                    method: dto.method,
+                    select: dto.select
+                },
+            },
+            { headers: headers }
+        );
+        console.log(response.data);
+        if ("errors" in response.data) return response.data;
+        return response.data.data.generateVnpayPayment
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
 
 export async function removeNotificationAsync(userId: string, notiId: string, accessToken: string) {
     const endpoint = 'http://103.155.161.116:3434/graphql';
