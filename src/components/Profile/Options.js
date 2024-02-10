@@ -1,8 +1,7 @@
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import React, { useState, useEffect } from "react";
 import profileStyle from "../../styles/profileStyles";
 import { useNavigation } from "@react-navigation/native";
-import { TouchableOpacity } from "react-native-gesture-handler";
 
 import {
   getUserDataAsync,

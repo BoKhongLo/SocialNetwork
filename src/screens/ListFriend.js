@@ -1,9 +1,8 @@
-import { View, Text, Image, ScrollView } from "react-native";
+import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
 import React, { useEffect } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Divider } from "react-native-elements";
 import notistyles from "../styles/notiStyles";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import styles from "../styles/styles";
 import ItemFriends from "../components/Friends/ItemFriend";
