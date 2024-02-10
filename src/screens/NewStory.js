@@ -5,10 +5,10 @@ import {
   TextInput,
   ScrollView,
   FlatList,
+  TouchableOpacity
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { heightPercentageToDP } from "react-native-responsive-screen";
 import { useNavigation } from "@react-navigation/native";
 import postSytles from "./../styles/newpostStyles";

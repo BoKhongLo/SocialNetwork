@@ -42,7 +42,6 @@ import {
   ValidateMessagesDto,
   BookmarksDto,
 } from "../../../util/dto";
-import { TouchableHighlight } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 
 const PostFooter = ({
