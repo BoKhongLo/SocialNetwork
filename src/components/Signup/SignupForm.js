@@ -120,7 +120,7 @@ const SignupForm = ({receivedData, isLoading, setIsLoading}) => {
     try {
       const dataSignUp = await SignupAsync(dto);
       if ("errors" in dataSignUp) {
-        Alert.alert(dataRe.errors[0].message);
+        Alert.alert(dataSignUp.errors[0].message);
         setIsLoading(false);
         return;
       }

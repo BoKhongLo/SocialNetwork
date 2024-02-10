@@ -167,6 +167,22 @@ const ProfileUser = () => {
     setDataPost((prevPosts) => [...prevPosts, newPost]);
   }
   
+  const handlePressBookmark = (validate) => {
+    setUserProfile((preData) => {
+      if (validate == true) {
+        preData.bookMarks.push("-1");
+      }
+      else {
+        try {
+          preData.bookMarks.splice(0,0);
+        }
+        catch {
+          return preData;
+        }
+      }
+      return preData;
+    })
+  }
   
   const VirtualizedView = (props) => {
     return (
@@ -211,6 +227,7 @@ const ProfileUser = () => {
               users={dataUser}
               userCurrent={dataUserCurrent}
               onRemovePost={handleRemovePost}
+              onBookmark={handlePressBookmark}
               style={{ flex: 1 }} />
           ))}
         </VirtualizedView>

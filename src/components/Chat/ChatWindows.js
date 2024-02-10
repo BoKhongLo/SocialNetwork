@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   TextInput,
+  Alert
 } from "react-native";
 import * as Clipboard from "expo-clipboard";
 import React, { useState, useEffect, useCallback } from "react";
@@ -531,7 +532,7 @@ const Content = ({ roomProfile }) => {
     );
 
     let data = await uploadFile(dto, dataUpdate.accessToken);
-    if (data == null) {
+    if ("message" in data) {
       dataUpdate = await updateAccessTokenAsync(
         dataLocal.id,
         dataLocal.refreshToken
@@ -539,7 +540,8 @@ const Content = ({ roomProfile }) => {
       data = await uploadFile(dto, dataUpdate.accessToken);
     }
 
-    if (data == null) {
+    if ("message" in data) {
+      Alert.alert(data.message);
       return;
     }
 

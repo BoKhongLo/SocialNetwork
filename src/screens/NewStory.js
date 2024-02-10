@@ -5,7 +5,8 @@ import {
   TextInput,
   ScrollView,
   FlatList,
-  TouchableOpacity
+  TouchableOpacity,
+  Alert
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -225,7 +226,10 @@ const ChoseImg = ({
       quality: 1,
     });
 
-    if (result.canceled) return;
+    if (result.canceled) {
+      setIsLoading(false);
+      return;
+    }
 
     const keys = await getAllIdUserLocal();
     const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
@@ -236,20 +240,26 @@ const ChoseImg = ({
       "image/jpeg"
     );
     let data = await uploadFile(dto, dataLocal.accessToken);
-    setIsLoading(false);
-    if (data == null) {
+
+    if ("message" in data) {
       const dataUpdate = await updateAccessTokenAsync(
         dataLocal.id,
         dataLocal.refreshToken
       );
       data = await uploadFile(dto, dataUpdate.accessToken);
     }
+    if ("message" in data) {
+      Alert.alert(data.message);
+      setIsLoading(false);
+      return;
+    }
+    setIsLoading(false);
     let newFile = { id: data.id, source: { uri: data.url } };
     upFile((preFile) => [...preFile, newFile]);
     let newPostData = { ...postData };
     newPostData.fileUrl.push(data.url);
     onUpdateData({ fileUrl: newPostData.fileUrl });
-    setIsLoading(false); 
+
   };
   const handleGallery = async () => {
     setIsLoading(true); 
@@ -279,24 +289,25 @@ const ChoseImg = ({
     );
 
     let data = await uploadFile(dto, dataUpdate.accessToken);
-    setIsLoading(false); 
-    if (data == null) {
+
+    if ("message" in data) {
       dataUpdate = await updateAccessTokenAsync(
         dataLocal.id,
         dataLocal.refreshToken
       );
       data = await uploadFile(dto, dataUpdate.accessToken);
     }
-    if (data == null) {
+    if ("message" in data) {
       setIsLoading(false); 
+      Alert.alert(data.message);
       return;
     }
+    setIsLoading(false); 
     let newFile = { id: data.id, source: { uri: data.url } };
     upFile((preFile) => [...preFile, newFile]);
     newPostData.fileUrl.push(data.url);
-
     onUpdateData({ fileUrl: newPostData.fileUrl });
-    setIsLoading(false); 
+
   };
 
   return (

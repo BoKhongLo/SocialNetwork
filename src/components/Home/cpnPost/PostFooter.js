@@ -171,6 +171,7 @@ const PostFooter = ({
         }
         if ("errors" in dataReturn) return;
         setBookmarkPressed(false);
+        onPressBookmark(false);
       } else if (bookmarkPressed === false) {
         const dto = new BookmarksDto(dataUserLocal.id, post.id);
         let dataReturn = await addBookmarkAsync(dto, dataUserLocal.accessToken);
@@ -183,6 +184,7 @@ const PostFooter = ({
         }
         if ("errors" in dataReturn) return;
         setBookmarkPressed(true);
+        onPressBookmark(true);
       }
     } else if (action === "Comment") {
       setCommentModalVisible(true);

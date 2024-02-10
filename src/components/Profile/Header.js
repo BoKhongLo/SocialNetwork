@@ -22,8 +22,7 @@ const Header = ({ user }) => {
 
       <TouchableOpacity
       style={{padding: 10,}}
-      // onPress={() => logoutFunction(user.id)}
-      onPress={()=>navigation.replace('setting', {data: user})}
+      onPress={()=>navigation.replace('setting')}
       >
       <Image
           style={{ height: 35, width: 35 }}

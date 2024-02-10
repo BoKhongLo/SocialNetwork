@@ -31,7 +31,7 @@ import {
   saveDataUserLocal
 } from "../../util";
 import { useNavigation } from "@react-navigation/native";
-const Post = React.memo(({ post, users, userCurrent, onRemovePost }) => {
+const Post = React.memo(({ post, users, userCurrent, onRemovePost, onBookmark }) => {
   const [countLike, setCountLike] = useState(post.interaction.length);
   const [dataUsers, setDataUsers] = useState(users);
   const [dataPost, setDataPost] = useState(post);
@@ -106,6 +106,10 @@ const Post = React.memo(({ post, users, userCurrent, onRemovePost }) => {
       return "VIDEO"
     }
   }
+  const pressBookmarks = (validate) => {
+    if (onBookmark == undefined || !onBookmark) return
+    onBookmark(validate) 
+  }
 
   const fileType = useState(validateFile(post.fileUrl[0]))[0]
 
@@ -127,7 +131,7 @@ const Post = React.memo(({ post, users, userCurrent, onRemovePost }) => {
               <Caption post={dataPost} users={dataUsers} />
           </View>
           <View>
-            <PostFooter post={dataPost} users={dataUsers} userCurrent={dataUserCurrent} />
+            <PostFooter post={dataPost} users={dataUsers} userCurrent={dataUserCurrent} onPressBookmark={pressBookmarks}/>
             <View style={{ marginLeft: 14 }}>
               <Likes post={dataPost} users={dataUsers} likes={countLike} />
             </View>
@@ -142,7 +146,7 @@ const Post = React.memo(({ post, users, userCurrent, onRemovePost }) => {
           </View>
           <PostImage post={dataPost} users={dataUsers} />
           <View>
-            <PostFooter post={dataPost} users={dataUsers} userCurrent={dataUserCurrent}  />
+            <PostFooter post={dataPost} users={dataUsers} userCurrent={dataUserCurrent} onPressBookmark={pressBookmarks} />
             <View style={{ marginLeft: 14 }}>
               <Likes post={dataPost} users={dataUsers}  likes={countLike} />
             </View>
@@ -156,7 +160,7 @@ const Post = React.memo(({ post, users, userCurrent, onRemovePost }) => {
           <Caption post={dataPost} users={dataUsers} />
         </View>
         <View>
-          <PostFooter post={dataPost} users={dataUsers} userCurrent={dataUserCurrent} />
+          <PostFooter post={dataPost} users={dataUsers} userCurrent={dataUserCurrent} onPressBookmark={pressBookmarks}/>
           <View style={{ marginLeft: 14 }}>
             <Likes post={dataPost} users={dataUsers} likes={countLike} />
           </View>

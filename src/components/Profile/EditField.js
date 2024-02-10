@@ -7,6 +7,7 @@ import {
   Platform,
   Modal,
   TouchableOpacity,
+  Alert
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -105,7 +106,7 @@ const Header = (data) => {
         padding: 13,
       }}
     >
-      <TouchableOpacity onPress={() => navigation.goBack()}>
+      <TouchableOpacity onPress={()=>navigation.replace('setting')}>
         <Text style={{ fontSize: 18 }}>Hủy</Text>
       </TouchableOpacity>
       <Text style={{ fontSize: 18, fontWeight: "500" }}>
@@ -191,12 +192,16 @@ const Field = ({ data, onUpdateData }) => {
         const dto = new FileUploadDto(receivedData.id, result.assets[0].uri, "userAvatar.jpg", "image/jpeg");
         const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
         let data = await uploadFile(dto, dataLocal.accessToken);
-        if (data == null) {
+        if ("message" in data) {
           const dataUpdate = await updateAccessTokenAsync(
             dataLocal.id,
             dataLocal.refreshToken
           );
           data = await uploadFile(dto, dataUpdate.accessToken);
+        }
+        if ("message" in data) {
+          Alert.alert(data.message);
+          return
         }
         setAvtImg({ uri: data.url });
         onUpdateData({ avatarUrl: data.url });
@@ -221,12 +226,16 @@ const Field = ({ data, onUpdateData }) => {
         const dto = new FileUploadDto(receivedData.id, result.assets[0].uri, "userAvatar.jpg", "image/jpeg");
         const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
         let data = await uploadFile(dto, dataLocal.accessToken);
-        if (data == null) {
+        if ("message" in data) {
           const dataUpdate = await updateAccessTokenAsync(
             dataLocal.id,
             dataLocal.refreshToken
           );
           data = await uploadFile(dto, dataUpdate.accessToken);
+        }
+        if ("message" in data) {
+          Alert.alert(data.message);
+          return
         }
         setAvtImg({ uri: data.url });
         onUpdateData({ avatarUrl: data.url });

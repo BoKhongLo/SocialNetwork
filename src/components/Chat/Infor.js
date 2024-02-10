@@ -4,7 +4,8 @@ import {
   Image,
   TouchableOpacity,
   Modal,
-  TextInput
+  TextInput,
+  Alert
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import settingChat from "../../styles/ChatStyles/settingStyle";
@@ -108,9 +109,9 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
         const keys = await getAllIdUserLocal();
         const dto = new FileUploadDto(dataUser.id, result.assets[0].uri, `avatarGroup${dataRoom.id}.jpg`, "image/jpeg");
         const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
-        const dataUserLocal = { ...dataLocal };
+        let dataUserLocal = { ...dataLocal };
         let data = await uploadFile(dto, dataUserLocal.accessToken);
-        if (data == null) {
+        if ("message" in data) {
           let dataUpdate = await updateAccessTokenAsync(
             dataUserLocal.id,
             dataUserLocal.refreshToken
@@ -119,7 +120,10 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
           data = await uploadFile(dto, dataUpdate.accessToken);
         }
         onEdit(false)
-        if (data == null) return;
+        if ("message" in data) {
+          Alert.alert(data.message);
+          return
+        }
         const dtoValidate = new ValidateRoomchatDto(dataUser.id, dataRoom.id, dataRoom.title, dataRoom.description, data.url)
         const dataRe = await validateRoomchatAsync(dtoValidate, dataUserLocal.accessToken)
         if ("errors" in dataRe) {
@@ -160,7 +164,7 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
         const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
         const dataUserLocal = { ...dataLocal };
         let data = await uploadFile(dto, dataUserLocal.accessToken);
-        if (data == null) {
+        if ("message" in data) {
           let dataUpdate = await updateAccessTokenAsync(
             dataUserLocal.id,
             dataUserLocal.refreshToken
@@ -170,7 +174,10 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
         }
         console.log(data)
         onEdit(false)
-        if (data == null) return
+        if ("message" in data) {
+          Alert.alert(data.message);
+          return
+        }
         const dtoValidate = new ValidateRoomchatDto(dataUser.id, dataRoom.id, dataRoom.title, dataRoom.description, data.url)
         const dataRe = await validateRoomchatAsync(dtoValidate, dataUserLocal.accessToken)
         if ("errors" in dataRe) {
@@ -181,6 +188,7 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
           dataUserLocal.accessToken == dataUpdate.accessToken;
           dataRe = await validateRoomchatAsync(dto, dataUpdate.accessToken)
         }
+        
         console.log(dataRe)
         if ("errors" in dataRe) return;
         setDataRoom((preData) => {

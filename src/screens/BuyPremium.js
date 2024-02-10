@@ -68,7 +68,7 @@ const BuyPremium = () => {
       <View style={{ flexDirection: "row", alignItems: "center" }}>
         <TouchableOpacity
           style={{ paddingVertical: 10 }}
-          onPress={() => navigation.goBack()}
+          onPress={()=>navigation.replace('setting')}
         >
           <Image
             style={{ height: 40, width: 40 }}
