@@ -76,7 +76,7 @@ export async function deleteDataUserLocal(userId: string): Promise<void> {
 
 
 export async function LoginAsync(dto: LoginDto) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY =       
         `query Login ($email: String!, $password: String!) {
@@ -127,7 +127,7 @@ export async function LoginAsync(dto: LoginDto) {
 
 
 export async function CreateOtpCodeAsync(email: string, type: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const MUTATION = `
             mutation CreateOtpCode($email: String!, $type: String!) {
@@ -164,7 +164,7 @@ export async function CreateOtpCodeAsync(email: string, type: string) {
     }
 }
 export async function ValidateOtpCodeAsync(email: string, otpCode: string, type: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const MUTATION = `
             mutation ValidateOtpCode ($email: String!, $otpCode: String, $type: String!){
@@ -206,7 +206,7 @@ export async function ValidateOtpCodeAsync(email: string, otpCode: string, type:
     }
 }
 export async function forgetPasswordValidate(dto: ForgetPasswordDto) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const MUTATION = `
             query ForgetPasswordValidate ($email: String!, $otpCode: String!, $newPassword: String!, $validatePassword: String!) {
@@ -257,7 +257,7 @@ export async function forgetPasswordValidate(dto: ForgetPasswordDto) {
     }
 }
 export async function SignupAsync(dto: SignUpDto) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const MUTATION = `
             mutation SignUp($email: String!, $password: String!, $name: String!, $birthday: DateTime, $phoneNumber: String, $otpId: String!, $gender: String, $countryCode: String) {
@@ -322,7 +322,7 @@ export async function SignupAsync(dto: SignUpDto) {
     }
 }
 export async function validateUserDataAsync(dto: ValidateUserDto, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
         mutation ValidateUser ($userId: String!, $name: String!, $nickName: String!, $description: String!, $avatarUrl: String, $birthday: DateTime) {
@@ -387,7 +387,7 @@ export async function validateUserDataAsync(dto: ValidateUserDto, accessToken: s
 
 
 export async function updateAccessTokenAsync(userId: string, refreshToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const MUTATION = `
         query Refresh ($userId: String!) {
@@ -438,7 +438,7 @@ export async function updateAccessTokenAsync(userId: string, refreshToken: strin
 
 
 export async function getUserDataAsync(userId: string, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
         query GetUser($userId: String!) {
@@ -501,7 +501,7 @@ export async function getUserDataAsync(userId: string, accessToken: string) {
 }
 
 export async function getUserDataLiteAsync(userId: string, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
         query GetUser ($id: String!) {
@@ -547,7 +547,7 @@ export async function getUserDataLiteAsync(userId: string, accessToken: string) 
 }
 
 export async function getAllRoomchatAsync(userId: string, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
     query GetAllRomchatByUserId ($userId: String!) {
@@ -600,7 +600,7 @@ export async function getAllRoomchatAsync(userId: string, accessToken: string) {
 }
 
 export async function getRoomchatAsync(id: string, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
         query GetRomchatById ($roomchatId: String!) {
@@ -671,7 +671,7 @@ export async function getRoomchatAsync(id: string, accessToken: string) {
 }
 
 export async function getRoomchatByTitleAsync(id: string, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
         query GetRomchatByTitle ($roomchatId: String!) {
@@ -738,7 +738,7 @@ export async function getRoomchatByTitleAsync(id: string, accessToken: string) {
 }
 
 export async function addMemberRoomchatAsync(payload: MemberRoomDto, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
         mutation AddMemberRomchat ($userId: String!, $roomchatId: String!, $member: [String!]!) {
@@ -793,7 +793,7 @@ export async function addMemberRoomchatAsync(payload: MemberRoomDto, accessToken
 }
 
 export async function removeMemberRoomchatAsync(payload: MemberRoomDto, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
         mutation RemoveMemberRoomchat ($userId: String!, $roomchatId: String!, $member: [String!]!) {
@@ -836,7 +836,7 @@ export async function removeMemberRoomchatAsync(payload: MemberRoomDto, accessTo
 }
 
 export async function blockRoomchatAsync(userId: string, roomId: string, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
         mutation BlockRoomchat ($userId: String!, $title: String!, $roomchatId: String!)  {
@@ -891,7 +891,7 @@ export async function blockRoomchatAsync(userId: string, roomId: string, accessT
 }
 
 export async function unblockRoomchatAsync(userId: string, roomId: string, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
         mutation UnblockRoomchat ($userId: String!, $title: String!, $roomchatId: String!) {
@@ -947,7 +947,7 @@ export async function unblockRoomchatAsync(userId: string, roomId: string, acces
 }
 
 export async function addModRoomchatAsync(payload: MemberRoomDto, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
         mutation AddModRoomchat ($userId: String!, $roomchatId: String!, $member: [String!]!){
@@ -1003,7 +1003,7 @@ export async function addModRoomchatAsync(payload: MemberRoomDto, accessToken: s
 }
 
 export async function removeModRoomchatAsync(payload: MemberRoomDto, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
         mutation RemoveModRoomchat ($userId: String!, $roomchatId: String!, $member: [String!]!){
@@ -1059,7 +1059,7 @@ export async function removeModRoomchatAsync(payload: MemberRoomDto, accessToken
 
 
 export async function validateNicknameMemberRoomchatAsync(payload: ValidateMemberRoomDto, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
     mutation ValidateNicknameMemberRoomchat ($userId: String!, $roomchatId: String!, $nickName: String, $fileUrl: [String!]) {
@@ -1115,7 +1115,7 @@ export async function validateNicknameMemberRoomchatAsync(payload: ValidateMembe
     }
 }
 export async function changePasswordAsync(dto: ChangePasswordDto, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
     mutation ChangePassword ($userId: String!, $currentPassword: String!, $newPassword: String!, $validatePassword: String!) {
@@ -1164,7 +1164,7 @@ export async function changePasswordAsync(dto: ChangePasswordDto, accessToken: s
 
 
 export async function removeMessageAsync(dto: ValidateMessagesDto, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
     mutation RemoveMessageRoomchat ($userId: String!, $roomchatId: String!, $messageId: String!) {
@@ -1209,7 +1209,7 @@ export async function removeMessageAsync(dto: ValidateMessagesDto, accessToken: 
 
 
 export async function createRoomchatAsync(dto: RoomchatDto, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const GET_USER_QUERY = `
     mutation CreateRoomChat ($userId: String!, $member: [String!]!, $title: String!, $isSingle: Boolean!, $description: String, $imgDisplay: String) {
@@ -1286,7 +1286,7 @@ export async function createRoomchatAsync(dto: RoomchatDto, accessToken: string)
 
 
 export async function validateRoomchatAsync(dto: ValidateRoomchatDto, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
     
     const GET_USER_QUERY = `
         mutation ValidateRomchat ($userId: String!, $roomchatId: String!, $title: String!, $description: String, $imgDisplay: String){
@@ -1345,7 +1345,7 @@ export async function validateRoomchatAsync(dto: ValidateRoomchatDto, accessToke
 }
 
 export async function removeRoomchatAsync(userId: string, roomchatId: string, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const GET_USER_QUERY = `
     mutation RemoveRoomChat ($roomchatId: String!, $title: String!, $userId: String!) {
@@ -1389,7 +1389,7 @@ export async function removeRoomchatAsync(userId: string, roomchatId: string, ac
 
 
 export async function findFriendAsync(content: string, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
     query FindUser ($content: String!){
@@ -1437,7 +1437,7 @@ export async function findFriendAsync(content: string, accessToken: string) {
 
 
 export async function addFriendAsync(userId: string, friendId: string, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const GET_USER_QUERY = `
     mutation AddFriendUser ($userId: String!, $friendId: String!){
@@ -1484,7 +1484,7 @@ export async function addFriendAsync(userId: string, friendId: string, accessTok
 }
 
 export async function acceptFriendAsync(userId: string, friendId: string, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const GET_USER_QUERY = `
     query AcceptFriendUser ($userId: String!, $friendId: String!) {
@@ -1531,7 +1531,7 @@ export async function acceptFriendAsync(userId: string, friendId: string, access
 }
 
 export async function removeFriendAsync(userId: string, friendId: string, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const GET_USER_QUERY = `
         mutation RemoveFriendUser ($userId: String!, $friendId: String!) {
@@ -1571,7 +1571,7 @@ export async function removeFriendAsync(userId: string, friendId: string, access
 }
 
 export async function getFriendRequestAsync(userId: string, accessToken: string): Promise<[]> {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const GET_USER_QUERY = `
     query GetFriendRequest ($userId: String!) {
@@ -1611,7 +1611,7 @@ export async function getFriendRequestAsync(userId: string, accessToken: string)
 }
 
 export async function getFriendReceiveAsync(userId: string, accessToken: string): Promise<[]> {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
     query GetFriendReceive ($userId: String!) {
@@ -1651,7 +1651,7 @@ export async function getFriendReceiveAsync(userId: string, accessToken: string)
 }
 
 export async function createPostAsync(dto: PostDto, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
     mutation CreatePost ($userId: String!, $type: String!, $content: String, $fileUrl: [String!]!) {
@@ -1730,7 +1730,7 @@ export async function createPostAsync(dto: PostDto, accessToken: string) {
 
 
 export async function findPostAsync(content: string, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
     query SearchPost ($content: String!) {
@@ -1800,7 +1800,7 @@ export async function findPostAsync(content: string, accessToken: string) {
 
 
 export async function getPostDailyAsync(userId: string, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
     query GetDailyPostByUserId($userId: String!) {
@@ -1869,7 +1869,7 @@ export async function getPostDailyAsync(userId: string, accessToken: string) {
 }
 
 export async function getPostAsync(postId: string, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const FIND_POST_QUERY = `
     query GetPostById ($id: String!){
@@ -1938,7 +1938,7 @@ export async function getPostAsync(postId: string, accessToken: string) {
 }
 
 export async function getAllPostUserAsync(userId: string, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
     query GetAllPostByUserId($userId: String!) {
@@ -2007,7 +2007,7 @@ export async function getAllPostUserAsync(userId: string, accessToken: string) {
 }
 
 export async function validatePostAsync(dto: PostDto, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
     mutation ValidatePost ($userId: String!, $postId: String!, $content: String, $fileUrl: [String!]!){
@@ -2060,7 +2060,7 @@ export async function validatePostAsync(dto: PostDto, accessToken: string) {
 }
 
 export async function removePostAsync(userId: string, postId: string, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
         mutation RemovePost ($userId: String!, $postId: String!, $fileUrl: [String!]!) {
@@ -2103,7 +2103,7 @@ export async function removePostAsync(userId: string, postId: string, accessToke
 }
 
 export async function addCommentPostAsync(dto: ValidateMessagesDto, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
     mutation AddComment ($userId: String!, $postId: String!, $content: String!, $fileUrl: [String!]!){
@@ -2153,7 +2153,7 @@ export async function addCommentPostAsync(dto: ValidateMessagesDto, accessToken:
 }
 
 export async function removeCommentPostAsync(dto: ValidateMessagesDto, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
     
     const QUERY = `
         mutation RemoveComment ($userId: String!, $postId: String!, $commentId: String, $content: String!, $fileUrl: [String!]!){
@@ -2200,7 +2200,7 @@ export async function removeCommentPostAsync(dto: ValidateMessagesDto, accessTok
 }
 
 export async function addInteractPostAsync(dto: InteractDto, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
     mutation InteractPost ($userId: String!, $postId: String!, $content: String){
@@ -2248,7 +2248,7 @@ export async function addInteractPostAsync(dto: InteractDto, accessToken: string
 }
 
 export async function removeInteractPostAsync(dto: InteractDto, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
     mutation RemoveInteractionPost ($userId: String!, $postId: String!, $interactionId: String) {
@@ -2294,7 +2294,7 @@ export async function removeInteractPostAsync(dto: InteractDto, accessToken: str
 
 
 export async function addInteractCommentAsync(dto: InteractDto, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
     mutation InteractComment ($userId: String!, $postId: String!, $commentId: String, $content: String){
@@ -2356,7 +2356,7 @@ export async function addInteractCommentAsync(dto: InteractDto, accessToken: str
 
 
 export async function removeInteractCommentAsync(dto: InteractDto, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
         mutation RemoveInteractionComment ($userId: String!, $postId: String!, $commentId: String, $interactionId: String) {
@@ -2403,7 +2403,7 @@ export async function removeInteractCommentAsync(dto: InteractDto, accessToken: 
 
 
 export async function addBookmarkAsync(dto: BookmarksDto, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
         mutation AddBookMarkUser ($userId: String!, $bookMarkId: String!) {
@@ -2445,7 +2445,7 @@ export async function addBookmarkAsync(dto: BookmarksDto, accessToken: string) {
 }
 
 export async function removeBookmarkAsync(dto: BookmarksDto, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
         mutation RemoveBookMarkUser ($userId: String!, $bookMarkId: String!) {
@@ -2487,7 +2487,7 @@ export async function removeBookmarkAsync(dto: BookmarksDto, accessToken: string
 
 
 export async function GenerateMomoPaymentAsync(dto: PaymentDto, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
         mutation GenerateMomoPayment ($userId: String!, $method: String!, $select: String!) {
@@ -2533,7 +2533,7 @@ export async function GenerateMomoPaymentAsync(dto: PaymentDto, accessToken: str
 
 
 export async function removeNotificationAsync(userId: string, notiId: string, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
             mutation RemoveNotificationUser ($userId: String!, $notificationId: String!) {
@@ -2585,7 +2585,7 @@ export async function removeNotificationAsync(userId: string, notiId: string, ac
 
 
 export async function validatePrivacyUserAsync(dto: ValidatePrivacyUserDto, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
         mutation ValidatePrivacyUser ($userId: String!, $name: String!, $nickName: String!, $description: String!, $gender: String, $phoneNumber: String, $countryCode: String){

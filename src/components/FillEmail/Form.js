@@ -23,7 +23,6 @@ const Form = ({ receivedData, isLoading, setIsLoading }) => {
   };
 
   const handleSubmit = async () => {
-    
     Keyboard.dismiss();
     console.log("data: ", email);
     if (email == "") return;
@@ -40,13 +39,17 @@ const Form = ({ receivedData, isLoading, setIsLoading }) => {
     const dataRe = await CreateOtpCodeAsync(email, data.type);
 
     if ("errors" in dataRe) {
+      console.log(dataRe)
       Alert.alert(dataRe.errors[0].message);
+      setIsLoading(false);
       return;
     }
     if (dataRe.isRequest == false) {
       Toast.error("Request is not allowed!");
+      setIsLoading(false);
       return;
     }
+    setIsLoading(false);
     data.email = email;
     navigation.replace("verify", { data: data });
   };

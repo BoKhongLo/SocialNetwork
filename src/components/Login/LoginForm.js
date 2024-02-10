@@ -54,8 +54,8 @@ const LoginForm = ({ isLoading, setIsLoading }) => {
       }
 
       if (dataLogin != null && dataLogin != undefined) {
-        navigation.navigate("main", { data: dataLogin });
         setIsLoading(false); //////////////////////////////////////
+        navigation.navigate("main", { data: dataLogin });
       }
     } catch (err) {
       console.log(err);

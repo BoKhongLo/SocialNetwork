@@ -51,7 +51,7 @@ class AdminDto {
 
 
 export async function LoginAsync(dto: LoginDto) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY =       
         `query Login ($email: String!, $password: String!) {
@@ -98,7 +98,7 @@ export async function LoginAsync(dto: LoginDto) {
 }
 
 export async function getUserDataByIdAsync(userId: string, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
         query GetUser($userId: String!) {
@@ -151,7 +151,7 @@ export async function getUserDataByIdAsync(userId: string, accessToken: string) 
 
 
 export async function searchUserAsync(content: string, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
     query FindUser ($content: String!){
@@ -199,7 +199,7 @@ export async function searchUserAsync(content: string, accessToken: string) {
 }
 
 export async function searchPostAsync(content: string, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
     query SearchPost ($content: String!) {
@@ -276,7 +276,7 @@ export async function banUserAsync(dto: CommandDto, accessToken: string,) {
         };
       
         const formDataString = querystring.stringify(formDataObject);
-        const response = await axios.post(`http://103.144.87.14:3434/auth/banUser`, formDataString, {
+        const response = await axios.post(`http://103.155.161.116:3434/auth/banUser`, formDataString, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -300,7 +300,7 @@ export async function unbanUserAsync(dto: CommandDto, accessToken: string,) {
       
         const formDataString = querystring.stringify(formDataObject);
 
-        const response = await axios.post(`http://103.144.87.14:3434/auth/unbanUser`, formDataString, {
+        const response = await axios.post(`http://103.155.161.116:3434/auth/unbanUser`, formDataString, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -321,7 +321,7 @@ export async function addAdminAsync(dto: AdminDto, accessToken: string,) {
 
         const formDataString = querystring.stringify(formDataObject);
 
-        const response = await axios.post(`http://103.144.87.14:3434/auth/addAdmin`, formDataString, {
+        const response = await axios.post(`http://103.155.161.116:3434/auth/addAdmin`, formDataString, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -345,7 +345,7 @@ export async function removeAdminAsync(dto: CommandDto, accessToken: string,) {
         };
       
         const formDataString = querystring.stringify(formDataObject);
-        const response = await axios.post(`http://103.144.87.14:3434/auth/removeAdmin`, formDataString, {
+        const response = await axios.post(`http://103.155.161.116:3434/auth/removeAdmin`, formDataString, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -360,7 +360,7 @@ export async function removeAdminAsync(dto: CommandDto, accessToken: string,) {
 };
 
 export async function updateAccessTokenAsync(userId: string, refreshToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const MUTATION = `
         query Refresh ($userId: String!) {
@@ -407,7 +407,7 @@ export async function updateAccessTokenAsync(userId: string, refreshToken: strin
 
 
 export async function getAllUserAsync(userId: string, assessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const MUTATION = `
         query GetAllUser ($userId: String!){
@@ -460,7 +460,7 @@ export async function getAllUserAsync(userId: string, assessToken: string) {
 }
 
 export async function getAllPostAsync(userId: string, refreshToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const MUTATION = `
         query GetAllPost ($userId: String!){
