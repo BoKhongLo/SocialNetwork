@@ -71,9 +71,9 @@ export default function App() {
 
   if (loading) {
     return (
-      <GestureHandlerRootView style={styles.container}>
+      <View style={styles.container}>
         <Text>Loading...</Text>
-      </GestureHandlerRootView>
+      </View>
     );
   }
 
