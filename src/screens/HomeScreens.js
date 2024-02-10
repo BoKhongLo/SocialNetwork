@@ -26,10 +26,9 @@ import {
   getUserDataAsync,
   saveDataUserLocal
 } from "../util";
-import { registerIndieID, unregisterIndieDevice } from 'native-notify';
-import NewStory from './NewStory';
-
+import LoadingAnimation from "../components/Loading/loadingAnimation";
 const HomeScreen = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const route = useRoute();
   const [receivedData, setReceivedData] = useState(route.params?.data || null);
   const insets = useSafeAreaInsets();
@@ -37,6 +36,14 @@ const HomeScreen = () => {
   const [dataStory, setDataStory] = useState([]);
   const [dataUser, setDataUser] = useState({});
   const [dataUserCurrent, setDataUserCurrent] = useState({});
+
+  function removeDuplicates(array, key) {
+    return array.filter((item, index, self) =>
+        index === self.findIndex((t) => (
+            t[key] === item[key]
+        ))
+    );
+  }
 
   const handleRemovePost = (id) => {
     setDataPost((prevPosts) => prevPosts.filter(item => item.id !== id));
@@ -48,6 +55,7 @@ const HomeScreen = () => {
   
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       const keys = await getAllIdUserLocal();
       const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
       const dataUserLocal = { ...dataLocal }
@@ -72,6 +80,11 @@ const HomeScreen = () => {
           dataUpdate.accessToken
         );
       }
+      if ("errors" in dataReturn) {
+        setIsLoading(false);
+        return
+      }
+      dataReturn = removeDuplicates(dataReturn, "id");
       // registerIndieID(dataUserLocal.id, 18604, '8sbEFbNYoDaZJKMDeIAWoc');
       let tmpPost = [];
       let tmpUserData = {};
@@ -115,9 +128,9 @@ const HomeScreen = () => {
 
       tmpStory.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
       tmpPost.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      setIsLoading(false)
       setDataUser(tmpUserData);
       setDataPost(tmpPost);
-      console.log(tmpPost);
       setDataStory(tmpStory);
       let dataUserCurrent = await getUserDataAsync(dataUserLocal.id, dataUserLocal.accessToken);
       setDataUserCurrent(dataUserCurrent)
@@ -169,7 +182,11 @@ const HomeScreen = () => {
               style={{ flex: 1 }} />
           ))}
         </VirtualizedView>
+        
       </View>
+      {isLoading  == true && (
+        <LoadingAnimation isVisible={isLoading} />
+      )}
       <BottomTabs receivedData={receivedData}
       />
     </View>

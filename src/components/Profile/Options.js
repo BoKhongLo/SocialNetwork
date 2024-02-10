@@ -26,7 +26,7 @@ const Options = ({ data }) => {
   const [isFriend, setIsFriend] = useState("Cancel request");
   const [isPending, setPending] = useState(false);
   const [isFetching, setFetching] = useState(false);
-
+  const [dataUser, setDataUser] = useState({});
   useEffect(() => {
     const fetchData = async () => {
       const keys = await getAllIdUserLocal();
@@ -90,22 +90,46 @@ const Options = ({ data }) => {
     if (!isFetching) return;
     const keys = await getAllIdUserLocal();
     const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
-    const dataUpdate = await updateAccessTokenAsync(
+    let dataUpdate = await updateAccessTokenAsync(
       dataUserLocal.id,
       dataUserLocal.refreshToken
     );
     if (isFriend === "Friend" && isFriendAdded) {
-      await removeFriendAsync(
+      let dataRe = await removeFriendAsync(
         dataUserLocal.id,
         data.id,
         dataUpdate.accessToken
       );
+      if ("errors" in dataRe) {
+        dataUpdate = await updateAccessTokenAsync(
+          dataUserLocal.id,
+          dataUserLocal.refreshToken
+        );
+        dataRe = await removeFriendAsync(
+          dataUserLocal.id,
+          data.id,
+          dataUpdate.accessToken
+        );
+      }
+      if ("errors" in dataRe) return;
     } else if (isFriend === "Accept" && isFriendAdded) {
-      await acceptFriendAsync(
+      let dataRe = await acceptFriendAsync(
         dataUserLocal.id,
         data.id,
         dataUpdate.accessToken
       );
+      if ("errors" in dataRe) {
+        dataUpdate = await updateAccessTokenAsync(
+          dataUserLocal.id,
+          dataUserLocal.refreshToken
+        );
+        dataRe = await acceptFriendAsync(
+          dataUserLocal.id,
+          data.id,
+          dataUpdate.accessToken
+        );
+      }
+      if ("errors" in dataRe) return;
       const dto = new RoomchatDto(
         dataUserLocal.id,
         [data.id],
@@ -116,8 +140,37 @@ const Options = ({ data }) => {
       setIsFriend("Friend");
       setPending(false);
       return;
-    } else {
-      await addFriendAsync(dataUserLocal.id, data.id, dataUpdate.accessToken);
+    } 
+    else if (isFriend === "Cancel request" ) {
+      let dataRe = await removeFriendAsync(
+        dataUserLocal.id,
+        data.id,
+        dataUpdate.accessToken
+      );
+      console.log(dataRe)
+      if ("errors" in dataRe) {
+        dataUpdate = await updateAccessTokenAsync(
+          dataUserLocal.id,
+          dataUserLocal.refreshToken
+        );
+        dataRe = await removeFriendAsync(
+          dataUserLocal.id,
+          data.id,
+          dataUpdate.accessToken
+        );
+      }
+      if ("errors" in dataRe) return;
+    }
+    else {
+      let dataRe = await addFriendAsync(dataUserLocal.id, data.id, dataUpdate.accessToken);
+      if ("errors" in dataRe) {
+        dataUpdate = await updateAccessTokenAsync(
+          dataUserLocal.id,
+          dataUserLocal.refreshToken
+        );
+        dataRe = await addFriendAsync(dataUserLocal.id, data.id, dataUpdate.accessToken);
+      }
+      if ("errors" in dataRe) return;
     }
     setFriendAdded(!isFriendAdded);
   };
@@ -125,11 +178,19 @@ const Options = ({ data }) => {
   const handleDenyFriend = async () => {
     const keys = await getAllIdUserLocal();
     const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
-    const dataUpdate = await updateAccessTokenAsync(
+    let dataUpdate = await updateAccessTokenAsync(
       dataUserLocal.id,
       dataUserLocal.refreshToken
     );
-    await removeFriendAsync(dataUserLocal.id, data.id, dataUpdate.accessToken);
+    let dataRe = await removeFriendAsync(dataUserLocal.id, data.id, dataUpdate.accessToken);
+    if ("errors" in dataRe) {
+      dataUpdate = await updateAccessTokenAsync(
+        dataUserLocal.id,
+        dataUserLocal.refreshToken
+      );
+      dataRe = await removeFriendAsync(dataUserLocal.id, data.id, dataUpdate.accessToken);
+    }
+    if ("errors" in dataRe) return;
     setFriendAdded(!isFriendAdded);
     setPending(false);
   };
@@ -152,7 +213,7 @@ const Options = ({ data }) => {
       dataUpdate.accessToken
     );
     dataRoomchatAsync.imgDisplay = data.avatarUrl;
-    dataRoomchatAsync.title = data.name;
+    dataRoomchatAsync.title = data.username;
     navigation.replace("chatwindow", { data: dataRoomchatAsync });
   };
   return (

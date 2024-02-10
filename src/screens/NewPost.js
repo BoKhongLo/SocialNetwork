@@ -32,7 +32,6 @@ import LoadingAnimation from "../components/Loading/loadingAnimation";
 
 const NewPost = () => {
   const [isLoading, setIsLoading] = useState(false);
-
   const route = useRoute();
   const navigation = useNavigation();
   const [receivedData, setReceivedData] = useState(route.params?.data || null);
@@ -152,7 +151,7 @@ const Header = ({ postData, isLoading, setIsLoading }) => {
   const navigation = useNavigation();
 
   const handleCreatePost = async () => {
-    setIsLoading(true); //////////////////////////////////////
+    setIsLoading(true); 
     const dto = new PostDto(
       postData.userId,
       "POST",
@@ -164,7 +163,6 @@ const Header = ({ postData, isLoading, setIsLoading }) => {
     const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
     if (postData.postId === "") {
       let dataReturn = await createPostAsync(dto, dataUserLocal.accessToken);
-
       if ("errors" in dataReturn) {
         const dataUpdate = await updateAccessTokenAsync(
           dataUserLocal.id,
@@ -186,7 +184,7 @@ const Header = ({ postData, isLoading, setIsLoading }) => {
     }
     
     navigation.replace("main");
-    setIsLoading(false); //////////////////////////////////////
+    setIsLoading(false); 
   };
   return (
     <View

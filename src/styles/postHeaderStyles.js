@@ -60,6 +60,9 @@ const headerPostStyles = StyleSheet.create({
 
   caption:{
     fontWeight: '500',
+    fontSize: 16,
+    marginRight: 14,
+    textAlign: "left"
   },
 
   modalContainer: {

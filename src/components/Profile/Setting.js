@@ -23,6 +23,8 @@ const Setting = () => {
     description: "",
     birthday: "0-0-0",
     age: -1,
+    gender: "other",
+    countryCode: "+84"
   });
 
   useEffect(() => {
@@ -68,6 +70,8 @@ const Setting = () => {
         else newProfile.description = "...";
         if (detail.phoneNumber) newProfile.phoneNumber = detail.phoneNumber;
         if (detail.birthday) newProfile.birthday = detail.birthday;
+        if (detail.gender) newProfile.gender = detail.gender;
+        if (detail.countryCode) newProfile.countryCode = detail.countryCode;
       }
 
       setUserProfile(newProfile);
@@ -79,7 +83,7 @@ const Setting = () => {
   const logoutFunction = async () => {
     const keys = await getAllIdUserLocal();
     const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
-    // unregisterIndieDevice(dataUserLocal.id, 18604, '8sbEFbNYoDaZJKMDeIAWoc');
+
     await deleteDataUserLocal(dataUserLocal.id);
     navigation.dispatch(
       CommonActions.reset({
@@ -174,7 +178,7 @@ const General = ({ userProfile }) => {
         <TouchableOpacity
           style={{ padding: 10, borderBottomWidth: 0.5, marginVertical: 10 }}
           onPress={() =>
-            navigation.navigate("editField", { data: userProfile })
+            navigation.replace("editField", { data: userProfile })
           }
         >
           <View
@@ -192,7 +196,7 @@ const General = ({ userProfile }) => {
         <TouchableOpacity
           style={{ padding: 10, borderBottomWidth: 0.5, marginVertical: 10 }}
           onPress={() =>
-            navigation.navigate("genderAndPhone", { data: userProfile })
+            navigation.replace("genderAndPhone", { data: userProfile })
           }
         >
           <View
@@ -223,6 +227,7 @@ const General = ({ userProfile }) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={{ padding: 10, borderBottomWidth: 0.5, marginVertical: 10 }}
+          onPress={() => navigation.navigate("contactUs")}
         >
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}

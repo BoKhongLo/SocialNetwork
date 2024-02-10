@@ -15,7 +15,8 @@ import {
   findFriendAsync,
   getFriendRequestAsync,
   getFriendReceiveAsync,
-  saveDataUserLocal
+  saveDataUserLocal,
+  getSocketIO
 } from "../util";
 import { useNavigation } from "@react-navigation/native";
 import searchStyles from "../styles/searchScreen";
@@ -28,6 +29,8 @@ const SearchScreen = () => {
   const [dataUserCurrent, setDataUserCurrent] = useState({})
   const [dataFriendRequest, setDataFriendRequest] = useState([])
   const [dataFriendReceive, setDataFriendReceive] = useState([])
+  const [refreshing, setRefreshing] = useState(false)
+
   useEffect(() => {
     const fetchData = async () => {
       const keys = await getAllIdUserLocal();
@@ -71,7 +74,59 @@ const SearchScreen = () => {
     };
     fetchData();
   }, []);
+  useEffect(() => {
+    const connectSocket = async () => {
+      const keys = await getAllIdUserLocal();
+      const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+      let dataUpdate = await updateAccessTokenAsync(
+        dataUserLocal.id,
+        dataUserLocal.refreshToken
+      );
+      const newSocket = await getSocketIO(dataUpdate.accessToken);
+      console.log("Connect Search");
 
+      newSocket.on("newFriend", (payload) => {
+        setRefreshing(true)
+        setDataFriendReceive((preData) => {
+          let newData = [...preData, payload];
+          return newData;
+        } )
+        setRefreshing(false)
+      });
+
+      newSocket.on("friendAccept", (payload) => {
+        setRefreshing(true)
+        setDataUserCurrent((preData) => {
+          let newData = {...preData};
+          newData.friends.push(payload.userId);
+          return newData;
+        } )
+        setDataFriendRequest((preData) => {
+          let newData = [...preData];
+          newData = newData.filter(friend => friend.receiveUserId !== payload.userId)
+          return newData;
+        })
+        setRefreshing(false)
+      });
+
+      newSocket.on("removeFriend", (payload) => {
+        setRefreshing(true)
+        setDataUserCurrent((preData) => {
+          if (payload.friendId !== preData.id) return preData;
+          let newData = {...preData};
+          newData.friends = newData.friends.filter(friend => friend !== payload.userId)
+          return newData;
+        })
+        setDataFriendRequest((preData) => {
+          let newData = [...preData];
+          newData = newData.filter(friend => friend.receiveUserId !== payload.userId)
+          return newData;
+        })
+        setRefreshing(false)
+      });
+    };
+    connectSocket();
+  }, []);
   const handleUserPress = async (user) => {
     const keys = await getAllIdUserLocal();
     const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
@@ -105,8 +160,7 @@ const SearchScreen = () => {
       dataRequest = removeDuplicates(dataRequest, 'id');
     }
     dataRequest = removeDuplicates(dataRequest, 'id');
-    
-    console.log(dataRequest);
+
     setDataSearch(dataRequest);
   };
   const renderItem = ({ item }) => (
@@ -116,9 +170,47 @@ const SearchScreen = () => {
       friendReceive={dataFriendReceive} 
       friendRequest={dataFriendRequest}
       userCurrent={dataUserCurrent}
+      updateData={updateData}
     />
   );
-
+  const updateData = (friendId, typeUpdate) => {
+    if (typeUpdate = "REMOVEFRIEND") {
+      setRefreshing(true)
+      setDataUserCurrent((preData) => {
+        let newData = {...preData};
+        newData.friends = newData.friends.filter(friend => friend !== friendId)
+        return newData;
+      })
+      setDataFriendReceive((preData) => {
+        let newData = [...preData];
+        newData = newData.filter(friend => friend.createdUserId !== friendId)
+        return newData;
+      })
+      setRefreshing(false)
+    }
+    else if (typeUpdate = "ADDFRIEND") {
+      setRefreshing(true)
+      setDataFriendRequest((preData) => {
+        let newData = [...preData, friendId];
+        return newData;
+      })
+      setRefreshing(false)
+    }
+    else if (typeUpdate = "ACCEPTFRIEND") {
+      setRefreshing(true)
+      setDataUserCurrent((preData) => {
+        let newData = {...preData};
+        newData.friends.push(friendId);
+        return newData;
+      } )
+      setDataFriendReceive((preData) => {
+        let newData = [...preData];
+        newData = newData.filter(friend => friend.createdUserId !== friendId)
+        return newData;
+      } )
+      setRefreshing(false)
+    }
+  }
   return (
     <View
       style={{
@@ -155,6 +247,7 @@ const SearchScreen = () => {
 
         {dataSearch.length > 0 && (
           <FlatList
+            refreshing={refreshing}
             data={dataSearch}
             keyExtractor={(user) => user.id}
             renderItem={renderItem}

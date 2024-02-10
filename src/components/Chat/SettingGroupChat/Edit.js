@@ -96,6 +96,12 @@ const Edit = ({ receivedData, users, userCurrent }) => {
   }
 
   // Leave room logic
+  const LeaveRoomAlert = () => {
+    Alert.alert("", "Would you like to leave this room?", [
+      { text: "Cancel", onPress: () => null },
+      { text: "Ok", onPress: async () => await leaveRoom() },
+    ]);
+  };
   const leaveRoom = async () => {
     if (!userCurrent) return
     const keys = await getAllIdUserLocal();
@@ -107,11 +113,17 @@ const Edit = ({ receivedData, users, userCurrent }) => {
       dataRe = await removeMemberRoomchatAsync(dto, dataUpdate.accessToken);
     }
     if ("errors" in dataRe) return
-    navigation.navigate("main")
+    navigation.replace('chat', {data: dataLocal})
   }
 
 
   // delete room logic
+  const DeleteRoomAlert = () => {
+    Alert.alert("", "Would you like to remove this room?", [
+      { text: "Cancel", onPress: () => null },
+      { text: "Ok", onPress: async () => await deleteRoom() },
+    ]);
+  };
   const deleteRoom = async () => {
     if (!userCurrent) return
     const keys = await getAllIdUserLocal();
@@ -123,7 +135,7 @@ const Edit = ({ receivedData, users, userCurrent }) => {
     }
     console.log(dataRe);
     if ("errors" in dataRe) return
-    navigation.navigate("main")
+    navigation.replace('chat', {data: dataLocal})
   }
 
   return (
@@ -237,14 +249,14 @@ const Edit = ({ receivedData, users, userCurrent }) => {
           <Text style={settingChat.title}>Privacy</Text>
           <TouchableOpacity
             style={settingChat.editItemContainer}
-            onPress={async () => await leaveRoom()}
+            onPress={() => LeaveRoomAlert()}
           >
             <Text style={settingChat.editItem}>Leave Chat</Text>
           </TouchableOpacity>
           {dataReturn.ownerUserId == userCurrent.id && (
             <TouchableOpacity
               style={settingChat.editItemContainer}
-              onPress={async () => await deleteRoom()}
+              onPress={() => DeleteRoomAlert()}
             >
               <Text style={settingChat.editItem}>Delete Group</Text>
             </TouchableOpacity>
@@ -312,7 +324,7 @@ const EditNickname = ({ users, room, updateRoom }) => {
       let dataRe = await validateNicknameMemberRoomchatAsync(dto, dataLocal.accessToken);
       if ("errors" in dataRe) {
         let dataUpdate = await updateAccessTokenAsync(dataLocal.id, dataLocal.refreshToken);
-        dataRe = await validateNicknameMemberRoomchatAsync(dto, dataLocal.accessToken);
+        dataRe = await validateNicknameMemberRoomchatAsync(dto, dataUpdate.accessToken);
       }
       if ("errors" in dataRe) return
       let newData = { ...room }
@@ -330,6 +342,7 @@ const EditNickname = ({ users, room, updateRoom }) => {
   }
 
   const renderItem = ({ item }) => {
+    if (item == undefined) return (<View></View>);
     return (
       <View style={settingChat.nicknameItem}>
         {users[item.id] && users[item.id].detail.avatarUrl ? (
@@ -642,7 +655,7 @@ const ViewMember = ({ users, room, userCurrent, updateRoom }) => {
       <Text style={{ fontSize: 15, color: "#A9A9A9", marginBottom:10 }}>
         Admins & moderators
       </Text>
-      {/** ITEM LA MAY CAI THANG MEMBER DAY M SUA LAI KIEU GI THI SUA T CHIU!!! */}
+
       <FlatList
         data={dataAdmin}
         keyExtractor={(item) => item.id}

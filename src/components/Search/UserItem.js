@@ -13,7 +13,9 @@ import {
   getFriendRequestAsync,
   createRoomchatAsync,
 } from "../../util";
-const UserItem = ({ user, onPress, userCurrent, friendRequest, friendReceive }) => {
+import { RoomchatDto } from "../../util/dto";
+
+const UserItem = ({ user, onPress, userCurrent, friendRequest, friendReceive, updateData }) => {
   const [isUser, setIsUser] = useState(true);
   const [isFriendAdded, setFriendAdded] = useState(false);
   const [isFriend, setIsFriend] = useState("Cancel request");
@@ -45,22 +47,48 @@ const UserItem = ({ user, onPress, userCurrent, friendRequest, friendReceive }) 
   const handleAddFriend = async (friendId) => {
     const keys = await getAllIdUserLocal();
     const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
-    const dataUpdate = await updateAccessTokenAsync(
+    let dataUpdate = await updateAccessTokenAsync(
       dataUserLocal.id,
       dataUserLocal.refreshToken
     );
     if (isFriend === "Friend" && isFriendAdded) {
-      await removeFriendAsync(
+      let dataRe = await removeFriendAsync(
         dataUserLocal.id,
         friendId,
         dataUpdate.accessToken
       );
+      if ("errors" in dataRe) {
+        dataUpdate = await updateAccessTokenAsync(
+          dataUserLocal.id,
+          dataUserLocal.refreshToken
+        );
+        dataRe = await removeFriendAsync(
+          dataUserLocal.id,
+          friendId,
+          dataUpdate.accessToken
+        );
+      }
+      if ("errors" in dataRe) return;
+      updateData(friendId, "REMOVEFRIEND")
     } else if (isFriend === "Accept" && isFriendAdded) {
-      await acceptFriendAsync(
+      let dataRe = await acceptFriendAsync(
         dataUserLocal.id,
         friendId,
         dataUpdate.accessToken
       );
+      if ("errors" in dataRe) {
+        dataUpdate = await updateAccessTokenAsync(
+          dataUserLocal.id,
+          dataUserLocal.refreshToken
+        );
+        dataRe = await acceptFriendAsync(
+          dataUserLocal.id,
+          friendId,
+          dataUpdate.accessToken
+        );
+      }
+      if ("errors" in dataRe) return;
+      updateData(friendId, "ACCEPTFRIEND")
       const dto = new RoomchatDto(
         dataUserLocal.id,
         [friendId],
@@ -71,8 +99,38 @@ const UserItem = ({ user, onPress, userCurrent, friendRequest, friendReceive }) 
       setIsFriend("Friend");
       setPending(false);
       return;
-    } else {
-      await addFriendAsync(dataUserLocal.id, data.id, dataUpdate.accessToken);
+    } 
+    else if (isFriend === "Cancel request") {
+      let dataRe = await removeFriendAsync(
+        dataUserLocal.id,
+        friendId,
+        dataUpdate.accessToken
+      );
+      if ("errors" in dataRe) {
+        dataUpdate = await updateAccessTokenAsync(
+          dataUserLocal.id,
+          dataUserLocal.refreshToken
+        );
+        dataRe = await removeFriendAsync(
+          dataUserLocal.id,
+          friendId,
+          dataUpdate.accessToken
+        );
+      }
+      if ("errors" in dataRe) return;
+      updateData(friendId, "REMOVEFRIEND")
+    }
+    else {
+      let dataRe = await addFriendAsync(dataUserLocal.id, friendId, dataUpdate.accessToken);
+      if ("errors" in dataRe) {
+        dataUpdate = await updateAccessTokenAsync(
+          dataUserLocal.id,
+          dataUserLocal.refreshToken
+        );
+        dataRe = await addFriendAsync(dataUserLocal.id, friendId, dataUpdate.accessToken);
+      }
+      if ("errors" in dataRe) return;
+      updateData(dataRe, "ADDFRIEND")
     }
     setFriendAdded(!isFriendAdded);
   };
@@ -84,7 +142,9 @@ const UserItem = ({ user, onPress, userCurrent, friendRequest, friendReceive }) 
       dataUserLocal.id,
       dataUserLocal.refreshToken
     );
-    await removeFriendAsync(dataUserLocal.id, friendId, dataUpdate.accessToken);
+    const dataRe = await removeFriendAsync(dataUserLocal.id, friendId, dataUpdate.accessToken);
+    if ("errors" in dataRe) return;
+    updateData(friendId, "REMOVEFRIEND")
     setFriendAdded(!isFriendAdded);
     setPending(false);
   };

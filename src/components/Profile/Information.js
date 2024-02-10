@@ -22,7 +22,7 @@ const Information = ({ data, isUser }) => {
       >
         <Pressable onPress={() => {
           if (!isUser) return;
-          navigation.replace("listFriend", {data: {userId: data.id, dto: "Profile"}})
+          navigation.replace("listFriend", {data: {userId: data.id}})
           }}>
           <View style={profileStyle.numInfor}>
             {data.friends ? (
@@ -46,7 +46,7 @@ const Information = ({ data, isUser }) => {
         </View>
         <Pressable onPress={() => {
           if (!isUser) return;
-          navigation.replace("listPost", {data: {userId: data.id}})
+          navigation.replace("listPost", {data: {userId: data.id, dto: "Profile"}})
           }}>
           <View style={profileStyle.numInfor}>
             <Text style={{ fontWeight: '400', marginRight: 5 }}>Bookmark</Text>

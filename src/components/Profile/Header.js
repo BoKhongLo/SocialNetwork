@@ -14,7 +14,9 @@ const Header = ({ user }) => {
         flexDirection: "row",
         justifyContent: "space-between",
         flex: 0.08,
-        alignItems:'center'
+        alignItems:'center',
+        marginLeft: 10,
+        marginRight: 10,
       }}
     >
       <Text style={profileStyle.userNameStyles}>Profile</Text>
@@ -22,7 +24,7 @@ const Header = ({ user }) => {
       <TouchableOpacity
       style={{padding: 10,}}
       // onPress={() => logoutFunction(user.id)}
-      onPress={()=>navigation.navigate('setting', {data: user})}
+      onPress={()=>navigation.replace('setting', {data: user})}
       >
       <Image
           style={{ height: 35, width: 35 }}

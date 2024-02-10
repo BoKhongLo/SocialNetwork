@@ -69,7 +69,6 @@ const Header = (data) => {
     if (data.data == null) return;
 
     if (!("name" in data.data) || !data.data.name) return;
-
     const dto = new ValidateUserDto(
       data.data.userId,
       data.data.name,

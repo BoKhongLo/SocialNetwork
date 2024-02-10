@@ -1,6 +1,7 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import "core-js/stable/atob";
+import querystring from "querystring";
 
 class JwtPayload {
     id: string;
@@ -50,19 +51,18 @@ class AdminDto {
 
 
 export async function LoginAsync(dto: LoginDto) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
-    const QUERY = `
-      query Login($email: String!, $password: String!) {
-        Login(userDto: {
-          email: $email
-          password: $password
-        }) {
-          access_token
-          refresh_token
-        }
-      }
-    `;
+    const QUERY =       
+        `query Login ($email: String!, $password: String!) {
+            Login(userDto: { 
+                email: $email
+                password: $password
+                }) {
+                access_token
+                refresh_token
+            }
+        }`;
 
     const headers = {
         'Content-Type': 'application/json',
@@ -98,7 +98,7 @@ export async function LoginAsync(dto: LoginDto) {
 }
 
 export async function getUserDataByIdAsync(userId: string, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
         query GetUser($userId: String!) {
@@ -151,7 +151,7 @@ export async function getUserDataByIdAsync(userId: string, accessToken: string) 
 
 
 export async function searchUserAsync(content: string, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
     query FindUser ($content: String!){
@@ -199,7 +199,7 @@ export async function searchUserAsync(content: string, accessToken: string) {
 }
 
 export async function searchPostAsync(content: string, accessToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
     query SearchPost ($content: String!) {
@@ -269,15 +269,17 @@ export async function searchPostAsync(content: string, accessToken: string) {
 
 export async function banUserAsync(dto: CommandDto, accessToken: string,) {
     try {
-        const formData = new FormData();
-        formData.append('userId', dto.userId);
-        formData.append('adminId', dto.adminId);
-        formData.append('command', dto.command);
-
-        const response = await axios.post(`http://103.144.87.14:3434/auth/banUser`, formData, {
+        const formDataObject = {
+            userId: dto.userId, 
+            adminId: dto.adminId,
+            command: dto.command
+        };
+      
+        const formDataString = querystring.stringify(formDataObject);
+        const response = await axios.post(`http://103.155.161.116:3434/auth/banUser`, formDataString, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
-                'Content-Type': 'multipart/form-data',
+                'Content-Type': 'application/x-www-form-urlencoded',
             },
         });
 
@@ -290,15 +292,18 @@ export async function banUserAsync(dto: CommandDto, accessToken: string,) {
 
 export async function unbanUserAsync(dto: CommandDto, accessToken: string,) {
     try {
-        const formData = new FormData();
-        formData.append('userId', dto.userId);
-        formData.append('adminId', dto.adminId);
-        formData.append('command', dto.command);
+        const formDataObject = {
+            userId: dto.userId, 
+            adminId: dto.adminId,
+            command: dto.command
+        };
+      
+        const formDataString = querystring.stringify(formDataObject);
 
-        const response = await axios.post(`http://103.144.87.14:3434/auth/unbanUser`, formData, {
+        const response = await axios.post(`http://103.155.161.116:3434/auth/unbanUser`, formDataString, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
-                'Content-Type': 'multipart/form-data',
+                'Content-Type': 'application/x-www-form-urlencoded',
             },
         });
 
@@ -311,19 +316,20 @@ export async function unbanUserAsync(dto: CommandDto, accessToken: string,) {
 
 export async function addAdminAsync(dto: AdminDto, accessToken: string,) {
     try {
-        const formData = new FormData();
-        formData.append('userId', dto.userId);
-        formData.append('secretKey', dto.secretKey);
 
-        const response = await axios.post(`http://103.144.87.14:3434/auth/addAdmin`, formData, {
+        const formDataObject = {userId: dto.userId, secretKey: dto.secretKey};
+
+        const formDataString = querystring.stringify(formDataObject);
+
+        const response = await axios.post(`http://103.155.161.116:3434/auth/addAdmin`, formDataString, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
-                'Content-Type': 'multipart/form-data',
+                'Content-Type': 'application/x-www-form-urlencoded',
             },
         });
 
         if (response.data == null) return null;
-        return response.data
+        return response.data;
     } catch (error) {
         console.error('Error:', error);
     }
@@ -331,15 +337,18 @@ export async function addAdminAsync(dto: AdminDto, accessToken: string,) {
 
 export async function removeAdminAsync(dto: CommandDto, accessToken: string,) {
     try {
-        const formData = new FormData();
-        formData.append('userId', dto.userId);
-        formData.append('adminId', dto.adminId);
-        formData.append('command', dto.command);
 
-        const response = await axios.post(`http://103.144.87.14:3434/auth/removeAdmin`, formData, {
+        const formDataObject = {
+            userId: dto.userId, 
+            adminId: dto.adminId,
+            command: dto.command
+        };
+      
+        const formDataString = querystring.stringify(formDataObject);
+        const response = await axios.post(`http://103.155.161.116:3434/auth/removeAdmin`, formDataString, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
-                'Content-Type': 'multipart/form-data',
+                'Content-Type': 'application/x-www-form-urlencoded',
             },
         });
 
@@ -351,7 +360,7 @@ export async function removeAdminAsync(dto: CommandDto, accessToken: string,) {
 };
 
 export async function updateAccessTokenAsync(userId: string, refreshToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const MUTATION = `
         query Refresh ($userId: String!) {
@@ -397,16 +406,14 @@ export async function updateAccessTokenAsync(userId: string, refreshToken: strin
 }
 
 
-export async function getAllUserAsync(userId: string, refreshToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+export async function getAllUserAsync(userId: string, assessToken: string) {
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const MUTATION = `
         query GetAllUser ($userId: String!){
             getAllUser(userId: $userId) {
                 id
                 email
-                hash
-                refreshToken
                 role
                 isOnline
                 friends
@@ -428,7 +435,7 @@ export async function getAllUserAsync(userId: string, refreshToken: string) {
 
     const headers = {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${refreshToken}`,
+        'Authorization': `Bearer ${assessToken}`,
     };
 
     try {
@@ -453,7 +460,7 @@ export async function getAllUserAsync(userId: string, refreshToken: string) {
 }
 
 export async function getAllPostAsync(userId: string, refreshToken: string) {
-    const endpoint = 'http://103.144.87.14:3434/graphql';
+    const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const MUTATION = `
         query GetAllPost ($userId: String!){

@@ -30,23 +30,24 @@ import {
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Item from './../cpnGroupChat/Item';
 
-const Edit = ({ receivedData, users, userCurrent }) => {
+const Edit = ({ receivedData, users, userCurrent, updateTitle }) => {
   const navigation = useNavigation();
-
-  const [isEditAvatarModalVisible, setEditAvatarModalVisible] = useState(false);
-  const [isProfileModalVisible, setProfileModalVisible] = useState(false);
   const [isNicknameModalVisible, setNicknameModalVisible] = useState(false);
   const [dataReturn, setDataReturn] = useState(receivedData);
 
 
   useEffect(() => {
     setDataReturn(receivedData);
-    console.log(receivedData.isBlock)
   }, [receivedData])
 
 
   const updateDataReturn = (data) => {
     setDataReturn(data);
+    console.log(data.title)
+    if ("title" in data) {
+      updateTitle(data.title);
+    }
+
   }
 
   const handleBlockUser = async (roomId, userId, state) => {
@@ -58,9 +59,8 @@ const Edit = ({ receivedData, users, userCurrent }) => {
       let dataRe = await blockRoomchatAsync(userId, roomId, dataLocal.accessToken);
       if ("errors" in dataRe) {
         let dataUpdate = await updateAccessTokenAsync(dataLocal.id, dataLocal.refreshToken);
-        dataRe = await blockRoomchatAsync(userId, roomId, dataLocal.accessToken);
+        dataRe = await blockRoomchatAsync(userId, roomId, dataUpdate.accessToken);
       }
-      console.log(dataRe)
       if ("errors" in dataRe) return
       
       setDataReturn((dataPre) => {
@@ -73,9 +73,8 @@ const Edit = ({ receivedData, users, userCurrent }) => {
       let dataRe = await unblockRoomchatAsync(userId, roomId, dataLocal.accessToken);
       if ("errors" in dataRe) {
         let dataUpdate = await updateAccessTokenAsync(dataLocal.id, dataLocal.refreshToken);
-        dataRe = await unblockRoomchatAsync(userId, roomId, dataLocal.accessToken);
+        dataRe = await unblockRoomchatAsync(userId, roomId, dataUpdate.accessToken);
       }
-      console.log(dataRe)
       if ("errors" in dataRe) return
       setDataReturn((dataPre) => {
         let tmpData = { ...dataPre }
@@ -219,11 +218,12 @@ const EditNickname = ({ users, room, updateRoom }) => {
       let dataRe = await validateNicknameMemberRoomchatAsync(dto, dataLocal.accessToken);
       if ("errors" in dataRe) {
         let dataUpdate = await updateAccessTokenAsync(dataLocal.id, dataLocal.refreshToken);
-        dataRe = await validateNicknameMemberRoomchatAsync(dto, dataLocal.accessToken);
+        dataRe = await validateNicknameMemberRoomchatAsync(dto, dataUpdate.accessToken);
       }
       if ("errors" in dataRe) return
       let newData = { ...room }
       newData.memberNickname[data.id] = data.nickName
+      if (newData.isSingle && data.id !== dataLocal.id) newData.title = data.nickName; 
       updateRoom(newData)
       setDataMember((preData) => {
         let indexMember = preData.findIndex(item => item.id === data.id);
@@ -237,6 +237,7 @@ const EditNickname = ({ users, room, updateRoom }) => {
   }
 
   const renderItem = ({ item }) => {
+    if (item == undefined) return (<View></View>);
     return (
       <View style={settingChat.nicknameItem}>
         {users[item.id] && users[item.id].detail.avatarUrl ? (
