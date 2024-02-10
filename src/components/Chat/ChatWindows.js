@@ -506,10 +506,12 @@ const Content = ({ roomProfile }) => {
   const pickDocument = async () => {
     let result = await DocumentPicker.getDocumentAsync({
       type: ["image/*", "video/*", "audio/*"],
-      multiple: true,
     });
 
-    if (result.canceled) return;
+    if (result.type !== "success") {
+      return 
+    }
+
     if (socket == undefined) return;
     if (contentRoom.id === "") return;
 
@@ -521,25 +523,27 @@ const Content = ({ roomProfile }) => {
     );
 
     let newUrl = [];
-    for (let i = 0; i < result.assets.length; i++) {
-      const dto = new FileUploadDto(
+    const dto = new FileUploadDto(
+      dataLocal.id,
+      result.uri,
+      result.name,
+      result.mimeType
+    );
+
+    let data = await uploadFile(dto, dataUpdate.accessToken);
+    if (data == null) {
+      dataUpdate = await updateAccessTokenAsync(
         dataLocal.id,
-        result.assets[i].uri,
-        result.assets[i].name,
-        result.assets[i].mimeType
+        dataLocal.refreshToken
       );
-      let data = await uploadFile(dto, dataUpdate.accessToken);
-      if (data == null) {
-        dataUpdate = await updateAccessTokenAsync(
-          dataLocal.id,
-          dataLocal.refreshToken
-        );
-      }
-      if (data == null) {
-        continue;
-      }
-      newUrl.push(data.url);
+      data = await uploadFile(dto, dataUpdate.accessToken);
     }
+
+    if (data == null) {
+      return;
+    }
+
+    newUrl.push(data.url);
 
     socket.emit("sendMessage", {
       userId: dataLocal.id,

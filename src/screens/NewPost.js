@@ -283,8 +283,9 @@ const ChoseImg = ({
       quality: 1,
     });
 
-    if (result.canceled) {
-      return setIsLoading(false);
+    if (result.type === "success") {
+      setIsLoading(false);
+      return 
     }
 
     const keys = await getAllIdUserLocal();
@@ -296,7 +297,7 @@ const ChoseImg = ({
       "image/jpeg"
     );
     let data = await uploadFile(dto, dataLocal.accessToken);
-    setIsLoading(false); //////////////////////////////////////
+    setIsLoading(false);
     if (data == null) {
       const dataUpdate = await updateAccessTokenAsync(
         dataLocal.id,
@@ -309,19 +310,19 @@ const ChoseImg = ({
     let newPostData = { ...postData };
     newPostData.fileUrl.push(data.url);
     onUpdateData({ fileUrl: newPostData.fileUrl });
-    setIsLoading(false); //////////////////////////////////////
+    setIsLoading(false); 
   };
 
   const handleGallery = async () => {
-    setIsLoading(true); //////////////////////////////////////
+    setIsLoading(true); 
 
     let result = await DocumentPicker.getDocumentAsync({
       type: ["image/*", "video/*", "audio/*"],
-      multiple: true,
     });
 
-    if (result.canceled) {
-      return setIsLoading(false);
+    if (result.type !== "success") {
+      setIsLoading(false);
+      return 
     }
     const keys = await getAllIdUserLocal();
     const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
@@ -332,31 +333,32 @@ const ChoseImg = ({
 
     let newPostData = { ...postData };
 
-    for (let i = 0; i < result.assets.length; i++) {
-      const dto = new FileUploadDto(
-        dataLocal.id,
-        result.assets[i].uri,
-        result.assets[i].name,
-        result.assets[i].mimeType
-      );
+    const dto = new FileUploadDto(
+      dataLocal.id,
+      result.uri,
+      result.name,
+      result.mimeType
+    );
 
-      let data = await uploadFile(dto, dataUpdate.accessToken);
-      setIsLoading(false); //////////////////////////////////
-      if (data == null) {
-        dataUpdate = await updateAccessTokenAsync(
-          dataLocal.id,
-          dataLocal.refreshToken
-        );
-      }
-      if (data == null) {
-        continue;
-      }
-      let newFile = { id: data.id, source: { uri: data.url } };
-      upFile((preFile) => [...preFile, newFile]);
-      newPostData.fileUrl.push(data.url);
+    let data = await uploadFile(dto, dataUpdate.accessToken);
+    setIsLoading(false); 
+    if (data == null) {
+      dataUpdate = await updateAccessTokenAsync(
+        dataLocal.id,
+        dataLocal.refreshToken
+      );
+      data = await uploadFile(dto, dataUpdate.accessToken);
     }
+    if (data == null) {
+      setIsLoading(false); 
+      return;
+    }
+    let newFile = { id: data.id, source: { uri: data.url } };
+    upFile((preFile) => [...preFile, newFile]);
+    newPostData.fileUrl.push(data.url);
+
     onUpdateData({ fileUrl: newPostData.fileUrl });
-    setIsLoading(false); //////////////////////////////////
+    setIsLoading(false); 
   };
 
   return (
