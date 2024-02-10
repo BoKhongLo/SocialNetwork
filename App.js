@@ -1,4 +1,3 @@
-import {  GestureHandlerRootView, gestureHandlerRootHOC} from 'react-native-gesture-handler'
 import 'react-native-gesture-handler';
 import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
@@ -80,30 +79,30 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName={isLoggedIn ? "main" : "Login"}>
-            <Stack.Screen key="main" options={{ headerShown: false }} name="main" component={gestureHandlerRootHOC(HomeScreens)} />
-            <Stack.Screen key="chat" options={{ headerShown: false }} name="chat" component={gestureHandlerRootHOC(ChatScreen)} />
-            <Stack.Screen key="noti" options={{ headerShown: false }} name="noti" component={gestureHandlerRootHOC(NotiScreen)} />
-            <Stack.Screen key="Login" options={{ headerShown: false }} name="Login" component={gestureHandlerRootHOC(LoginScreen)} />
-            <Stack.Screen key="Signup" options={{ headerShown: false }} name="Signup" component={gestureHandlerRootHOC(SignupScreen)} />
-            <Stack.Screen key="Profile" options={{ headerShown: false }} name="Profile" component={gestureHandlerRootHOC(ProfileUser)} />
-            <Stack.Screen key="editField" options={{ headerShown: false }} name="editField" component={gestureHandlerRootHOC(EditField)} />
-            <Stack.Screen key="loadStory" options={{headerShown: false}}  name="loadStory" component={gestureHandlerRootHOC(LoadStories)} />
-            <Stack.Screen key="chatwindow" options={{headerShown: false}}  name="chatwindow" component={gestureHandlerRootHOC(ChatWindows)} />
-            <Stack.Screen key="setting" options={{headerShown: false}}  name="setting" component={gestureHandlerRootHOC(Setting)} />
-            <Stack.Screen key="changepassword" options={{headerShown: false}}  name="changepassword" component={gestureHandlerRootHOC(ChangePassword)} />
-            <Stack.Screen key="newpost" options={{headerShown: false}}  name="newpost" component={gestureHandlerRootHOC(NewPost)} />
-            <Stack.Screen key="newstory" options={{headerShown: false}}  name="newstory" component={gestureHandlerRootHOC(NewStory)} />
-            <Stack.Screen key="search" options={{headerShown: false}}  name="search" component={gestureHandlerRootHOC(SearchScreen)} />
-            <Stack.Screen key="settingChat" options={{headerShown: false}}  name="settingChat" component={gestureHandlerRootHOC(SettingChat)} />
-            <Stack.Screen key="fillEmail" options={{headerShown: false}}  name="fillEmail" component={gestureHandlerRootHOC(ForgotPassScreen)} />
-            <Stack.Screen key="verify" options={{headerShown: false}}  name="verify" component={gestureHandlerRootHOC(VerifyScreen)} />
-            <Stack.Screen key="fillPass" options={{headerShown: false}}  name="fillPass" component={gestureHandlerRootHOC(NewPassScreen)} />
-            <Stack.Screen key="settingGroupChat" options={{headerShown: false}}  name="settingGroupChat" component={gestureHandlerRootHOC(SettingGroupChat)} />
-            <Stack.Screen key="listFriend" options={{headerShown: false}}  name="listFriend" component={gestureHandlerRootHOC(ListFriend)} />
-            <Stack.Screen key="listPost" options={{headerShown: false}}  name="listPost" component={gestureHandlerRootHOC(ListPost)} />
-            <Stack.Screen key="buyPremium" options={{headerShown: false}}  name="buyPremium" component={gestureHandlerRootHOC(BuyPremium)} />
-            <Stack.Screen key="genderAndPhone" options={{headerShown: false}}  name="genderAndPhone" component={gestureHandlerRootHOC(GenderAndPhone)} />
-            <Stack.Screen key="contactUs" options={{headerShown: false}}  name="contactUs" component={gestureHandlerRootHOC(ContactUs)} />
+            <Stack.Screen key="main" options={{ headerShown: false }} name="main" component={HomeScreens} />
+            <Stack.Screen key="chat" options={{ headerShown: false }} name="chat" component={ChatScreen} />
+            <Stack.Screen key="noti" options={{ headerShown: false }} name="noti" component={NotiScreen} />
+            <Stack.Screen key="Login" options={{ headerShown: false }} name="Login" component={LoginScreen} />
+            <Stack.Screen key="Signup" options={{ headerShown: false }} name="Signup" component={SignupScreen} />
+            <Stack.Screen key="Profile" options={{ headerShown: false }} name="Profile" component={ProfileUser} />
+            <Stack.Screen key="editField" options={{ headerShown: false }} name="editField" component={EditField} />
+            <Stack.Screen key="loadStory" options={{headerShown: false}}  name="loadStory" component={LoadStories} />
+            <Stack.Screen key="chatwindow" options={{headerShown: false}}  name="chatwindow" component={ChatWindows} />
+            <Stack.Screen key="setting" options={{headerShown: false}}  name="setting" component={Setting} />
+            <Stack.Screen key="changepassword" options={{headerShown: false}}  name="changepassword" component={ChangePassword} />
+            <Stack.Screen key="newpost" options={{headerShown: false}}  name="newpost" component={NewPost} />
+            <Stack.Screen key="newstory" options={{headerShown: false}}  name="newstory" component={NewStory} />
+            <Stack.Screen key="search" options={{headerShown: false}}  name="search" component={SearchScreen} />
+            <Stack.Screen key="settingChat" options={{headerShown: false}}  name="settingChat" component={SettingChat} />
+            <Stack.Screen key="fillEmail" options={{headerShown: false}}  name="fillEmail" component={ForgotPassScreen} />
+            <Stack.Screen key="verify" options={{headerShown: false}}  name="verify" component={VerifyScreen} />
+            <Stack.Screen key="fillPass" options={{headerShown: false}}  name="fillPass" component={NewPassScreen} />
+            <Stack.Screen key="settingGroupChat" options={{headerShown: false}}  name="settingGroupChat" component={SettingGroupChat} />
+            <Stack.Screen key="listFriend" options={{headerShown: false}}  name="listFriend" component={ListFriend} />
+            <Stack.Screen key="listPost" options={{headerShown: false}}  name="listPost" component={ListPost} />
+            <Stack.Screen key="buyPremium" options={{headerShown: false}}  name="buyPremium" component={BuyPremium} />
+            <Stack.Screen key="genderAndPhone" options={{headerShown: false}}  name="genderAndPhone" component={GenderAndPhone} />
+            <Stack.Screen key="contactUs" options={{headerShown: false}}  name="contactUs" component={ContactUs} />
       </Stack.Navigator>
     </NavigationContainer>
 );
