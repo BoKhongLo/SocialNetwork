@@ -115,6 +115,7 @@ const ChatScreen = ({}) => {
       }
 
       setUserProfile(newProfile);
+      dataRoomchatAsync.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
       setDataRoomchat(dataRoomchatAsync);
       setDataRoomchatTmp(dataRoomchatAsync);
 
@@ -131,7 +132,18 @@ const ChatScreen = ({}) => {
   useEffect(() => {
     if (socket == undefined) return;
     const dataUserLocal = receivedData;
-    console.log("on Connect")
+    socket.on("newMessage", async (message) => {
+      if (message.isDisplay == false) return;
+      setDataRoomchat((preData) => {
+        let indexRoom = preData.findIndex(item => item.id === message.roomId)
+        if (indexRoom == -1) return preData;
+        let newData = [...preData];
+        newData[indexRoom].updated_at = new Date().toISOString();
+        newData.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+        return newData;
+      })
+    });
+
     socket.on("newRoomCreated", async (roomchat) => {
       console.log(roomchat);
       const newRoom = { ...roomchat };
@@ -161,21 +173,31 @@ const ChatScreen = ({}) => {
           newRoom.imgDisplay = {uri: "https://firebasestorage.googleapis.com/v0/b/testgame-d8af2.appspot.com/o/avt.png?alt=media&token=b8108af6-1f90-4512-91f5-45091ca7351f"}
         else newRoom.imgDisplay = { uri: dataFriend.detail.avatarUrl };
       }
-      setDataRoomchat((preRoom) => [...preRoom, newRoom]);
-      setDataRoomchatTmp((preRoom) => [...preRoom, newRoom]);
+      else {
+        newRoom.imgDisplay = {uri: 'https://firebasestorage.googleapis.com/v0/b/testgame-d8af2.appspot.com/o/room.jpg?alt=media&token=dcef7b37-3d4b-4bca-9159-1275e966b1a7'}
+      }
+      setDataRoomchat((preRoom) => [...preRoom, newRoom].sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at)));
+      setDataRoomchatTmp((preRoom) => [...preRoom, newRoom].sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at)));
     });
 
     socket.on("removeRoom", async (roomchat) => {
-      setDataRoomchat((preRoom) => preRoom.filter(item => item.id === roomchat.roomchatId));
-      setDataRoomchatTmp((preRoom) => preRoom.filter(item => item.id === roomchat.roomchatId));
+      setDataRoomchat((preRoom) => preRoom.filter(item => item.id === roomchat.roomchatId).sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at)));
+      setDataRoomchatTmp((preRoom) => preRoom.filter(item => item.id === roomchat.roomchatId).sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at)));
     });
   }, [socket]);
 
-  const UpdateRoom = (data) => {
-    console.log("On Get")
-    setDataRoomchat((preRoom) => [...preRoom, data]);
-    setDataRoomchatTmp((preRoom) => [...preRoom, data]);
-  }
+  // const UpdateRoom = (data) => {
+  //   console.log("On Get")
+  //   setDataRoomchat((preRoom) => {
+  //     if (data.id in preRoom) return preRoom;
+  //     return [...preRoom, data]
+  //   });
+    
+  //   setDataRoomchatTmp((preRoom) => {
+  //     if (data.id in preRoom) return preRoom;
+  //     return [...preRoom, data]
+  //   });
+  // }
 
   return (
     <View style={chat.container}>
@@ -187,7 +209,7 @@ const ChatScreen = ({}) => {
           paddingRight: insets.right + 10,
         }}
       >
-        <Header user={userProfile} updateRoom={UpdateRoom}/>
+        <Header user={userProfile} />
 
         <ScrollView
           showsVerticalScrollIndicator={false}

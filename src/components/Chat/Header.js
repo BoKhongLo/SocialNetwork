@@ -30,7 +30,7 @@ import {
 
 import { RoomchatDto } from "../../util/dto";
 
-const Header = ({ user, updateRoom }) => {
+const Header = ({ user}) => {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
   const [groupName, setGroupName] = useState("");
@@ -103,11 +103,11 @@ const Header = ({ user, updateRoom }) => {
     );
     let dataReturn = await createRoomchatAsync(dto, dataUpdate.accessToken);
     console.log(dataReturn)
-    updateRoom(dataReturn);
-    if ("errors" in dataReturn) {
-      console.log(dataReturn.errors);
-      return;
-    }
+    // updateRoom(dataReturn);
+    // if ("errors" in dataReturn) {
+    //   console.log(dataReturn.errors);
+    //   return;
+    // }
     closeModal();
   };
   return (

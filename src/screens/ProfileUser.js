@@ -34,7 +34,8 @@ const ProfileUser = () => {
     birthday: "0-0-0",
     age: -1,
     gender: "other",
-    countryCode: "+84"
+    countryCode: "+84",
+    premiumTime: "0-0-0",
   });
   const [dataPost, setDataPost] = useState([]);
   const [dataUser, setDataUser] = useState({});
@@ -75,7 +76,7 @@ const ProfileUser = () => {
         return;
       }
 
-      const { detail, id, friends, bookMarks } = dataUserAsync;
+      const { detail, id, friends, bookMarks, premiumTime } = dataUserAsync;
       const newProfile = { ...userProfile, id };
 
       if (detail) {
@@ -85,6 +86,7 @@ const ProfileUser = () => {
         if (detail.age) newProfile.age = detail.age;
         newProfile.friends = friends;
         newProfile.bookMarks = bookMarks;
+        newProfile.premiumTime = premiumTime
         if (detail.description) newProfile.description = detail.description;
         else newProfile.description = "...";
         if (detail.phoneNumber) newProfile.phoneNumber = detail.phoneNumber;

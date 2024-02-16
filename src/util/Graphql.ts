@@ -446,6 +446,7 @@ export async function getUserDataAsync(userId: string, accessToken: string) {
             getUser(id: $userId) {
                 id
                 email
+                premiumTime
                 detail {
                     name
                     nickName
@@ -510,6 +511,7 @@ export async function getUserDataLiteAsync(userId: string, accessToken: string) 
                 id
                 role
                 isOnline
+                premiumTime
                 friends
                 created_at
                 updated_at
@@ -1475,6 +1477,7 @@ export async function addFriendAsync(userId: string, friendId: string, accessTok
             },
             { headers: headers }
         );
+        console.log(response.data);
         if ("errors" in response.data) return response.data;
         return response.data.data.addFriendUser
 
@@ -1522,6 +1525,7 @@ export async function acceptFriendAsync(userId: string, friendId: string, access
             },
             { headers: headers }
         );
+        console.log(response.data);
         if ("errors" in response.data) return response.data;
         return response.data.data.acceptFriendUser
 
@@ -1562,7 +1566,9 @@ export async function removeFriendAsync(userId: string, friendId: string, access
             },
             { headers: headers }
         );
+        console.log(response.data);
         if ("errors" in response.data) return response.data;
+
         return response.data.data.removeFriendUser
 
     } catch (error) {

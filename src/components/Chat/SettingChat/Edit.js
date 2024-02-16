@@ -47,7 +47,6 @@ const Edit = ({ receivedData, users, userCurrent, updateTitle }) => {
     if ("title" in data) {
       updateTitle(data.title);
     }
-
   }
 
   const handleBlockUser = async (roomId, userId, state) => {

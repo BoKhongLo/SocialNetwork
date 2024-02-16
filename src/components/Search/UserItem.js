@@ -100,7 +100,7 @@ const UserItem = ({ user, onPress, userCurrent, friendRequest, friendReceive, up
       setPending(false);
       return;
     } 
-    else if (isFriend === "Cancel request") {
+    else if (isFriend === "Cancel request" && isFriendAdded) {
       let dataRe = await removeFriendAsync(
         dataUserLocal.id,
         friendId,
@@ -130,6 +130,7 @@ const UserItem = ({ user, onPress, userCurrent, friendRequest, friendReceive, up
         dataRe = await addFriendAsync(dataUserLocal.id, friendId, dataUpdate.accessToken);
       }
       if ("errors" in dataRe) return;
+      console.log(dataRe);
       updateData(dataRe, "ADDFRIEND")
     }
     setFriendAdded(!isFriendAdded);

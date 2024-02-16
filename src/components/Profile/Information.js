@@ -4,14 +4,27 @@ import profileStyle from '../../styles/profileStyles';
 import { widthPercentageToDP } from 'react-native-responsive-screen';
 import styles from './../../styles/styles';
 import { useNavigation } from '@react-navigation/native';
+import { fontWeight } from 'react-native';
+
 
 const Information = ({ data, isUser }) => {
   const navigation = useNavigation();
+  
   return (
     <View style={{ alignItems: 'center' }}>
       <Image style={profileStyle.avatar} source={data.avatarUrl} />
-      <Text style={{fontWeight: '400', fontSize: 25,    marginTop:10}}>{data.username}</Text>
+      {data && new Date(data.premiumTime) > new Date() && (
+        <Text style={{
+          fontSize: 20,
+          color:'#cccc00', 
+          fontWeight: "bold",
+          fontVariant: [ "lining-nums" ]
+        }}>Premium</Text>
+
+      )}
+      <Text style={{fontWeight: '400', fontSize: 25,    marginTop:5}}>{data.username}</Text>
       <Text style={{fontSize: 15,color:'grey',    marginTop:5 }}>{data.nickName}</Text>
+
       <View
         style={{
           flexDirection: 'row',

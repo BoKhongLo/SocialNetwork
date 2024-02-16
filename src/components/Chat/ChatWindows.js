@@ -186,7 +186,7 @@ const Header = ({ roomProfile, userData }) => {
       }}
     >
       <TouchableOpacity
-        onPress={() => navigation.navigate("chat", { data: dataUser })}
+        onPress={() => navigation.replace("chat", { data: dataUser })}
         style={{ padding: 10 }}
       >
         <Image

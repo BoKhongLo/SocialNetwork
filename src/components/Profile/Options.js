@@ -87,6 +87,7 @@ const Options = ({ data }) => {
 
   const handleAddFriendPress = async () => {
     if (!isFetching) return;
+    console.log(isFriend)
     const keys = await getAllIdUserLocal();
     const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
     let dataUpdate = await updateAccessTokenAsync(
@@ -140,7 +141,7 @@ const Options = ({ data }) => {
       setPending(false);
       return;
     } 
-    else if (isFriend === "Cancel request" ) {
+    else if (isFriend === "Cancel request" && isFriendAdded) {
       let dataRe = await removeFriendAsync(
         dataUserLocal.id,
         data.id,
