@@ -113,7 +113,7 @@ const SignupForm = ({receivedData, isLoading, setIsLoading}) => {
       dto.countryCode = selected;
     }
 
-    dto.birthday = dateOfBirth;
+    dto.birthday = date.toISOString();
     dto.otpId = receivedData.otpId;
     dto.gender = selectedGender;
 
@@ -127,6 +127,8 @@ const SignupForm = ({receivedData, isLoading, setIsLoading}) => {
       setIsLoading(false);
       navigation.navigate("main", { data: dataSignUp });
     } catch (err) {
+      setIsLoading(false);
+      Alert.alert(err);
       console.log(err);
     }
   };

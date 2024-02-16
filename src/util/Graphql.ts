@@ -260,22 +260,23 @@ export async function SignupAsync(dto: SignUpDto) {
     const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const MUTATION = `
-            mutation SignUp($email: String!, $password: String!, $name: String!, $birthday: DateTime, $phoneNumber: String, $otpId: String!, $gender: String, $countryCode: String) {
-                SignUp(userDto: {
-                    email: $email
-                    password: $password
+        mutation SignUp ($email: String!, $password: String!, $name: String!, $otpId: String!, $birthday: DateTime, $phoneNumber: String,  $gender: String, $countryCode: String) {
+            SignUp(
+                userDto: {
                     name: $name
-                    birthday: $birthday
-                    phoneNumber: $phoneNumber
                     otpId: $otpId
+                    password: $password
+                    birthday: $birthday
                     gender: $gender
+                    phoneNumber: $phoneNumber
                     countryCode: $countryCode
-                }) {
-                    access_token
-                    refresh_token
+                    email: $email
                 }
+            ) {
+                access_token
+                refresh_token
             }
-        `;
+        }`;
 
     const headers = {
         'Content-Type': 'application/json',

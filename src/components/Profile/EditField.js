@@ -260,8 +260,7 @@ const Field = ({ data, onUpdateData }) => {
     if (type == "set") {
       const currentDate = selectDate;
       setDate(currentDate);
-      onUpdateData({ birthday: formatDate(currentDate) });
-
+      onUpdateData({ birthday: currentDate.toISOString()});
       if (Platform.OS === "android") {
         toggleDatePicker();
         setDateOfBirth(formatDate(currentDate));
