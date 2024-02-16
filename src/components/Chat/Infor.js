@@ -66,9 +66,9 @@ const Infor = ({ receivedData, userCurrent, onEdit,  updateTitle}) => {
       return;
     }
     else if (typeButton == "check") {
-      const dto = new ValidateRoomchatDto(dataRoom.id, dataRoom.id, newTitle, dataRoom.description, dataRoom.imgDisplay)
       const keys = await getAllIdUserLocal();
       const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
+      const dto = new ValidateRoomchatDto(dataLocal.id, dataRoom.id, newTitle, dataRoom.description, dataRoom.imgDisplay)
       let dataRe = await validateRoomchatAsync(dto, dataLocal.accessToken)
       if ("errors" in dataRe) {
         let dataUpdate = await updateAccessTokenAsync(

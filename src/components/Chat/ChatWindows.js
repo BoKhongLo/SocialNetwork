@@ -344,9 +344,14 @@ const Content = ({ roomProfile }) => {
           newMessage.file = message.fileUrl[0];
         }
       }
-      setMessages((previousMessages) =>
-        GiftedChat.append(previousMessages, [newMessage])
-      );
+      setMessages((previousMessages) => {
+        if (previousMessages.findIndex(item => item._id === message.id) !== -1) {
+          GiftedChat.append(previousMessages);
+        }
+        else {
+          GiftedChat.append(previousMessages, [newMessage])
+        }
+      });
     });
 
     socket.on("removeMessage", async (message) => {
@@ -374,7 +379,16 @@ const Content = ({ roomProfile }) => {
     });
 
     socket.on("validateNicknameMember", async (payload) => {
-     
+      if (payload.roomchatId != roomProfile.id) return;
+      setMessages((previousState) => {
+        let newState = [...previousState];
+        for (let i = 0; i < newState.length; i++) {
+          if (newState[i].user._id === payload.userId) {
+            newState[i].user.name = payload.nickName;
+          }
+        }
+        return newState;
+      });
     });
 
     socket.on("removeMember", async (payload) => {

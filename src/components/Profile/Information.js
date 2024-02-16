@@ -22,8 +22,8 @@ const Information = ({ data, isUser }) => {
         }}>Premium</Text>
 
       )}
-      <Text style={{fontWeight: '400', fontSize: 25,    marginTop:5}}>{data.username}</Text>
-      <Text style={{fontSize: 15,color:'grey',    marginTop:5 }}>{data.nickName}</Text>
+      <Text style={{fontWeight: '400', fontSize: 25, marginTop:5}}>{data.username}</Text>
+      <Text style={{fontSize: 15,color:'grey', marginTop:5 }}>{data.nickName}</Text>
 
       <View
         style={{

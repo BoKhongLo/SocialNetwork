@@ -16,7 +16,7 @@ const ContactUs = () => {
   };
 
   const openWebsite = () => {
-    Linking.openURL('http://103.144.87.14/contact');
+    Linking.openURL('http://103.155.161.116/contact');
   };
   return (
     <View
