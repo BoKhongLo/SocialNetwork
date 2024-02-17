@@ -11,16 +11,10 @@ import {
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import styles from "../../styles/styles";
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
-import { color } from "react-native-elements/dist/helpers";
 import { SignupAsync, getUserDataAsync } from "../../util";
 import { SignUpDto } from "../../util/dto";
 
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Toast } from 'toastify-react-native'
 import RNPickerSelect from 'react-native-picker-select';
 import CountryCodeDropdownPicker from 'react-native-dropdown-country-picker'
@@ -116,21 +110,18 @@ const SignupForm = ({receivedData, isLoading, setIsLoading}) => {
     dto.birthday = date.toISOString();
     dto.otpId = receivedData.otpId;
     dto.gender = selectedGender;
-
-    try {
-      const dataSignUp = await SignupAsync(dto);
-      if ("errors" in dataSignUp) {
-        Alert.alert(dataSignUp.errors[0].message);
-        setIsLoading(false);
-        return;
-      }
+    console.log(dto)
+    setIsLoading(false);
+    const dataSignUp = await SignupAsync(dto);
+    console.log(dataSignUp)
+    if ("errors" in dataSignUp) {
+      Alert.alert(dataSignUp.errors[0].message);
       setIsLoading(false);
-      navigation.navigate("main", { data: dataSignUp });
-    } catch (err) {
-      setIsLoading(false);
-      Alert.alert(err);
-      console.log(err);
+      return;
     }
+    setIsLoading(false);
+    navigation.navigate("main", { data: dataSignUp });
+
   };
 
 

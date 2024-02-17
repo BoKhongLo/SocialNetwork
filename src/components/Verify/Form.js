@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import forgotPass from "../../styles/forgotPassStyles";
-import { ValidateOtpCodeAsync } from "../../util";
+import { ValidateOtpCodeAsync, CreateOtpCodeAsync } from "../../util";
 import { Toast } from 'toastify-react-native'
 
-const Form = ({receivedData}) => {
+const Form = ({receivedData, setIsLoading}) => {
   const navigation = useNavigation();
   const [verificationCode, setVerificationCode] = useState("");
 
@@ -26,13 +26,39 @@ const Form = ({receivedData}) => {
     dataPass.otpId = dataRe.otpId;
     navigation.replace("fillPass", {data: dataPass});
   };
+
   const handleSetVerificationCode = (text) => {
-    if (text.includes(" ")) return;
-    if (text.includes(",")) return;
-    if (text.includes(".")) return;
-    if (text.includes("-")) return;
-    setVerificationCode(text);
+    if (text == "") {
+      setVerificationCode(text);
+      return;
+    }
+    const numberRegex = /^[0-9]+$/;
+    if (numberRegex.test(text)) {
+      setVerificationCode(text);
+    } else {
+      return;
+    }
   }
+
+  const handleResend = async () => {
+    if (!receivedData) return;
+    setIsLoading(true); //////////////////////////////////////
+    const dataRe = await CreateOtpCodeAsync(receivedData.email, receivedData.type);
+
+    if ("errors" in dataRe) {
+      console.log(dataRe)
+      Toast.alert(dataRe.errors[0].message);
+      setIsLoading(false);
+      return;
+    }
+    if (dataRe.isRequest == false) {
+      Toast.error("Request is not allowed!");
+      setIsLoading(false);
+      return;
+    }
+    setIsLoading(false);
+  }
+
   return (
     <View style={forgotPass.formContainer}>
       <Text style={forgotPass.text}>Enter Verification Code</Text>
@@ -52,7 +78,9 @@ const Form = ({receivedData}) => {
       <View style={{ flexDirection: "row", justifyContent: "center" }}>
         <Text style={{borderBottomWidth:1}}>Check your spam folder</Text>
         <Text>  or  </Text>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={async () => await handleResend()}
+        >
           <Text style={{color:'#FF0000'}}>Resend</Text>
         </TouchableOpacity>
       </View>

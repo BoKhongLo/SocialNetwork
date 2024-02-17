@@ -260,7 +260,7 @@ export async function SignupAsync(dto: SignUpDto) {
     const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const MUTATION = `
-        mutation SignUp ($email: String!, $password: String!, $name: String!, $otpId: String!, $birthday: DateTime, $phoneNumber: String,  $gender: String, $countryCode: String) {
+        mutation SignUp ($email: String!, $password: String!, $name: String!, $otpId: String!, $birthday: String, $phoneNumber: String,  $gender: String, $countryCode: String) {
             SignUp(
                 userDto: {
                     name: $name
@@ -300,7 +300,6 @@ export async function SignupAsync(dto: SignUpDto) {
             },
             { headers: headers }
         );
-
         if ("errors" in response.data) return response.data;
         const decoded = jwtDecode<JwtPayload>(response.data.data.SignUp.access_token);
 
@@ -326,7 +325,7 @@ export async function validateUserDataAsync(dto: ValidateUserDto, accessToken: s
     const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
-        mutation ValidateUser ($userId: String!, $name: String!, $nickName: String!, $description: String!, $avatarUrl: String, $birthday: DateTime) {
+        mutation ValidateUser ($userId: String!, $name: String!, $nickName: String!, $description: String!, $avatarUrl: String, $birthday: String) {
             validateUser(
                 validateUser: {
                     userId: $userId
