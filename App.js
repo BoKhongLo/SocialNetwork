@@ -100,7 +100,7 @@ export default function App() {
             <Stack.Screen key="settingGroupChat" options={{headerShown: false}}  name="settingGroupChat" component={SettingGroupChat} />
             <Stack.Screen key="listFriend" options={{headerShown: false}}  name="listFriend" component={ListFriend} />
             <Stack.Screen key="listPost" options={{headerShown: false}}  name="listPost" component={ListPost} />
-            <Stack.Screen key="buyPremium" options={{headerShown: false}}  name="buyPremium" component={BuyPremium} />
+            {/* <Stack.Screen key="buyPremium" options={{headerShown: false}}  name="buyPremium" component={BuyPremium} /> */}
             <Stack.Screen key="genderAndPhone" options={{headerShown: false}}  name="genderAndPhone" component={GenderAndPhone} />
             <Stack.Screen key="contactUs" options={{headerShown: false}}  name="contactUs" component={ContactUs} />
       </Stack.Navigator>
