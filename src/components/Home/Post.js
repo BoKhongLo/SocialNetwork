@@ -6,7 +6,10 @@ import {
   StyleSheet,
   FlatList,
   Image,
+  Pressable,
+  Alert
 } from "react-native";
+import * as Clipboard from "expo-clipboard";
 import headerPostStyles from "../../styles/postHeaderStyles";
 import Modal from "react-native-modal";
 
@@ -304,12 +307,25 @@ function capitalizeFirstLetter(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 const Caption = ({ post, users }) => {
+  const handleAlert = () => {
+    Alert.alert("", "Would you like to copy this?", [
+      { text: "Cancel", onPress: () => null },
+      { text: "Ok", onPress: async () => await copyContent() },
+    ]);
+  }
+
+  const copyContent = async () => {
+    await Clipboard.setStringAsync(post.content);
+  }
+
   return (
     <View style={[headerPostStyles.ItemFooterContainer]}>
       {/* {users[post.ownerUserId] && post.fileUrl.length != 0 && (
         <Text style={{ fontWeight: "600" }}>{users[post.ownerUserId].detail.name}</Text>
       )} */}
-      <Text style={headerPostStyles.caption}>{post.content}</Text>
+      <Pressable onLongPress={handleAlert}>
+        <Text style={headerPostStyles.caption}>{post.content}</Text>
+      </Pressable>
     </View>
   );
 };

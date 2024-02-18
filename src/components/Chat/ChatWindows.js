@@ -32,6 +32,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import * as DocumentPicker from "expo-document-picker";
 import { FileUploadDto, ValidateMessagesDto } from "../../util/dto";
 import { Video, Audio } from "expo-av";
+import * as WebBrowser from 'expo-web-browser';
 
 const ChatWindows = ({ user }) => {
   const insets = useSafeAreaInsets();
@@ -443,41 +444,90 @@ const Content = ({ roomProfile }) => {
 
   const onLongPress = async (context, message) => {
     if (!("id" in contentRoom)) return;
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const urls = message.text.match(urlRegex);
     if (message.user._id === contentRoom.currentUserId) {
-      const options = ["Copy", "Delete Message", "Cancel"];
-      const cancelButtonIndex = options.length - 1;
-      context.actionSheet().showActionSheetWithOptions(
-        {
-          options,
-          cancelButtonIndex,
-        },
-        async (buttonIndex) => {
-          switch (buttonIndex) {
-            case 0:
-              await Clipboard.setStringAsync(message.text);
-              break;
-            case 1:
-              onDelete(message._id);
-              break;
+      if (urls == null) {
+        const options = ["Copy", "Delete Message", "Cancel"];
+        const cancelButtonIndex = options.length - 1;
+        context.actionSheet().showActionSheetWithOptions(
+          {
+            options,
+            cancelButtonIndex,
+          },
+          async (buttonIndex) => {
+            switch (buttonIndex) {
+              case 0:
+                await Clipboard.setStringAsync(message.text);
+                break;
+              case 1:
+                onDelete(message._id);
+                break;
+            }
           }
-        }
-      );
+        );
+      }
+      else {
+        const options = ["Copy", "Open Link", "Delete Message", "Cancel"];
+        const cancelButtonIndex = options.length - 1;
+        context.actionSheet().showActionSheetWithOptions(
+          {
+            options,
+            cancelButtonIndex,
+          },
+          async (buttonIndex) => {
+            switch (buttonIndex) {
+              case 0:
+                await Clipboard.setStringAsync(message.text);
+                break;
+              case 1:
+                let result = await WebBrowser.openBrowserAsync(urls[0]);
+                break;
+              case 2:
+                onDelete(message._id);
+                break;
+            }
+          }
+        );
+      }
     } else {
-      const options = ["Copy", "Cancel"];
-      const cancelButtonIndex = options.length - 1;
-      context.actionSheet().showActionSheetWithOptions(
-        {
-          options,
-          cancelButtonIndex,
-        },
-        async (buttonIndex) => {
-          switch (buttonIndex) {
-            case 0:
-              await Clipboard.setStringAsync(message.text);
-              break;
+      if (urls == null) {
+        const options = ["Copy", "Cancel"];
+        const cancelButtonIndex = options.length - 1;
+        context.actionSheet().showActionSheetWithOptions(
+          {
+            options,
+            cancelButtonIndex,
+          },
+          async (buttonIndex) => {
+            switch (buttonIndex) {
+              case 0:
+                await Clipboard.setStringAsync(message.text);
+                break;
+            }
           }
-        }
-      );
+        );
+      }
+      else {
+        const options = ["Copy", "Open Link", "Cancel"];
+        const cancelButtonIndex = options.length - 1;
+        context.actionSheet().showActionSheetWithOptions(
+          {
+            options,
+            cancelButtonIndex,
+          },
+          async (buttonIndex) => {
+            switch (buttonIndex) {
+              case 0:
+                await Clipboard.setStringAsync(message.text);
+                break;
+              case 1:
+                let result = await WebBrowser.openBrowserAsync(urls[0]);
+                break;
+            }
+          }
+        );
+      }
     }
   };
   const renderUsername = (props) => {
