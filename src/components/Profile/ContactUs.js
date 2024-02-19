@@ -16,7 +16,7 @@ const ContactUs = () => {
   };
 
   const openWebsite = () => {
-    Linking.openURL('http://103.155.161.116/contact');
+    Linking.openURL('http://www.blackcatstudio.site/#/contact');
   };
   
   return (

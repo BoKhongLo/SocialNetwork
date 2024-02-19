@@ -64,7 +64,7 @@ const ChatWindows = ({ user }) => {
       }
 
       const keys = await getAllIdUserLocal();
-      const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+      let dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
       setUserCurrentData({ ...dataUserLocal });
 
       let dataRoomchatAsync = await getRoomchatAsync(
@@ -76,7 +76,7 @@ const ChatWindows = ({ user }) => {
           dataUserLocal.id,
           dataUserLocal.refreshToken
         );
-        
+
         await saveDataUserLocal(dataUpdate.id, dataUpdate);
         dataUserLocal.accessToken = dataUpdate.accessToken;
         dataRoomchatAsync = await getRoomchatAsync(
@@ -203,7 +203,7 @@ const Header = ({ roomProfile, userData }) => {
           if ("isSingle" in dataRoomchat && dataRoomchat.isSingle === true) {
             navigation.replace("settingChat", { data: dataRoomchat })
           }
-          else {
+          else if ("isSingle" in dataRoomchat && dataRoomchat.isSingle === false) {
             navigation.replace("settingGroupChat", { data: dataRoomchat })
           }
         }}
@@ -223,10 +223,12 @@ const Content = ({ roomProfile }) => {
   const [socket, setSocket] = useState(undefined);
   const [fileAtt, setFileAtt] = useState(null);
   const navigation = useNavigation();
-  const [contentRoom , setContentRoom] = useState({});
+  const [contentRoom, setContentRoom] = useState({});
+  const [isFetch, setIsFetch] = useState(false);
 
   useEffect(() => {
     if (!roomProfile) return;
+    if (!("id" in roomProfile)) return;
     let DataRoomInit = [];
     let count = 0;
     for (let message of roomProfile.data) {
@@ -274,11 +276,18 @@ const Content = ({ roomProfile }) => {
     }
     setMessages(DataRoomInit.reverse());
 
+
+    setContentRoom(roomProfile)
+    setIsFetch(pre => !pre)
+
+  }, [roomProfile]);
+
+  useEffect(() => {
     const fetchData = async () => {
       const keys = await getAllIdUserLocal();
-      const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+      let dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
 
-      const dataUpdate = await updateAccessTokenAsync(
+      let dataUpdate = await updateAccessTokenAsync(
         dataUserLocal.id,
         dataUserLocal.refreshToken
       );
@@ -290,120 +299,154 @@ const Content = ({ roomProfile }) => {
       dataUserLocal.accessToken = dataUpdate.accessToken;
       const newSocket = getSocketIO(dataUserLocal.accessToken);
       setSocket(newSocket);
-    };
-    fetchData();
-    setContentRoom(roomProfile)
-    if (!("id" in roomProfile)) return;
-    if (socket == undefined) return;
-    socket.on("newMessage", async (message) => {
-      if (message.isDisplay == false) return;
 
-      if (message.roomId != roomProfile.id) return;
+      newSocket.on("newMessage", async (message) => {
+        if (message.isDisplay == false) return;
+        if (!("id" in contentRoom)) return;
+        if (message.roomId != contentRoom.id) return;
 
-      let newMessage = {
-        _id: message.id,
-        text: message.content,
-        createdAt: new Date(message.created_at),
-        user: {
-          _id: message.userId,
-          name: roomProfile.nameMembers[message.userId],
-          avatar: roomProfile.imgMembers[message.userId],
-        },
-      };
-      if (message.fileUrl.length > 0) {
-        const imgExt = [
-          "jpg",
-          "jpeg",
-          "png",
-          "gif",
-          "bmp",
-          "tiff",
-          "webp",
-          "raf",
-        ];
-        const videoExt = ["mp4", "avi", "mkv", "mov", "wmv", "flv", "webm"];
-        const audioExt = ["mp3", "ogg", "wav", "flac", "aac", "wma", "m4a"];
-        const lastElement = message.fileUrl[0].split("/").pop();
-        const fileExt = lastElement
-          .split("?")[0]
-          .split(".")
-          .pop()
-          .toLowerCase();
-        if (imgExt.includes(fileExt)) {
-          newMessage.image = message.fileUrl[0];
-        } else if (audioExt.includes(fileExt)) {
-          newMessage.video = {
-            type: "audio",
-            uri: message.fileUrl[0],
-          };
-        } else if (videoExt.includes(fileExt)) {
-          newMessage.video = {
-            type: "video",
-            uri: message.fileUrl[0],
-          };
-        } else {
-          newMessage.file = message.fileUrl[0];
-        }
-      }
-      setMessages((previousMessages) => {
-        if (previousMessages.findIndex(item => item._id === message.id) !== -1) {
-          GiftedChat.append(previousMessages);
-        }
-        else {
-          GiftedChat.append(previousMessages, [newMessage])
-        }
-      });
-    });
-
-    socket.on("removeMessage", async (message) => {
-      setMessages((previousState) => {
-        return previousState.filter(
-          (messages) => messages._id !== message.messageId
-        );
-      });
-    });
-
-    socket.on("blockRoomchat", async (payload) => {
-     setContentRoom((preData) => {
-      let newData = {...preData}
-      newData.isBlock = payload.userId;
-      return newData;
-     })
-    });
-
-    socket.on("unblockRoomchat", async (payload) => {
-      setContentRoom((preData) => {
-        let newData = {...preData}
-        newData.isBlock = null;
-        return newData;
-       })
-    });
-
-    socket.on("validateNicknameMember", async (payload) => {
-      if (payload.roomchatId != roomProfile.id) return;
-      setMessages((previousState) => {
-        let newState = [...previousState];
-        for (let i = 0; i < newState.length; i++) {
-          if (newState[i].user._id === payload.userId) {
-            newState[i].user.name = payload.nickName;
+        let newMessage = {
+          _id: message.id,
+          text: message.content,
+          createdAt: new Date(message.created_at),
+          user: {
+            _id: message.userId,
+            name: contentRoom.nameMembers[message.userId],
+            avatar: contentRoom.imgMembers[message.userId],
+          },
+        };
+        if (message.fileUrl.length > 0) {
+          const imgExt = [
+            "jpg",
+            "jpeg",
+            "png",
+            "gif",
+            "bmp",
+            "tiff",
+            "webp",
+            "raf",
+          ];
+          const videoExt = ["mp4", "avi", "mkv", "mov", "wmv", "flv", "webm"];
+          const audioExt = ["mp3", "ogg", "wav", "flac", "aac", "wma", "m4a"];
+          const lastElement = message.fileUrl[0].split("/").pop();
+          const fileExt = lastElement
+            .split("?")[0]
+            .split(".")
+            .pop()
+            .toLowerCase();
+          if (imgExt.includes(fileExt)) {
+            newMessage.image = message.fileUrl[0];
+          } else if (audioExt.includes(fileExt)) {
+            newMessage.video = {
+              type: "audio",
+              uri: message.fileUrl[0],
+            };
+          } else if (videoExt.includes(fileExt)) {
+            newMessage.video = {
+              type: "video",
+              uri: message.fileUrl[0],
+            };
+          } else {
+            newMessage.file = message.fileUrl[0];
           }
         }
-        return newState;
+        setMessages((previousMessages) => {
+          if (previousMessages.findIndex(item => item._id === message.id) !== -1) {
+            return previousMessages;
+          }
+          else {
+            return GiftedChat.append(previousMessages, [newMessage]);
+          }
+        });
       });
-    });
 
-    socket.on("removeMember", async (payload) => {
-      try {
-        if (payload.member.includes(roomProfile.currentUserId)) {
-          navigation.navigate("main")
+      newSocket.on("removeMessage", async (message) => {
+        if (!("id" in contentRoom)) return;
+        if (message.roomchatId != contentRoom.id) return;
+        setMessages((previousState) => {
+          return previousState.filter(
+            (messages) => messages._id !== message.messageId
+          );
+        });
+      });
+
+      newSocket.on("blockRoomchat", async (payload) => {
+        if (!("id" in contentRoom)) return;
+        if (payload.roomchatId != contentRoom.id) return;
+        let newRoomchat = { ...contentRoom }
+        newRoomchat.isBlock = payload.userId;
+        setContentRoom(newRoomchat);
+      });
+
+      newSocket.on("unblockRoomchat", async (payload) => {
+        if (!("id" in contentRoom)) return;
+        if (payload.roomchatId != contentRoom.id) return;
+        let newRoomchat = { ...contentRoom }
+        newRoomchat.isBlock = null;
+        setContentRoom(newRoomchat);
+      });
+
+      newSocket.on("validateNicknameMember", async (payload) => {
+        if (!("id" in contentRoom)) return;
+        if (payload.roomchatId != contentRoom.id) return;
+        setMessages((previousState) => {
+          let newState = [...previousState];
+          for (let i = 0; i < newState.length; i++) {
+            if (newState[i].user._id === payload.userId) {
+              newState[i].user.name = payload.nickName;
+            }
+          }
+          return newState;
+        });
+
+        let newRoomchat = { ...contentRoom }
+        newRoomchat.nameMembers[payload.userId] = payload.nickName;
+        setContentRoom(newRoomchat);
+      });
+
+      newSocket.on("removeMember", async (payload) => {
+        if (!("id" in contentRoom)) return;
+        if (payload.roomchatId != contentRoom.id) return;
+        try {
+          if (payload.member.includes(contentRoom.currentUserId)) {
+            navigation.navigate("main")
+          }
         }
-      }
-      catch (err) {
-        console.log(err);
-      }
+        catch (err) {
+          console.log(err);
+        }
+      });
 
-    });
-  }, [roomProfile]);
+      newSocket.on("addMember", async (payload) => {
+        if (!("id" in contentRoom)) return;
+        if (payload.roomchatId != contentRoom.id) return;
+        let newRoomchat = { ...contentRoom }
+        for (let i = 0; i < payload.member.length; i++) {
+          if (newRoomchat.member.findIndex(item => item === payload.member[i]) !== -1) continue;
+
+          newRoomchat.member.push(payload.member[i]);
+          let tmpDataLite = await getUserDataLiteAsync(payload.member[i], dataUserLocal.accessToken)
+          if ("errors" in tmpDataLite) {
+            dataUpdate = await updateAccessTokenAsync(dataUserLocal.id, dataUserLocal.refreshToken);
+            dataUserLocal.accessToken = dataUpdate.accessToken;
+            tmpDataLite = await getUserDataLiteAsync(payload.member[i], dataUserLocal.accessToken)
+          }
+
+          if (tmpDataLite.detail.avatarUrl != undefined && tmpDataLite.detail.avatarUrl != null) {
+            newRoomchat.imgMembers[payload.member[i]] = tmpDataLite.detail.avatarUrl;
+          }
+          else {
+            newRoomchat.imgMembers[payload.member[i]] = "https://firebasestorage.googleapis.com/v0/b/testgame-d8af2.appspot.com/o/avt.png?alt=media&token=b8108af6-1f90-4512-91f5-45091ca7351f"
+          }
+
+          newRoomchat.nameMembers[payload.member[i]] = tmpDataLite.detail.name;
+        }
+        setContentRoom(newRoomchat);
+      });
+    };
+    fetchData();
+
+  }, [isFetch])
 
   const onSend = useCallback(
     (messages = []) => {
@@ -532,8 +575,8 @@ const Content = ({ roomProfile }) => {
   };
   const renderUsername = (props) => {
     return (
-      <View style={{marginLeft: 10, marginBottom:5 }}>
-        <Text style={{fontStyle:'italic', color: "gray"}}>{props.name}</Text>
+      <View style={{ marginLeft: 10, marginBottom: 5 }}>
+        <Text style={{ fontStyle: 'italic', color: "gray" }}>{props.name}</Text>
       </View>
     )
   }
@@ -574,7 +617,7 @@ const Content = ({ roomProfile }) => {
     });
 
     if (result.type !== "success") {
-      return 
+      return
     }
 
     if (socket == undefined) return;
@@ -645,7 +688,7 @@ const Content = ({ roomProfile }) => {
   const renderSend = useCallback((props) => {
     return (
       <View >
-        {contentRoom.isBlock == null  ? (
+        {contentRoom.isBlock == null ? (
           <View style={{ flexDirection: "row" }}>
             <TouchableOpacity onPress={pickDocument}>
               <View>
@@ -668,29 +711,29 @@ const Content = ({ roomProfile }) => {
               </View>
             </Send>
           </View>
-        ) :  contentRoom.isSingle == false && (
+        ) : contentRoom.isSingle == false && (
           <View style={{ flexDirection: "row" }}>
-          <TouchableOpacity onPress={pickDocument}>
-            <View>
-              <FontAwesome
-                name="file"
-                style={{ marginRight: 5, marginTop: 5 }}
-                size={28}
-                color="#2e64e5"
-              />
-            </View>
-          </TouchableOpacity>
-          <Send {...props}>
-            <View>
-              <MaterialCommunityIcons
-                name="send-circle"
-                style={{ marginBottom: 5, marginRight: 5 }}
-                size={34}
-                color="#2e64e5"
-              />
-            </View>
-          </Send>
-        </View>
+            <TouchableOpacity onPress={pickDocument}>
+              <View>
+                <FontAwesome
+                  name="file"
+                  style={{ marginRight: 5, marginTop: 5 }}
+                  size={28}
+                  color="#2e64e5"
+                />
+              </View>
+            </TouchableOpacity>
+            <Send {...props}>
+              <View>
+                <MaterialCommunityIcons
+                  name="send-circle"
+                  style={{ marginBottom: 5, marginRight: 5 }}
+                  size={34}
+                  color="#2e64e5"
+                />
+              </View>
+            </Send>
+          </View>
         )}
       </View>
     );

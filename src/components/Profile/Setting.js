@@ -254,7 +254,7 @@ const Security = ({ logoutFunction }) => {
       </Text>
       <View style={{ marginLeft: 15, marginTop: 20 }}>
         <TouchableOpacity
-          onPress={() => {Linking.openURL("https://docs.google.com/document/d/1Du7eMoZDUhBzLJBcAgsv3cFKmaNn-EBhSQntb-3taUg/edit?usp=sharing")}}
+          onPress={() => {Linking.openURL("http://www.blackcatstudio.site/#/privacy")}}
           style={{ padding: 10 }}
         >
           <View
