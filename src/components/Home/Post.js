@@ -6,7 +6,10 @@ import {
   StyleSheet,
   FlatList,
   Image,
+  Pressable,
+  Alert
 } from "react-native";
+import * as Clipboard from "expo-clipboard";
 import headerPostStyles from "../../styles/postHeaderStyles";
 import Modal from "react-native-modal";
 
@@ -28,10 +31,11 @@ import {
   updateAccessTokenAsync,
   findFriendAsync,
   getSocketIO,
-  saveDataUserLocal
+  saveDataUserLocal,
+  getPostAsync
 } from "../../util";
 import { useNavigation } from "@react-navigation/native";
-const Post = React.memo(({ post, users, userCurrent, onRemovePost }) => {
+const Post = React.memo(({ post, users, userCurrent, onRemovePost, onBookmark }) => {
   const [countLike, setCountLike] = useState(post.interaction.length);
   const [dataUsers, setDataUsers] = useState(users);
   const [dataPost, setDataPost] = useState(post);
@@ -106,6 +110,10 @@ const Post = React.memo(({ post, users, userCurrent, onRemovePost }) => {
       return "VIDEO"
     }
   }
+  const pressBookmarks = (validate) => {
+    if (onBookmark == undefined || !onBookmark) return
+    onBookmark(validate) 
+  }
 
   const fileType = useState(validateFile(post.fileUrl[0]))[0]
 
@@ -127,7 +135,7 @@ const Post = React.memo(({ post, users, userCurrent, onRemovePost }) => {
               <Caption post={dataPost} users={dataUsers} />
           </View>
           <View>
-            <PostFooter post={dataPost} users={dataUsers} userCurrent={dataUserCurrent} />
+            <PostFooter post={dataPost} users={dataUsers} userCurrent={dataUserCurrent} onPressBookmark={pressBookmarks}/>
             <View style={{ marginLeft: 14 }}>
               <Likes post={dataPost} users={dataUsers} likes={countLike} />
             </View>
@@ -142,7 +150,7 @@ const Post = React.memo(({ post, users, userCurrent, onRemovePost }) => {
           </View>
           <PostImage post={dataPost} users={dataUsers} />
           <View>
-            <PostFooter post={dataPost} users={dataUsers} userCurrent={dataUserCurrent}  />
+            <PostFooter post={dataPost} users={dataUsers} userCurrent={dataUserCurrent} onPressBookmark={pressBookmarks} />
             <View style={{ marginLeft: 14 }}>
               <Likes post={dataPost} users={dataUsers}  likes={countLike} />
             </View>
@@ -156,7 +164,7 @@ const Post = React.memo(({ post, users, userCurrent, onRemovePost }) => {
           <Caption post={dataPost} users={dataUsers} />
         </View>
         <View>
-          <PostFooter post={dataPost} users={dataUsers} userCurrent={dataUserCurrent} />
+          <PostFooter post={dataPost} users={dataUsers} userCurrent={dataUserCurrent} onPressBookmark={pressBookmarks}/>
           <View style={{ marginLeft: 14 }}>
             <Likes post={dataPost} users={dataUsers} likes={countLike} />
           </View>
@@ -299,12 +307,25 @@ function capitalizeFirstLetter(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 const Caption = ({ post, users }) => {
+  const handleAlert = () => {
+    Alert.alert("", "Would you like to copy this?", [
+      { text: "Cancel", onPress: () => null },
+      { text: "Ok", onPress: async () => await copyContent() },
+    ]);
+  }
+
+  const copyContent = async () => {
+    await Clipboard.setStringAsync(post.content);
+  }
+
   return (
     <View style={[headerPostStyles.ItemFooterContainer]}>
       {/* {users[post.ownerUserId] && post.fileUrl.length != 0 && (
         <Text style={{ fontWeight: "600" }}>{users[post.ownerUserId].detail.name}</Text>
       )} */}
-      <Text style={headerPostStyles.caption}>{post.content}</Text>
+      <Pressable onLongPress={handleAlert}>
+        <Text style={headerPostStyles.caption}>{post.content}</Text>
+      </Pressable>
     </View>
   );
 };

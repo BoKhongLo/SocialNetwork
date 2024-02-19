@@ -17,8 +17,6 @@ export async function uploadFile (data: FileUploadDto, authToken: string,) {
             'Content-Type': 'multipart/form-data',
         },
         });
-        if ("errors" in response.data) console.log(response.data)
-        if (response.data == null) return null;
         return response.data
     } catch (error) {
         console.error('Error:', error);

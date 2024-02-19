@@ -5,12 +5,14 @@ import Header from "./../components/Verify/Header";
 import Form from "./../components/Verify/Form";
 import ToastManager from 'toastify-react-native'
 import { useNavigation, useRoute } from "@react-navigation/native";
+import LoadingAnimation from "../components/Loading/loadingAnimation";
 
 const VerifyScreen = () => {
   const insets = useSafeAreaInsets();
   const route = useRoute();
   const navigation = useNavigation();
   const receivedData = route.params?.data;
+  const [isLoading, setIsLoading] = React.useState(false);
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -22,6 +24,7 @@ const VerifyScreen = () => {
   }, []);
 
   return (
+    <>
     <View
       style={{
         paddingTop: insets.top,
@@ -32,8 +35,10 @@ const VerifyScreen = () => {
     >
       <ToastManager  />
       <Header receivedData={receivedData}/>
-      <Form receivedData={receivedData} />
+      <Form receivedData={receivedData} setIsLoading={setIsLoading}/>
     </View>
+    <LoadingAnimation isVisible={isLoading}/>
+    </>
   );
 };
 

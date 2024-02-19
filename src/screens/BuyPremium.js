@@ -14,7 +14,8 @@ import {
   getAllIdUserLocal,
   getDataUserLocal,
   updateAccessTokenAsync,
-  GenerateMomoPaymentAsync
+  GenerateMomoPaymentAsync,
+  GenerateVnpayPaymentAsync
 } from "../util";
 
 import {
@@ -28,9 +29,25 @@ const BuyPremium = () => {
   const [clickedMonths, setClickedMonths] = useState([false, false, false]);
   const [isModalVisible, setModalVisible] = useState(false);
 
-  const handleBuyVnPay = () => {
-    // You can implement the logic for handling the purchase here
-    // For now, let's just show an alert
+  const handleBuyVnPay = async () => {
+    const selectIndex = clickedMonths.findIndex(x => x === true);
+    if (selectIndex === -1) return;
+
+    const keys = await getAllIdUserLocal();
+    const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
+    const dataUserLocal = { ...dataLocal }
+    const dataUpdate = await updateAccessTokenAsync(
+      dataUserLocal.id,
+      dataUserLocal.refreshToken
+    );
+
+    const dto = new PaymentDto(dataUserLocal.id, "Vnpay", (selectIndex+1).toString())
+    let dataReturn = await GenerateVnpayPaymentAsync(dto, dataUpdate.accessToken)
+    console.log(dataReturn)
+    if ("errors" in dataReturn) return;
+    if (dataReturn.status === "fail") return;
+
+    let result = await WebBrowser.openBrowserAsync(dataReturn.url);
   };
   const handleBuyMomo = async () => {
     const selectIndex = clickedMonths.findIndex(x => x === true);
@@ -47,6 +64,7 @@ const BuyPremium = () => {
     const dto = new PaymentDto(dataUserLocal.id, "Momo", (selectIndex+1).toString())
     console.log(dto);
     let dataReturn = await GenerateMomoPaymentAsync(dto, dataUpdate.accessToken)
+    if ("errors" in dataReturn) return;
     if (dataReturn.status === "fail") return;
     let result = await WebBrowser.openBrowserAsync(dataReturn.url);
     
@@ -68,15 +86,14 @@ const BuyPremium = () => {
       <View style={{ flexDirection: "row", alignItems: "center" }}>
         <TouchableOpacity
           style={{ paddingVertical: 10 }}
-          onPress={() => navigation.goBack()}
+          onPress={()=>navigation.replace('setting')}
         >
           <Image
             style={{ height: 40, width: 40 }}
             source={require("../../assets/dummyicon/left_line_64.png")}
           />
         </TouchableOpacity>
-        {/* <Text style ={paymentStyle.text}>Already subscribed</Text>
-        <Text style ={paymentStyle.text}>Not yet subscribed</Text> */}
+
       </View>
 
       <View>

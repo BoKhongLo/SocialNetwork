@@ -260,22 +260,23 @@ export async function SignupAsync(dto: SignUpDto) {
     const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const MUTATION = `
-            mutation SignUp($email: String!, $password: String!, $name: String!, $birthday: DateTime, $phoneNumber: String, $otpId: String!, $gender: String, $countryCode: String) {
-                SignUp(userDto: {
-                    email: $email
-                    password: $password
+        mutation SignUp ($email: String!, $password: String!, $name: String!, $otpId: String!, $birthday: String, $phoneNumber: String,  $gender: String, $countryCode: String) {
+            SignUp(
+                userDto: {
                     name: $name
-                    birthday: $birthday
-                    phoneNumber: $phoneNumber
                     otpId: $otpId
+                    password: $password
+                    birthday: $birthday
                     gender: $gender
+                    phoneNumber: $phoneNumber
                     countryCode: $countryCode
-                }) {
-                    access_token
-                    refresh_token
+                    email: $email
                 }
+            ) {
+                access_token
+                refresh_token
             }
-        `;
+        }`;
 
     const headers = {
         'Content-Type': 'application/json',
@@ -299,7 +300,6 @@ export async function SignupAsync(dto: SignUpDto) {
             },
             { headers: headers }
         );
-
         if ("errors" in response.data) return response.data;
         const decoded = jwtDecode<JwtPayload>(response.data.data.SignUp.access_token);
 
@@ -325,7 +325,7 @@ export async function validateUserDataAsync(dto: ValidateUserDto, accessToken: s
     const endpoint = 'http://103.155.161.116:3434/graphql';
 
     const QUERY = `
-        mutation ValidateUser ($userId: String!, $name: String!, $nickName: String!, $description: String!, $avatarUrl: String, $birthday: DateTime) {
+        mutation ValidateUser ($userId: String!, $name: String!, $nickName: String!, $description: String!, $avatarUrl: String, $birthday: String) {
             validateUser(
                 validateUser: {
                     userId: $userId
@@ -445,6 +445,7 @@ export async function getUserDataAsync(userId: string, accessToken: string) {
             getUser(id: $userId) {
                 id
                 email
+                premiumTime
                 detail {
                     name
                     nickName
@@ -509,6 +510,7 @@ export async function getUserDataLiteAsync(userId: string, accessToken: string) 
                 id
                 role
                 isOnline
+                premiumTime
                 friends
                 created_at
                 updated_at
@@ -1474,6 +1476,7 @@ export async function addFriendAsync(userId: string, friendId: string, accessTok
             },
             { headers: headers }
         );
+        console.log(response.data);
         if ("errors" in response.data) return response.data;
         return response.data.data.addFriendUser
 
@@ -1521,6 +1524,7 @@ export async function acceptFriendAsync(userId: string, friendId: string, access
             },
             { headers: headers }
         );
+        console.log(response.data);
         if ("errors" in response.data) return response.data;
         return response.data.data.acceptFriendUser
 
@@ -1561,7 +1565,9 @@ export async function removeFriendAsync(userId: string, friendId: string, access
             },
             { headers: headers }
         );
+        console.log(response.data);
         if ("errors" in response.data) return response.data;
+
         return response.data.data.removeFriendUser
 
     } catch (error) {
@@ -2531,6 +2537,50 @@ export async function GenerateMomoPaymentAsync(dto: PaymentDto, accessToken: str
     }
 }
 
+export async function GenerateVnpayPaymentAsync(dto: PaymentDto, accessToken: string) {
+    const endpoint = 'http://103.155.161.116:3434/graphql';
+
+    const QUERY = `
+        mutation GenerateVnpayPayment ($userId: String!, $method: String!, $select: String!) {
+            generateVnpayPayment(
+                payment: {
+                    userId: $userId
+                    method: $method
+                    select: $select
+                }
+            ) {
+                status
+                url
+            }
+        }`;
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+    };
+
+    try {
+        const response = await axios.post(
+            endpoint,
+            {
+                query: QUERY,
+                variables: {
+                    userId: dto.userId,
+                    method: dto.method,
+                    select: dto.select
+                },
+            },
+            { headers: headers }
+        );
+        console.log(response.data);
+        if ("errors" in response.data) return response.data;
+        return response.data.data.generateVnpayPayment
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
 
 export async function removeNotificationAsync(userId: string, notiId: string, accessToken: string) {
     const endpoint = 'http://103.155.161.116:3434/graphql';

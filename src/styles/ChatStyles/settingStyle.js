@@ -15,10 +15,11 @@ const settingChat = StyleSheet.create({
   avt: {
     height: 100,
     width: 100,
-    borderRadius: 50,
-    backgroundColor: "black",
     marginTop: 10,
     marginRight: -10,
+    borderRadius: 80,
+    borderWidth: 0.4,
+    borderColor: "gray",
   },
   editContainer: {
     height: 400,

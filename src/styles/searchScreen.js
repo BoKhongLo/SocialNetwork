@@ -23,9 +23,10 @@ const searchStyles = StyleSheet.create({
   avt: {
     height: 45,
     width: 45,
-    borderRadius: 30,
-    resizeMode: "contain",
+    borderRadius: 50,
+    // resizeMode: "contain",
     borderWidth: 0.3,
+    backgroundColor: "gray"
   },
   addButton: {
     justifyContent: "center",

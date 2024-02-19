@@ -4,7 +4,8 @@ import {
   Image,
   TouchableOpacity,
   Modal,
-  TextInput
+  TextInput,
+  Alert
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import settingChat from "../../styles/ChatStyles/settingStyle";
@@ -20,7 +21,7 @@ import {
 import { ValidateRoomchatDto, FileUploadDto } from "../../util/dto"
 import * as ImagePicker from "expo-image-picker";
 
-const Infor = ({ receivedData, userCurrent, onEdit }) => {
+const Infor = ({ receivedData, userCurrent, onEdit,  updateTitle}) => {
   const [modalChangeAvatar, setModalChangeAvatar] = useState(false);
   const [modalChangeTitle, setModalChangeTitle] = useState(false);
   const [typeButton, setTypeButton] = useState("edit");
@@ -30,6 +31,7 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
   const [isMod, setIsMod] = useState(false)
 
   useEffect(() => {
+    console.log(receivedData.role)
     setDataRoom(receivedData)
     setNewTitle(receivedData.title)
     setDataUser(userCurrent)
@@ -41,6 +43,7 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
   }, [receivedData, userCurrent])
 
   const pressModalChangeAvatar = () => {
+    console.log(modalChangeAvatar)
     setModalChangeAvatar(!modalChangeAvatar);
   };
 
@@ -55,6 +58,7 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
   };
 
   const handleChangeTitle = async () => {
+    console.log(typeButton)
     if (!dataRoom) return;
     if (!dataUser) return;
     if (typeButton == "edit") {
@@ -62,10 +66,10 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
       return;
     }
     else if (typeButton == "check") {
-      const dto = new ValidateRoomchatDto(dataRoom.id, dataRoom.id, newTitle, dataRoom.description, dataRoom.imgDisplay)
       const keys = await getAllIdUserLocal();
       const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
-      const dataRe = await validateRoomchatAsync(dto, dataLocal.accessToken)
+      const dto = new ValidateRoomchatDto(dataLocal.id, dataRoom.id, newTitle, dataRoom.description, dataRoom.imgDisplay)
+      let dataRe = await validateRoomchatAsync(dto, dataLocal.accessToken)
       if ("errors" in dataRe) {
         let dataUpdate = await updateAccessTokenAsync(
           dataLocal.id,
@@ -73,13 +77,17 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
         );
         dataRe = await validateRoomchatAsync(dto, dataUpdate.accessToken)
       }
-      if ("errors" in dataRe) return;
       console.log(dataRe);
+      if ("errors" in dataRe) return;
+
       setDataRoom((preData) => {
         let newData = { ...preData };
         newData.title = newTitle;
         return newData;
       })
+
+      updateTitle(newTitle);
+    
       setModalChangeTitle(!modalChangeTitle);
     }
   }
@@ -108,9 +116,9 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
         const keys = await getAllIdUserLocal();
         const dto = new FileUploadDto(dataUser.id, result.assets[0].uri, `avatarGroup${dataRoom.id}.jpg`, "image/jpeg");
         const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
-        const dataUserLocal = { ...dataLocal };
+        let dataUserLocal = { ...dataLocal };
         let data = await uploadFile(dto, dataUserLocal.accessToken);
-        if (data == null) {
+        if ("message" in data) {
           let dataUpdate = await updateAccessTokenAsync(
             dataUserLocal.id,
             dataUserLocal.refreshToken
@@ -119,7 +127,10 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
           data = await uploadFile(dto, dataUpdate.accessToken);
         }
         onEdit(false)
-        if (data == null) return;
+        if ("message" in data) {
+          Alert.alert(data.message);
+          return
+        }
         const dtoValidate = new ValidateRoomchatDto(dataUser.id, dataRoom.id, dataRoom.title, dataRoom.description, data.url)
         const dataRe = await validateRoomchatAsync(dtoValidate, dataUserLocal.accessToken)
         if ("errors" in dataRe) {
@@ -160,7 +171,7 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
         const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
         const dataUserLocal = { ...dataLocal };
         let data = await uploadFile(dto, dataUserLocal.accessToken);
-        if (data == null) {
+        if ("message" in data) {
           let dataUpdate = await updateAccessTokenAsync(
             dataUserLocal.id,
             dataUserLocal.refreshToken
@@ -170,7 +181,10 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
         }
         console.log(data)
         onEdit(false)
-        if (data == null) return
+        if ("message" in data) {
+          Alert.alert(data.message);
+          return
+        }
         const dtoValidate = new ValidateRoomchatDto(dataUser.id, dataRoom.id, dataRoom.title, dataRoom.description, data.url)
         const dataRe = await validateRoomchatAsync(dtoValidate, dataUserLocal.accessToken)
         if ("errors" in dataRe) {
@@ -181,6 +195,7 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
           dataUserLocal.accessToken == dataUpdate.accessToken;
           dataRe = await validateRoomchatAsync(dto, dataUpdate.accessToken)
         }
+        
         console.log(dataRe)
         if ("errors" in dataRe) return;
         setDataRoom((preData) => {
@@ -206,16 +221,19 @@ const Infor = ({ receivedData, userCurrent, onEdit }) => {
       >
         {dataRoom && dataRoom.imgDisplay ? (
           <Image style={settingChat.avt} source={{ uri: dataRoom.imgDisplay }} />
-        ) : (
+        ) : dataRoom.isSingle ? (
           <Image
             style={settingChat.avt}
             source={require("../../../assets/img/avt.png")}
-          />)}
+          />) : (
+            <Image
+            style={settingChat.avt}
+            source={{uri: 'https://firebasestorage.googleapis.com/v0/b/testgame-d8af2.appspot.com/o/room.jpg?alt=media&token=dcef7b37-3d4b-4bca-9159-1275e966b1a7'}}
+          />
+          )}
         {dataRoom.isSingle == false && isMod && (
           <TouchableOpacity
-            style={{
-
-            }}
+            onPress={pressModalChangeAvatar}
           >
             <FontAwesome
               name="edit"

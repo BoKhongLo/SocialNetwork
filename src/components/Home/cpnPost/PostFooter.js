@@ -43,7 +43,7 @@ import {
   BookmarksDto,
 } from "../../../util/dto";
 import { useNavigation } from "@react-navigation/native";
-
+import * as Clipboard from "expo-clipboard";
 const PostFooter = ({
   post,
   onPressComment,
@@ -171,6 +171,7 @@ const PostFooter = ({
         }
         if ("errors" in dataReturn) return;
         setBookmarkPressed(false);
+        onPressBookmark(false);
       } else if (bookmarkPressed === false) {
         const dto = new BookmarksDto(dataUserLocal.id, post.id);
         let dataReturn = await addBookmarkAsync(dto, dataUserLocal.accessToken);
@@ -183,6 +184,7 @@ const PostFooter = ({
         }
         if ("errors" in dataReturn) return;
         setBookmarkPressed(true);
+        onPressBookmark(true);
       }
     } else if (action === "Comment") {
       setCommentModalVisible(true);
@@ -480,12 +482,14 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
   };
 
   const alertDeleteComment = async (comment) => {
-    Alert.alert("", "Delete this comment ?", [
+    if (!comment) return;
+    const keys = await getAllIdUserLocal();
+    const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+      Alert.alert("", "Validate this comment ?", [
       { text: "Cancel", onPress: () => null },
-      { text: "OK", onPress: async() => {
-        if (!comment) return;
-        const keys = await getAllIdUserLocal();
-        const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+      { text: "Copy", onPress: async () => await Clipboard.setStringAsync(comment.content) },
+      comment.userId == dataUserLocal.id && 
+      {text:  "Delete", onPress: async() => {
         const dto = new ValidateMessagesDto(
           dataUserLocal.id,
           dataPost.id,
@@ -526,7 +530,7 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
         >
           <View>
             <TouchableOpacity
-            onPress={async () => await handlePressedAvatar(item.userIdw)}
+            onPress={async () => await handlePressedAvatar(item.userId)}
             >
               {dataUsers[item.userId] &&
               dataUsers[item.userId].detail.avatarUrl ? (

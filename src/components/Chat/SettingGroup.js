@@ -39,8 +39,6 @@ const SettingGroupChat = () => {
       );
 
       let dataRoomchat = await getRoomchatAsync(receivedData.id, dataUpdate.accessToken)
-      dataRoomchat.title = receivedData.title;
-      dataRoomchat.imgDisplay = receivedData.imgDisplay;
       setDataRoom(dataRoomchat)
       let tmpDataMember = {}
       let tmpDataUserCurrent = await getUserDataLiteAsync(dataUserLocal.id, dataUpdate.accessToken);
@@ -61,6 +59,13 @@ const SettingGroupChat = () => {
     setIsLoading(value);
   }
 
+  const updateTitle = (data) => {
+    setReceivedData((preData) => {
+      let newData = {...preData}
+      newData.title = data
+      return newData;
+    })
+  }
   return (
     <View
       style={{
@@ -73,7 +78,7 @@ const SettingGroupChat = () => {
       }}
     >
       <Header receivedData={receivedData}/>
-      <Infor receivedData={receivedData}  userCurrent={dataUserCurrent} onEdit={onEdit}/>
+      <Infor receivedData={receivedData}  userCurrent={dataUserCurrent} onEdit={onEdit} updateTitle={updateTitle}/>
       <Edit receivedData={dataRoom} users={dataUser} userCurrent={dataUserCurrent}/>
       <LoadingAnimation isVisible={isLoading} />
     </View>

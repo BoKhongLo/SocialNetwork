@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, Alert } from "react-native";
+import { View, Text, Image, TouchableOpacity, Alert, Linking } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { heightPercentageToDP } from "react-native-responsive-screen";
@@ -113,22 +113,22 @@ const Setting = () => {
       <Header />
       <View
         style={{
-          height: 350,
           backgroundColor: "#E0E0E0",
           borderRadius: 10,
           elevation: 8,
           marginVertical: 20,
+          paddingBottom:10
         }}
       >
         <General userProfile={userProfile} />
       </View>
       <View
         style={{
-          height: 250,
           backgroundColor: "#E0E0E0",
           borderRadius: 10,
           elevation: 8,
           marginVertical: 20,
+          paddingBottom:10
         }}
       >
         <Security logoutFunction={LogoutAlert} />
@@ -211,7 +211,7 @@ const General = ({ userProfile }) => {
         </TouchableOpacity>
 
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={() => navigation.navigate("buyPremium")}
           style={{ padding: 10, borderBottomWidth: 0.5, marginVertical: 10 }}
         >
@@ -224,7 +224,7 @@ const General = ({ userProfile }) => {
               source={require("../../../assets/dummyicon/right_line.png")}
             />
           </View>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <TouchableOpacity
           style={{ padding: 10, borderBottomWidth: 0.5, marginVertical: 10 }}
           onPress={() => navigation.navigate("contactUs")}
@@ -252,6 +252,25 @@ const Security = ({ logoutFunction }) => {
       <Text style={{ fontWeight: "400", fontSize: 18, color: "grey" }}>
         Security
       </Text>
+      <View style={{ marginLeft: 15, marginTop: 20 }}>
+        <TouchableOpacity
+          onPress={() => {Linking.openURL("http://www.blackcatstudio.site/#/privacy")}}
+          style={{ padding: 10 }}
+        >
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <Text style={{ fontSize: 18 }}>Privacy policy</Text>
+            <Image
+              style={{ height: 30, width: 30 }}
+              source={require("../../../assets/dummyicon/right_line.png")}
+            />
+          </View>
+          <View
+            style={{ height: 0.5, backgroundColor: "black", marginTop: 10 }}
+          ></View>
+        </TouchableOpacity>
+      </View>
       <View style={{ marginLeft: 15, marginTop: 20 }}>
         <TouchableOpacity
           onPress={() => navigation.navigate("changepassword")}
