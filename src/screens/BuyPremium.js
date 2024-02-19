@@ -69,7 +69,12 @@ const BuyPremium = () => {
     let result = await WebBrowser.openBrowserAsync(dataReturn.url);
     
   };
+
   const toggleModal = () => {
+    if (isModalVisible === false) {
+      const selectIndex = clickedMonths.findIndex(x => x === true);
+      if (selectIndex === -1) return;
+    }
     setModalVisible(!isModalVisible);
   };
 
