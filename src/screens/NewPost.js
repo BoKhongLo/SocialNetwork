@@ -153,6 +153,12 @@ const Header = ({ postData, isLoading, setIsLoading }) => {
 
   const handleCreatePost = async () => {
     setIsLoading(true); 
+    if ("fileUrl" in postData && "content" in postData) {
+      if (postData.fileUrl.length == 0 && postData.content.length == 0) {
+        setIsLoading(false);
+        return;
+      }
+    }
     const dto = new PostDto(
       postData.userId,
       "POST",
@@ -171,7 +177,11 @@ const Header = ({ postData, isLoading, setIsLoading }) => {
         );
         dataReturn = await createPostAsync(dto, dataUpdate.accessToken);
       }
-      if ("errors" in dataReturn) return;
+      if ("errors" in dataReturn) {
+        Alert.alert(dataReturn.errors[0].message)
+        setIsLoading(false)
+        return
+      };
     } else {
       let dataReturn = await validatePostAsync(dto, dataUserLocal.accessToken);
       if ("errors" in dataReturn) {
@@ -181,7 +191,11 @@ const Header = ({ postData, isLoading, setIsLoading }) => {
         );
         dataReturn = await validatePostAsync(dto, dataUpdate.accessToken);
       }
-      if ("errors" in dataReturn) return;
+      if ("errors" in dataReturn) {
+        Alert.alert(dataReturn.errors[0].message)
+        setIsLoading(false)
+        return
+      };
     }
     
     navigation.replace("main");
@@ -271,12 +285,13 @@ const ChoseImg = ({
   setIsLoading,
 }) => {
   const handleCamera = async () => {
-    setIsLoading(true); //////////////////////////////////////
 
     const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
     if (cameraPermission.granted === false) {
       return;
     }
+
+    setIsLoading(true); //////////////////////////////////////
 
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -323,12 +338,10 @@ const ChoseImg = ({
   };
 
   const handleGallery = async () => {
-    setIsLoading(true); 
-
     let result = await DocumentPicker.getDocumentAsync({
       type: ["image/*", "video/*", "audio/*"],
     });
-
+    setIsLoading(true); 
     if (result.type !== "success") {
       setIsLoading(false);
       return 

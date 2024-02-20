@@ -163,6 +163,7 @@ const SearchScreen = () => {
 
     setDataSearch(dataRequest);
   };
+
   const renderItem = ({ item }) => (
     <UserItem 
       user={item} 
@@ -211,6 +212,7 @@ const SearchScreen = () => {
       setRefreshing(false)
     }
   }
+  
   return (
     <View
       style={{

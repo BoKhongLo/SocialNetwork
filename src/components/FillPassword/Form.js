@@ -86,7 +86,7 @@ const Form = ({receivedData}) => {
         <Text style={forgotPass.text}>Enter New Password</Text>
         <View style={forgotPass.textInput}>
           <TextInput
-            style={{ fontSize: 18 }}
+            style={{ fontSize: 18, padding: 18 }}
             placeholder="At least 8 characters"
             secureTextEntry={!showPassword}
             autoCapitalize="none"
@@ -99,7 +99,7 @@ const Form = ({receivedData}) => {
         <Text style={forgotPass.text}>Confirm Password</Text>
         <View style={[forgotPass.textInput,{marginBottom:-10}]}>
           <TextInput
-            style={{ fontSize: 18 }}
+            style={{ fontSize: 18, padding: 18 }}
             placeholder=""
             secureTextEntry={!showPassword}
             autoCapitalize="none"

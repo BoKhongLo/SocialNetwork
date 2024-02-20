@@ -8,7 +8,6 @@ const forgotPass = StyleSheet.create({
   text: { fontSize: 27, fontWeight: "700" },
   textInput: {
     borderRadius: 4,
-    padding: 15,
     marginBottom: 60,
     borderBottomWidth: 0.5,
 

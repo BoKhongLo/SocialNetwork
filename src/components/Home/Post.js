@@ -27,13 +27,14 @@ import {
 import {
   getUserDataAsync,
   getAllIdUserLocal,
+  getUserDataLiteAsync,
   getDataUserLocal,
   updateAccessTokenAsync,
-  findFriendAsync,
   getSocketIO,
   saveDataUserLocal,
   getPostAsync
 } from "../../util";
+
 import { useNavigation } from "@react-navigation/native";
 const Post = React.memo(({ post, users, userCurrent, onRemovePost, onBookmark }) => {
   const [countLike, setCountLike] = useState(post.interaction.length);
@@ -73,8 +74,9 @@ const Post = React.memo(({ post, users, userCurrent, onRemovePost, onBookmark })
         if (dataPost.interaction.findIndex(interaction => interaction.id === post.id) !== -1) return;
         let newDataPost = dataPost;
         newDataPost.interaction.push(post);
+        console.log(newDataPost.interaction.length)
         setDataPost(newDataPost);
-        setCountLike(newDataPost.interaction.length)
+        setCountLike(predata => newDataPost.interaction.length)
       });
 
       newSocket.on("removeInteractionPost", (post) => {
@@ -83,8 +85,9 @@ const Post = React.memo(({ post, users, userCurrent, onRemovePost, onBookmark })
         if (indexInter === -1) return;
         let newDataPost = dataPost;
         newDataPost.interaction.splice(indexInter, 1);
+        console.log(newDataPost.interaction.length)
         setDataPost(newDataPost);
-        setCountLike(newDataPost.interaction.length)
+        setCountLike(predata => newDataPost.interaction.length)
       });
     }
     socketConnect()

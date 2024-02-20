@@ -128,6 +128,7 @@ const SignupForm = ({receivedData, isLoading, setIsLoading}) => {
         <ScrollView>
           <View style={styles.inputField}>
             <TextInput
+              style={{padding: 18}}
               placeholderTextColor="#444"
               placeholder="Name"
               autoCapitalize="none"
@@ -170,6 +171,7 @@ const SignupForm = ({receivedData, isLoading, setIsLoading}) => {
             {!showPicker && (
               <Pressable onPress={toggleDatePicker}>
                 <TextInput
+                  style={{padding: 18}}
                   placeholder="Month - Date - Year"
                   value={dateOfBirth}
                   editable={false}
@@ -179,14 +181,14 @@ const SignupForm = ({receivedData, isLoading, setIsLoading}) => {
               </Pressable>
             )}
           </View>
-          <View style={styles.inputField}>
+          <View style={[styles.inputField, {padding: 10}]}>
             <RNPickerSelect
               onValueChange={(value) => setSelectedGender(value)}
               items={genderOptions}
               value={selectedGender}
             />
           </View>
-          <View style={styles.inputField}>
+          <View style={[styles.inputField, {padding: 14}]}>
             <CountryCodeDropdownPicker
               selected={selected}
               setSelected={setSelected}

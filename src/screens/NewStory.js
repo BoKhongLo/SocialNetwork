@@ -128,6 +128,12 @@ const Header = ({ postData, isLoading, setIsLoading })  => {
   const navigation = useNavigation();
   const handleCreatePost = async () => {
     setIsLoading(true); //////////////////////////////////////
+    if ("fileUrl" in postData) {
+      if (postData.fileUrl.length == 0) {
+        setIsLoading(false);
+        return;
+      }
+    }
     const dto = new PostDto(
       postData.userId,
       "STORY",
@@ -146,7 +152,11 @@ const Header = ({ postData, isLoading, setIsLoading })  => {
       dataReturn = await createPostAsync(dto, dataUpdate.accessToken);
     }
     console.log(dataReturn);
-    if ("errors" in dataReturn) return;
+    if ("errors" in dataReturn) {
+      Alert.alert(dataReturn.errors[0].message)
+      setIsLoading(false)
+      return
+    };
     setIsLoading(false); //////////////////////////////////////
     navigation.replace("main");
   };
@@ -213,13 +223,11 @@ const ChoseImg = ({
   setIsLoading,
 }) => {
   const handleCamera = async () => {
-    setIsLoading(true);
-
     const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
     if (cameraPermission.granted === false) {
       return;
     }
-
+    setIsLoading(true);
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -262,12 +270,12 @@ const ChoseImg = ({
 
   };
   const handleGallery = async () => {
-    setIsLoading(true); 
 
     let result = await DocumentPicker.getDocumentAsync({
       type: ["image/*", "video/*", "audio/*"],
     });
 
+    setIsLoading(true); 
     if (result.type !== "success") {
       setIsLoading(false);
       return 
