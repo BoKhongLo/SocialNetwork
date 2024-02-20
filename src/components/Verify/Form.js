@@ -64,7 +64,7 @@ const Form = ({receivedData, setIsLoading}) => {
       <Text style={forgotPass.text}>Enter Verification Code</Text>
       <View style={forgotPass.textInput}>
         <TextInput
-          style={{ fontSize: 18, textAlignVertical: "top", }}
+          style={{ fontSize: 18, textAlignVertical: "top", padding: 18 }}
           keyboardType="number-pad"
           autoCapitalize="none"
           maxLength={6} // Set maximum length to 6 digits

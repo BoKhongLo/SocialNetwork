@@ -82,7 +82,6 @@ const styles = StyleSheet.create({
   },
   inputField: {
     borderRadius: 4,
-    padding: 15,
     marginBottom: 8,
     borderBottomWidth: 0.5,
     marginTop: 10,

@@ -27,9 +27,9 @@ const SignupForm = ({receivedData, isLoading, setIsLoading}) => {
   const [dateOfBirth, setDateOfBirth] = useState("");
   const navigation = useNavigation();
   const [selectedGender, setSelectedGender] = useState("other");
-  const [selected, setSelected] = React.useState('+84');
-  const [country, setCountry] = React.useState('');
-  const [phone, setPhone] = React.useState('');
+  const [selected, setSelected] = React.useState("+84");
+  const [country, setCountry] = React.useState("");
+  const [phone, setPhone] = React.useState("");
 
   const handleSetPhone = (text) => {
     if (text == "") {
@@ -45,14 +45,13 @@ const SignupForm = ({receivedData, isLoading, setIsLoading}) => {
     } else {
       return;
     }
-  }
+  };
 
   const genderOptions = [
-    { label: '🚹male', value: 'male' },
-    { label: '🚺female', value: 'female' },
-    { label: '🏳️‍🌈other', value: 'other' },
+    { label: "🚹male", value: "male" },
+    { label: "🚺female", value: "female" },
+    { label: "🏳️‍🌈other", value: "other" },
   ];
-
 
   const toggleDatePicker = () => {
     setShowPicker(!showPicker);
@@ -101,8 +100,7 @@ const SignupForm = ({receivedData, isLoading, setIsLoading}) => {
     if (phone === "") {
       dto.phoneNumber = null;
       dto.countryCode = null;
-    }
-    else {
+    } else {
       dto.phoneNumber = phone;
       dto.countryCode = selected;
     }
@@ -124,81 +122,83 @@ const SignupForm = ({receivedData, isLoading, setIsLoading}) => {
 
   };
 
-
   return (
-    <View style={styles.wrapper}>
-      <ScrollView>
-      <View style={styles.inputField}>
-        <TextInput
-          placeholderTextColor="#444"
-          placeholder="Name"
-          autoCapitalize="none"
-          autoFocus={true}
-          value={name}
-          onChangeText={(text) => setName(text)}
-        />
-      </View>
-      <View style={styles.inputField}>
-        {showPicker && (
-          <DateTimePicker
-            mode="date"
-            display="spinner"
-            value={date}
-            onChange={setDateTime}
-          />
-        )}
-        {!showPicker && Platform.OS === "ios" && (
-          <View
-            style={{ flexDirection: "Row", justifyContent: "space-around" }}
-          >
-            <TouchableOpacity
-              style={[styles.buttonLogin, { backgroundColor: "#11182711" }]}
-              onPress={toggleDatePicker}
-            >
-              <Text style={[styles.buttonLoginText, { color: "#075985" }]}>
-                Cancel
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.buttonLogin]}
-              onPress={confirmIOSDate}
-            >
-              <Text style={styles.buttonLoginText}>Confirm</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {!showPicker && (
-          <Pressable onPress={toggleDatePicker}>
+    <>
+      <View style={styles.wrapper}>
+        <ScrollView>
+          <View style={styles.inputField}>
             <TextInput
-              placeholder="Month - Date - Year"
-              value={dateOfBirth}
-              editable={false}
-              onChangeText={(text) => setDateOfBirth(text)}
-              onPressIn={toggleDatePicker}
+              style={{padding: 18}}
+              placeholderTextColor="#444"
+              placeholder="Name"
+              autoCapitalize="none"
+              autoFocus={true}
+              value={name}
+              onChangeText={(text) => setName(text)}
             />
-          </Pressable>
-        )}
-      </View>
-      <View style={styles.inputField}>
-          <RNPickerSelect 
-            onValueChange={(value) => setSelectedGender(value)}
-            items={genderOptions}
-            value={selectedGender}
-          />
-      </View>
-      <View style={styles.inputField}>
-        <CountryCodeDropdownPicker 
-          selected={selected} 
-          setSelected={setSelected}
-          setCountryDetails={setCountry} 
-          phone={phone} 
-          setPhone={handleSetPhone} 
-          countryCodeTextStyles={{fontSize: 13}}
-        />
-      </View>
-      {/* <View style={styles.inputField}>
+          </View>
+          <View style={styles.inputField}>
+            {showPicker && (
+              <DateTimePicker
+                mode="date"
+                display="spinner"
+                value={date}
+                onChange={setDateTime}
+              />
+            )}
+            {!showPicker && Platform.OS === "ios" && (
+              <View
+                style={{ flexDirection: "Row", justifyContent: "space-around" }}
+              >
+                <TouchableOpacity
+                  style={[styles.buttonLogin, { backgroundColor: "#11182711" }]}
+                  onPress={toggleDatePicker}
+                >
+                  <Text style={[styles.buttonLoginText, { color: "#075985" }]}>
+                    Cancel
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[styles.buttonLogin]}
+                  onPress={confirmIOSDate}
+                >
+                  <Text style={styles.buttonLoginText}>Confirm</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {!showPicker && (
+              <Pressable onPress={toggleDatePicker}>
+                <TextInput
+                  style={{padding: 18}}
+                  placeholder="Month - Date - Year"
+                  value={dateOfBirth}
+                  editable={false}
+                  onChangeText={(text) => setDateOfBirth(text)}
+                  onPressIn={toggleDatePicker}
+                />
+              </Pressable>
+            )}
+          </View>
+          <View style={[styles.inputField, {padding: 10}]}>
+            <RNPickerSelect
+              onValueChange={(value) => setSelectedGender(value)}
+              items={genderOptions}
+              value={selectedGender}
+            />
+          </View>
+          <View style={[styles.inputField, {padding: 14}]}>
+            <CountryCodeDropdownPicker
+              selected={selected}
+              setSelected={setSelected}
+              setCountryDetails={setCountry}
+              phone={phone}
+              setPhone={handleSetPhone}
+              countryCodeTextStyles={{ fontSize: 13 }}
+            />
+          </View>
+          {/* <View style={styles.inputField}>
         <TextInput
           placeholderTextColor="#444"
           placeholder="phone number"
@@ -210,15 +210,16 @@ const SignupForm = ({receivedData, isLoading, setIsLoading}) => {
           onChangeText={(text) => setPhoneNumber(text)}
         />
       </View> */}
-      <TouchableOpacity
-        titleSize={20}
-        style={styles.buttonLogin}
-        onPress={handleSignUp}
-      >
-        <Text style={styles.buttonLoginText}> Submit </Text>
-      </TouchableOpacity>
-      </ScrollView>
-    </View>
+          <TouchableOpacity
+            titleSize={20}
+            style={styles.buttonLogin}
+            onPress={() => handleSignUp()}
+          >
+            <Text style={styles.buttonLoginText}> Submit </Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </View>
+    </>
   );
 };
 

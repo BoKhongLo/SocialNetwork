@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
-  Keyboard
+  Keyboard,
 } from "react-native";
 import React, { useState, useRef } from "react";
 import styles from "../../styles/styles";
@@ -73,6 +73,7 @@ const LoginForm = ({ isLoading, setIsLoading }) => {
         <View style={styles.wrapper}>
           <View style={styles.inputField}>
             <TextInput
+              style={{padding: 18}}
               placeholderTextColor="#444"
               placeholder="Phone number, Username or Email"
               autoCapitalize="none"
@@ -98,7 +99,7 @@ const LoginForm = ({ isLoading, setIsLoading }) => {
               secureTextEntry={!showPassword}
               value={password}
               onChangeText={(text) => setPassword(text)}
-              style={{flex:1}}
+              style={{flex:1, padding: 18}}
             />
             <TouchableOpacity
               style={{

@@ -59,7 +59,7 @@ const Form = ({ receivedData, isLoading, setIsLoading }) => {
       <Text style={forgotPass.text}>Enter Email Address.</Text>
       <View style={forgotPass.textInput}>
         <TextInput
-          style={{ fontSize: 18 }}
+          style={{ fontSize: 18, padding: 18 }}
           placeholder="example@gmail.com"
           keyboardType="email-address"
           autoCapitalize="none"

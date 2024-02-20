@@ -217,13 +217,13 @@ const PostFooter = ({
         >
           <TextInput
             placeholder="Enter your comments"
-            style={{ padding: 10, marginLeft: 5 }}
+            style={{ padding: 10, paddingRight: 185, marginLeft: 5}}
             value={comment}
             onChangeText={(text) => setComment(text)}
           />
           <TouchableOpacity
             onPress={handleSendPress}
-            style={{ paddingHorizontal: 10, paddingVertical: 10}}
+            style={{ paddingHorizontal: 10, paddingVertical: 10  }}
           >
             <MaterialCommunityIcons name="send" size={25} />
           </TouchableOpacity>

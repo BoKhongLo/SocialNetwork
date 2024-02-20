@@ -17,7 +17,7 @@ const searchStyles = StyleSheet.create({
     marginLeft: 10,
   },
   button: {
-    paddingHorizontal: 25,
+    paddingHorizontal: 20,
     paddingVertical: 10,
   },
   avt: {

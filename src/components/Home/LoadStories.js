@@ -28,11 +28,19 @@ const LoadStories = () => {
 
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
+  const [isUser, setIsUser] = useState(false);
 
   useEffect(() => {
     if (!receivedData) navigation.navigate("main");
-    console.log(receivedData);
+    console.log(receivedData.post);
+    const checkUser = async () => {
+      const keys = await getAllIdUserLocal();
+      const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
+      if (dataUserLocal.id === receivedData.post.ownerUserId) setIsUser(true);
+    }
+    checkUser()
   }, []);
+
   const validateFile = (file) => {
     if (!file || file == "") return "Null";
     const imgExt = ["jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp", "raf"];
@@ -49,6 +57,8 @@ const LoadStories = () => {
       return "VIDEO";
     }
   };
+
+
   const handleDeletePost = async () => {
     const keys = await getAllIdUserLocal();
     const dataUserLocal = await getDataUserLocal(keys[keys.length - 1]);
@@ -77,7 +87,7 @@ const LoadStories = () => {
   const alertDeleteStory = () => {
     Alert.alert("", "Delete this story ?", [
       { text: "Cancel", onPress: () => null },
-      { text: "OK", onPress: () => handleDeletePost() },
+      { text: "OK", onPress: async () => await handleDeletePost() },
     ]);
   };
   return (
@@ -101,15 +111,17 @@ const LoadStories = () => {
             source={require("../../../assets/dummyicon/left_fill.png")}
           />
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => alertDeleteStory()}
-          style={{ marginLeft: 10 }}
-        >
-          <Image
-            style={styles.iconforAll}
-            source={require("../../../assets/dummyicon/more_1_line.png")}
-          />
-        </TouchableOpacity>
+        {isUser && (
+          <TouchableOpacity
+            onPress={() => alertDeleteStory()}
+            style={{ marginLeft: 10 }}
+          >
+            <Image
+              style={styles.iconforAll}
+              source={require("../../../assets/dummyicon/more_1_line.png")}
+            />
+          </TouchableOpacity>
+        )}
       </View>
       <View
         style={{
@@ -120,7 +132,7 @@ const LoadStories = () => {
         }}
       >
         {receivedData &&
-        validateFile(receivedData.post.fileUrl[0]) === "IMAGE" ? (
+          validateFile(receivedData.post.fileUrl[0]) === "IMAGE" ? (
           <Image
             source={{ uri: receivedData.post.fileUrl[0] }}
             style={{
@@ -128,6 +140,7 @@ const LoadStories = () => {
               height: "100%",
               resizeMode: "contain",
               alignItems: "center",
+              backgroundColor: "gray"
             }}
           />
         ) : receivedData &&
@@ -157,8 +170,9 @@ const LoadStories = () => {
           />
         )}
       </View>
-
-      <Comments data={receivedData.post} users={receivedData.users} />
+      {isUser == false && (
+        <Comments data={receivedData.post} users={receivedData.users} />
+      )}
     </View>
   );
 };
@@ -176,15 +190,14 @@ const Comments = ({ data, users }) => {
     const fetchData = async () => {
       const keys = await getAllIdUserLocal();
       const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
-      const dataUserLocal = { ...dataLocal };
+      let dataUserLocal = { ...dataLocal };
 
       let dataRoomchatAsync = await getRoomchatByTitleAsync(
         dataUserLocal.id + data.ownerUserId,
         dataUserLocal.accessToken
       );
 
-      if (
-        "errors" in dataRoomchatAsync &&
+      if ("errors" in dataRoomchatAsync &&
         dataRoomchatAsync.errors[0].message !== "This roomchat does not exist"
       ) {
         const dataUpdate = await updateAccessTokenAsync(
@@ -197,6 +210,8 @@ const Comments = ({ data, users }) => {
           dataUpdate.accessToken
         );
       }
+      const newSocket = await getSocketIO(dataUserLocal.accessToken);
+      setSocket(newSocket);
       if (
         "errors" in dataRoomchatAsync &&
         dataRoomchatAsync.errors[0].message === "This roomchat does not exist"
@@ -211,22 +226,19 @@ const Comments = ({ data, users }) => {
       }
       dataRoomchatAsync.imgDisplay = users[data.ownerUserId].detail.avatarUrl;
       dataRoomchatAsync.title = users[data.ownerUserId].detail.name;
-      const newSocket = await getSocketIO(dataUserLocal.accessToken);
-      setSocket(newSocket);
       setDataRoomchat(dataRoomchatAsync);
     };
 
     fetchData();
-    return () => {
-      if (socket != undefined) {
-        socket.disconnect();
-      }
-    };
   }, []);
 
   const handleSend = async () => {
+    if (text.length == 0 ) return
     if (socket == undefined) return;
-    if (dataRoomchat == null) return;
+    if (dataRoomchat == null) {
+      Alert.alert("This user is not your friend")
+      return
+    };
     const keys = await getAllIdUserLocal();
     const dataLocal = await getDataUserLocal(keys[keys.length - 1]);
     socket.emit("sendMessage", {
@@ -245,42 +257,42 @@ const Comments = ({ data, users }) => {
       style={{ flex: 0.1 }}
       keyboardShouldPersistTaps="handled"
     >
-      <View style={{ flex: 1, justifyContent: "center",margin:5}}>
-        
-          <View
-            style={{
-              flex: 7,
-              borderRadius: 20,
-              borderWidth: 1,
-              borderColor: "white",
-              backgroundColor: "white",
-              flexDirection: "row",
+      <View style={{ flex: 1, justifyContent: "center", margin: 5 }}>
+
+        <View
+          style={{
+            flex: 7,
+            borderRadius: 20,
+            borderWidth: 1,
+            borderColor: "white",
+            backgroundColor: "white",
+            flexDirection: "row",
             justifyContent: "space-between",
+          }}
+        >
+          <TextInput
+            keyboardType="default"
+            placeholder="Send a message"
+            style={{
+              textAlign: "center",
+              flex: 1,
             }}
-          >
-            <TextInput
-              keyboardType="default"
-              placeholder="Gửi tin nhắn"
-              style={{
-                textAlign: "center",
-                flex:1
-              }}
-              onChangeText={handleInputChange}
-              value={text}
-            />
-            <TouchableOpacity
+            onChangeText={handleInputChange}
+            value={text}
+          />
+          <TouchableOpacity
             onPress={handleSend}
-            style={{justifyContent:'center',padding:10}}
+            style={{ justifyContent: 'center', padding: 10 }}
           >
             <Image
               style={styles.iconforAll}
               source={require("../../../assets/dummyicon/share.png")}
             />
           </TouchableOpacity>
-          </View>
-
-          
         </View>
+
+
+      </View>
 
     </KeyboardAvoidingView>
   );

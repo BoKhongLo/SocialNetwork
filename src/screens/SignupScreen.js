@@ -23,6 +23,7 @@ const SignupScreen = () => {
     fetchData();
   }, []);
   return (
+    <>
     <View
       style={{
         paddingTop: insets.top,
@@ -49,6 +50,7 @@ const SignupScreen = () => {
       </ScrollView>
       <LoadingAnimation isVisible={isLoading}/>
     </View>
+    </>
   );
 };
 
