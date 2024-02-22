@@ -210,7 +210,7 @@ const General = ({ userProfile }) => {
           </View>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => navigation.navigate("buyPremium")}
+          onPress={() => navigation.replace("buyPremium")}
           style={{ padding: 10, borderBottomWidth: 0.5, marginVertical: 10 }}
         >
           <View
@@ -271,7 +271,7 @@ const Security = ({ logoutFunction }) => {
       </View>
       <View style={{ marginLeft: 15, marginTop: 20 }}>
         <TouchableOpacity
-          onPress={() => navigation.navigate("changepassword")}
+          onPress={() => navigation.replace("changepassword")}
           style={{ padding: 10 }}
         >
           <View

@@ -63,7 +63,7 @@ const Options = ({ data }) => {
         );
       }
       if ("errors" in dataUserAsync) {
-        navigation.navigate("main");
+        navigation.replace("main");
       }
       if (dataUserAsync.friends.includes(data.id)) {
         setIsFriend("Friend");
