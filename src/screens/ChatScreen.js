@@ -170,11 +170,11 @@ const ChatScreen = ({}) => {
 
         newRoom.title = dataFriend.detail.name;
         if (!dataFriend.detail.avatarUrl)
-          newRoom.imgDisplay = {uri: "https://firebasestorage.googleapis.com/v0/b/testgame-d8af2.appspot.com/o/avt.png?alt=media&token=b8108af6-1f90-4512-91f5-45091ca7351f"}
-        else newRoom.imgDisplay = { uri: dataFriend.detail.avatarUrl };
+          newRoom.imgDisplay = "https://firebasestorage.googleapis.com/v0/b/testgame-d8af2.appspot.com/o/avt.png?alt=media&token=b8108af6-1f90-4512-91f5-45091ca7351f"
+        else newRoom.imgDisplay = dataFriend.detail.avatarUrl;
       }
       else {
-        newRoom.imgDisplay = {uri: 'https://firebasestorage.googleapis.com/v0/b/testgame-d8af2.appspot.com/o/room.jpg?alt=media&token=dcef7b37-3d4b-4bca-9159-1275e966b1a7'}
+        newRoom.imgDisplay = 'https://firebasestorage.googleapis.com/v0/b/testgame-d8af2.appspot.com/o/room.jpg?alt=media&token=dcef7b37-3d4b-4bca-9159-1275e966b1a7'
       }
       setDataRoomchat((preRoom) => [...preRoom, newRoom].sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at)));
       setDataRoomchatTmp((preRoom) => [...preRoom, newRoom].sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at)));

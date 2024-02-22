@@ -102,7 +102,10 @@ const Header = ({ user}) => {
       false
     );
     let dataReturn = await createRoomchatAsync(dto, dataUpdate.accessToken);
-    console.log(dataReturn)
+    if ("errors" in dataReturn) {
+      Alert.alert(dataReturn.errors[0].message)
+      return
+    }
     // updateRoom(dataReturn);
     // if ("errors" in dataReturn) {
     //   console.log(dataReturn.errors);

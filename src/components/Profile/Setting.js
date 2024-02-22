@@ -271,7 +271,7 @@ const Security = ({ logoutFunction }) => {
       </View>
       <View style={{ marginLeft: 15, marginTop: 20 }}>
         <TouchableOpacity
-          onPress={() => navigation.navigate("changepassword")}
+          onPress={() => navigation.replace("changepassword")}
           style={{ padding: 10 }}
         >
           <View
