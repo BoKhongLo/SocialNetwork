@@ -9,12 +9,10 @@ const Header = ({ receivedData }) => {
   return (
     <View>
       <View style={[styles.headerContainer]}>
-        <TouchableOpacity>
           <Image
             style={styles.logo}
             source={require('../../../assets/img/Instagram_logo.png')}
           />
-        </TouchableOpacity>
         <View style={styles.iconContainer}>
           <TouchableOpacity
           onPress={() => navigation.replace('noti', {data: receivedData})}
