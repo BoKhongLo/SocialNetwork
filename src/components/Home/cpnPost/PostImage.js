@@ -127,7 +127,7 @@ const PostImage = ({ post, users }) => {
                       width: "100%",
                       height: "100%",
                       resizeMode: "contain",
-                      backgroundColor: "#111111",
+                      backgroundColor: "#303030",
                     }}
                   />
                 ) : validateFile(image) === "VIDEO" ? (
@@ -135,7 +135,7 @@ const PostImage = ({ post, users }) => {
                     style={{
                       width: "100%",
                       height: "100%",
-                      backgroundColor: "#111111",
+                      backgroundColor: "#303030",
                     }}
                     source={{ uri: image }}
                     useNativeControls
@@ -146,7 +146,7 @@ const PostImage = ({ post, users }) => {
                     style={{
                       width: "100%",
                       height: "100%",
-                      backgroundColor: "#111111",
+                      backgroundColor: "#303030",
                     }}
                     source={{ uri: image }}
                     useNativeControls
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
   video: {
     width: "100%",
     aspectRatio: 1, // Default aspect ratio
-    backgroundColor: "#111111",
+    backgroundColor: "#303030",
   },
 });
 export default PostImage;

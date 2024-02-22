@@ -11,7 +11,7 @@ export async function uploadFile (data: FileUploadDto, authToken: string,) {
             type: data.typeFile, 
           });
 
-        const response = await axios.post('http://103.155.161.116:3434/media/upload', formData, {
+        const response = await axios.post('https://api.blackcatstudio.site/media/upload', formData, {
         headers: {
             'Authorization': `Bearer ${authToken}`,
             'Content-Type': 'multipart/form-data',
@@ -46,7 +46,7 @@ export async function getFileByUrl (url: string, authToken: string,) {
         const formData = new FormData();
         formData.append('fileUrl', url);
 
-        const response = await axios.post(`http://103.155.161.116:3434/media/url`, formData, {
+        const response = await axios.post(`https://api.blackcatstudio.site/media/url`, formData, {
         headers: {
             'Authorization': `Bearer ${authToken}`,
             'Content-Type': 'multipart/form-data',
