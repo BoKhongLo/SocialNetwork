@@ -209,9 +209,7 @@ const General = ({ userProfile }) => {
             />
           </View>
         </TouchableOpacity>
-
-
-        {/* <TouchableOpacity
+        <TouchableOpacity
           onPress={() => navigation.navigate("buyPremium")}
           style={{ padding: 10, borderBottomWidth: 0.5, marginVertical: 10 }}
         >
@@ -224,7 +222,7 @@ const General = ({ userProfile }) => {
               source={require("../../../assets/dummyicon/right_line.png")}
             />
           </View>
-        </TouchableOpacity> */}
+        </TouchableOpacity>
         <TouchableOpacity
           style={{ padding: 10, borderBottomWidth: 0.5, marginVertical: 10 }}
           onPress={() => navigation.navigate("contactUs")}
