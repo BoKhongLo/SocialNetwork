@@ -303,6 +303,9 @@ const ItemComment = React.memo(({ post, users, userCurrent }) => {
         await saveDataUserLocal(dataUpdate.id, dataUpdate)
         dataRe = await getPostAsync(post.id, dataUserLocal.accessToken)
       }
+      if (Array.isArray(dataRe.comment)) {
+        dataRe.comment =  dataRe.comment.filter(it => it.isDisplay === true);
+      }
 
       setDataPost(dataRe);
     };

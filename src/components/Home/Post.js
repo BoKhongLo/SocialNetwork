@@ -76,7 +76,7 @@ const Post = React.memo(({ post, users, userCurrent, onRemovePost, onBookmark })
         newDataPost.interaction.push(post);
         console.log(newDataPost.interaction.length)
         setDataPost(newDataPost);
-        setCountLike(predata => newDataPost.interaction.length)
+        setCountLike(predata => {return newDataPost.interaction.length})
       });
 
       newSocket.on("removeInteractionPost", (post) => {
@@ -87,7 +87,7 @@ const Post = React.memo(({ post, users, userCurrent, onRemovePost, onBookmark })
         newDataPost.interaction.splice(indexInter, 1);
         console.log(newDataPost.interaction.length)
         setDataPost(newDataPost);
-        setCountLike(predata => newDataPost.interaction.length)
+        setCountLike(predata => {return newDataPost.interaction.length})
       });
     }
     socketConnect()
@@ -228,7 +228,10 @@ const ItemLike = ({ post, users }) => {
         await saveDataUserLocal(dataUpdate.id, dataUpdate)
         dataRe = await getPostAsync(post.id, dataUserLocal.accessToken)
       }
-
+      if (Array.isArray(dataRe.interaction)) {
+        dataRe.interaction = dataRe.interaction.filter(it => it.isDisplay === true)
+      }
+      console.log(dataRe.interaction)
       setDataPost(dataRe);
     };
 
@@ -243,8 +246,9 @@ const ItemLike = ({ post, users }) => {
     navigation.replace("Profile", { data: receivedData });
   };
 
-  const renderItem = ({ item }) => (
-    <View
+  const renderItem = ({ item }) => {
+    if (item.isDisplay === false) return
+    return (<View
       style={{
         flexDirection: "row",
         justifyContent: "space-between",
@@ -283,7 +287,7 @@ const ItemLike = ({ post, users }) => {
       </View>
       <Image style={{width: 30, height: 30}} source={require("../../../assets/dummyicon/heart_fill.png")}/>
     </View>
-  );
+  )};
 
   return (
     <FlatList
